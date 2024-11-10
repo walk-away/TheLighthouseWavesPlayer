@@ -1,0 +1,13 @@
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.deps.json
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.pdb
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.csproj.AssemblyReference.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.GeneratedMSBuildEditorConfig.editorconfig
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.AssemblyInfoInputs.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.AssemblyInfo.cs
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.csproj.CoreCompileInputs.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.sourcelink.json
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\refint\TheLighthouseWavesPlayer.Localization.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Localization.pdb
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Localization\obj\Debug\net8.0-windows10.0.19041.0\ref\TheLighthouseWavesPlayer.Localization.dll

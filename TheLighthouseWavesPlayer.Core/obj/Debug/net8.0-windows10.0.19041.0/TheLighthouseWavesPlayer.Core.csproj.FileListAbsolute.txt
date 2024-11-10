@@ -1,0 +1,13 @@
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.deps.json
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.pdb
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.csproj.AssemblyReference.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.AssemblyInfoInputs.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.AssemblyInfo.cs
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.csproj.CoreCompileInputs.cache
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.sourcelink.json
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\refint\TheLighthouseWavesPlayer.Core.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\TheLighthouseWavesPlayer.Core.pdb
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-windows10.0.19041.0\ref\TheLighthouseWavesPlayer.Core.dll
