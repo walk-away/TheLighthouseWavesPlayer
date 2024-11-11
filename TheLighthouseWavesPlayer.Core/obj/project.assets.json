@@ -2,6 +2,22 @@
   "version": 3,
   "targets": {
     "net8.0-android34.0": {
+      "CommunityToolkit.Mvvm/8.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/CommunityToolkit.Mvvm.targets": {}
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -2179,9 +2195,41 @@
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.KotlinX.Coroutines.Core.Jvm.targets": {}
         }
+      },
+      "TheLighthouseWavesPlayer.Localization/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "8.2.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Maui.Controls": "8.0.82",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.82"
+        },
+        "compile": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        }
       }
     },
     "net8.0-ios17.5": {
+      "CommunityToolkit.Mvvm/8.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/CommunityToolkit.Mvvm.targets": {}
+        }
+      },
       "Microsoft.Extensions.Configuration/8.0.0": {
         "type": "package",
         "dependencies": {
@@ -2579,9 +2627,41 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "TheLighthouseWavesPlayer.Localization/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "8.2.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Maui.Controls": "8.0.82",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.82"
+        },
+        "compile": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        }
       }
     },
     "net8.0-maccatalyst17.5": {
+      "CommunityToolkit.Mvvm/8.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/CommunityToolkit.Mvvm.targets": {}
+        }
+      },
       "Microsoft.Extensions.Configuration/8.0.0": {
         "type": "package",
         "dependencies": {
@@ -2979,9 +3059,41 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "TheLighthouseWavesPlayer.Localization/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "8.2.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Maui.Controls": "8.0.82",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.82"
+        },
+        "compile": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        }
       }
     },
     "net8.0-windows10.0.19041": {
+      "CommunityToolkit.Mvvm/8.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CommunityToolkit.Mvvm.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/CommunityToolkit.Mvvm.targets": {}
+        }
+      },
       "Microsoft.Extensions.Configuration/8.0.0": {
         "type": "package",
         "dependencies": {
@@ -3548,10 +3660,57 @@
             "rid": "win10-x86"
           }
         }
+      },
+      "TheLighthouseWavesPlayer.Localization/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "8.2.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Maui.Controls": "8.0.82",
+          "Microsoft.Maui.Controls.Compatibility": "8.0.82"
+        },
+        "compile": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TheLighthouseWavesPlayer.Localization.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "CommunityToolkit.Mvvm/8.2.2": {
+      "sha512": "r0g0k9tGYdrnz8R7T3x5UiokDffeevzK/2P/9SBL6fqLgN8B157MIi/bVUWI1KAz6ZorZrK9AdABCWUeXZZsvA==",
+      "type": "package",
+      "path": "communitytoolkit.mvvm/8.2.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "License.md",
+        "ThirdPartyNotices.txt",
+        "analyzers/dotnet/roslyn4.0/cs/CommunityToolkit.Mvvm.CodeFixers.dll",
+        "analyzers/dotnet/roslyn4.0/cs/CommunityToolkit.Mvvm.SourceGenerators.dll",
+        "analyzers/dotnet/roslyn4.3/cs/CommunityToolkit.Mvvm.CodeFixers.dll",
+        "analyzers/dotnet/roslyn4.3/cs/CommunityToolkit.Mvvm.SourceGenerators.dll",
+        "build/netstandard2.0/CommunityToolkit.Mvvm.targets",
+        "build/netstandard2.1/CommunityToolkit.Mvvm.targets",
+        "buildTransitive/netstandard2.0/CommunityToolkit.Mvvm.targets",
+        "buildTransitive/netstandard2.1/CommunityToolkit.Mvvm.targets",
+        "communitytoolkit.mvvm.8.2.2.nupkg.sha512",
+        "communitytoolkit.mvvm.nuspec",
+        "lib/net6.0/CommunityToolkit.Mvvm.dll",
+        "lib/net6.0/CommunityToolkit.Mvvm.pdb",
+        "lib/net6.0/CommunityToolkit.Mvvm.xml",
+        "lib/netstandard2.0/CommunityToolkit.Mvvm.dll",
+        "lib/netstandard2.0/CommunityToolkit.Mvvm.pdb",
+        "lib/netstandard2.0/CommunityToolkit.Mvvm.xml",
+        "lib/netstandard2.1/CommunityToolkit.Mvvm.dll",
+        "lib/netstandard2.1/CommunityToolkit.Mvvm.pdb",
+        "lib/netstandard2.1/CommunityToolkit.Mvvm.xml"
+      ]
+    },
     "GoogleGson/2.10.1.4": {
       "sha512": "L1vdbwbQzvKUoUGiMpMoJG5fqfLXaP6zMy1a26AYJQJSQKUO7Ojr2U5BAmgQoRxQ8J2GDjBfnfgnrsnorb4y5Q==",
       "type": "package",
@@ -7702,26 +7861,35 @@
         "xamarin.kotlinx.coroutines.core.jvm.1.7.2.1.nupkg.sha512",
         "xamarin.kotlinx.coroutines.core.jvm.nuspec"
       ]
+    },
+    "TheLighthouseWavesPlayer.Localization/1.0.0": {
+      "type": "project",
+      "path": "../TheLighthouseWavesPlayer.Localization/TheLighthouseWavesPlayer.Localization.csproj",
+      "msbuildProject": "../TheLighthouseWavesPlayer.Localization/TheLighthouseWavesPlayer.Localization.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0-android34.0": [
       "Microsoft.Maui.Controls >= 8.0.82",
-      "Microsoft.Maui.Controls.Compatibility >= 8.0.82"
+      "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
+      "TheLighthouseWavesPlayer.Localization >= 1.0.0"
     ],
     "net8.0-ios17.5": [
       "Microsoft.Maui.Controls >= 8.0.82",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.8"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.8",
+      "TheLighthouseWavesPlayer.Localization >= 1.0.0"
     ],
     "net8.0-maccatalyst17.5": [
       "Microsoft.Maui.Controls >= 8.0.82",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.8"
+      "Microsoft.NET.ILLink.Tasks >= 8.0.8",
+      "TheLighthouseWavesPlayer.Localization >= 1.0.0"
     ],
     "net8.0-windows10.0.19041": [
       "Microsoft.Maui.Controls >= 8.0.82",
-      "Microsoft.Maui.Controls.Compatibility >= 8.0.82"
+      "Microsoft.Maui.Controls.Compatibility >= 8.0.82",
+      "TheLighthouseWavesPlayer.Localization >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -7764,19 +7932,35 @@
       "frameworks": {
         "net8.0-android34.0": {
           "targetAlias": "net8.0-android",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj": {
+              "projectPath": "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj"
+            }
+          }
         },
         "net8.0-ios17.5": {
           "targetAlias": "net8.0-ios",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj": {
+              "projectPath": "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj"
+            }
+          }
         },
         "net8.0-maccatalyst17.5": {
           "targetAlias": "net8.0-maccatalyst",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj": {
+              "projectPath": "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj"
+            }
+          }
         },
         "net8.0-windows10.0.19041": {
           "targetAlias": "net8.0-windows10.0.19041.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj": {
+              "projectPath": "D:\\MyProjects\\TheLighthouseWavesPlayer\\TheLighthouseWavesPlayer.Localization\\TheLighthouseWavesPlayer.Localization.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

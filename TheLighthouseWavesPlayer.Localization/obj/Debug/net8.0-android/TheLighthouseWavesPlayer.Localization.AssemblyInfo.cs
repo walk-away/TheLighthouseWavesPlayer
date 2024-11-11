@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TheLighthouseWavesPlayer.Localization")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b85c1b5df30d1aa938be8bc3c664e43d053b6a53")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7b258beedc3f58d2c21858d8d7931791e670887f")]
 [assembly: System.Reflection.AssemblyProductAttribute("TheLighthouseWavesPlayer.Localization")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TheLighthouseWavesPlayer.Localization")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
