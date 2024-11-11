@@ -1,5 +1,7 @@
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.dll
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.pdb
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Localization.dll
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\bin\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Localization.pdb
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\actool\_PartialAppManifest.items
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\actool\_BundleResourceWithLogicalName.items
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\actool\_ProcessedImageAssetsPath.items
@@ -14,6 +16,7 @@ D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\n
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.AssemblyInfo.cs
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.csproj.CoreCompileInputs.cache
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.sourcelink.json
+D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLight.33BABC55.Up2Date
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.dll
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\refint\TheLighthouseWavesPlayer.Core.dll
 D:\MyProjects\TheLighthouseWavesPlayer\TheLighthouseWavesPlayer.Core\obj\Debug\net8.0-maccatalyst\TheLighthouseWavesPlayer.Core.pdb
