@@ -34,3 +34,12 @@ google-services.json
 
 TheLighthouseWavesPlayerApp/bin/
 TheLighthouseWavesPlayerApp/obj/
+
+TheLighthouseWavesPlayer.Core/bin/
+TheLighthouseWavesPlayer.Core/obj/
+
+TheLighthouseWavesPlayer.Localization/bin/
+TheLighthouseWavesPlayer.Localization/obj/
+
+**/bin/
+**/obj/
