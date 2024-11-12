@@ -9,4 +9,6 @@ namespace TheLighthouseWavesPlayerApp;
                            ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
+    private static MainActivity instance;
+    public static MainActivity Instance => instance;
 }
