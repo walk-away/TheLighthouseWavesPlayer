@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using TheLighthouseWavesPlayer.Core.Interfaces.Explorer;
 using TheLighthouseWavesPlayerApp.Extensions;
+
 
 namespace TheLighthouseWavesPlayerApp;
 
@@ -19,6 +21,8 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        
+
 
         builder.Services.AddViewModels();
         builder.Services.AddViews();
