@@ -22,7 +22,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         
-
+        builder.Services.AddTheLighthouseWavesPlayerServices();
 
         builder.Services.AddViewModels();
         builder.Services.AddViews();
