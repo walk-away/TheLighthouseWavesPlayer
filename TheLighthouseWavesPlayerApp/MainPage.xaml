@@ -22,6 +22,10 @@
             <Button Text="Play" Clicked="OnPlayClicked" />
             <Button Text="Next" Clicked="OnNextTrackClicked" />
         </HorizontalStackLayout>
+        
+        <Label Text="Volume" FontSize="Small" VerticalOptions="Center" />
+        <Slider x:Name="VolumeSlider" Minimum="0" Maximum="1" Value="0.5"
+                ValueChanged="OnVolumeChanged" />
     </VerticalStackLayout>
 
 </ContentPage>

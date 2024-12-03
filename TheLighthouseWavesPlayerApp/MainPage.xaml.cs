@@ -14,7 +14,12 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        _mediaPlayer = new MediaElement();
+        var savedVolume = Preferences.Get("Volume", 0.5);
+        _mediaPlayer = new MediaElement
+        {
+            Volume = savedVolume
+        };
+        VolumeSlider.Value = savedVolume;
     }
 
     private async void OnChooseFolderClicked(object sender, EventArgs e)
@@ -87,6 +92,15 @@ public partial class MainPage : ContentPage
         {
             PlayAudio(fileItem.Path);
             _currentTrackIndex = _audioFiles.IndexOf(fileItem);
+        }
+    }
+    
+    private void OnVolumeChanged(object sender, ValueChangedEventArgs e)
+    {
+        if (_mediaPlayer != null)
+        {
+            _mediaPlayer.Volume = e.NewValue;
+            Preferences.Set("Volume", e.NewValue);
         }
     }
 }
