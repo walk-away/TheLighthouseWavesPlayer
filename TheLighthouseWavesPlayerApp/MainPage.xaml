@@ -18,9 +18,9 @@
         </CollectionView>
 
         <HorizontalStackLayout Spacing="10" VerticalOptions="End">
-            <Button Text="Prev" Clicked="OnPrevTrackClicked" />
-            <Button Text="Play" Clicked="OnPlayClicked" />
-            <Button Text="Next" Clicked="OnNextTrackClicked" />
+            <Button Text="⏮" Clicked="OnPrevTrackClicked" />
+            <Button Text="▶️/⏸" Clicked="OnPlayClicked" />
+            <Button Text="⏭" Clicked="OnNextTrackClicked" />
         </HorizontalStackLayout>
         
         <Label Text="Volume" FontSize="Small" VerticalOptions="Center" />
