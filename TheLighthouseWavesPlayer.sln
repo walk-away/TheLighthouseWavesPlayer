@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayer.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayer.Localization", "TheLighthouseWavesPlayer.Localization\TheLighthouseWavesPlayer.Localization.csproj", "{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayerApp2", "TheLighthouseWavesPlayerApp2\TheLighthouseWavesPlayerApp2.csproj", "{614DCCDF-066D-4D81-850A-0ACDDB629960}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{614DCCDF-066D-4D81-850A-0ACDDB629960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{614DCCDF-066D-4D81-850A-0ACDDB629960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{614DCCDF-066D-4D81-850A-0ACDDB629960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{614DCCDF-066D-4D81-850A-0ACDDB629960}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
