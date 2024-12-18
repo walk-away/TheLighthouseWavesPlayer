@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using TheLighthouseWavesPlayerApp2.Database;
 using TheLighthouseWavesPlayerApp2.Services;
 using TheLighthouseWavesPlayerApp2.Services.Interfaces;
+using TheLighthouseWavesPlayerApp2.ViewModels;
 
 namespace TheLighthouseWavesPlayerApp2;
 
@@ -14,6 +18,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkitMediaElement()
             .RegisterServices()
             .RegisterViewModels()
             .RegisterViews()
@@ -46,7 +51,10 @@ public static class MauiProgram
 
     public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
     {
-        // More view-models registered here.
+        mauiAppBuilder.Services.AddSingleton<BookmarkViewModel>();
+        mauiAppBuilder.Services.AddSingleton<PlaylistViewModel>();
+        mauiAppBuilder.Services.AddSingleton<UserSettingsViewModel>();
+        mauiAppBuilder.Services.AddSingleton<VideoViewModel>();
 
         return mauiAppBuilder;        
     }
