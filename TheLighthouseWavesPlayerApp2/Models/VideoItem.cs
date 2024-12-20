@@ -1,18 +1,40 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using SQLite;
 
 namespace TheLighthouseWavesPlayerApp2.Models;
 
-public class VideoItem
+public class VideoItem : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler PropertyChanged;
+    
+    private string _title;
+    private string _filePath;
+    
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
 
     [Required, SQLite.MaxLength(255)]
-    public string Title { get; set; }
+    public string Title 
+    { 
+        get => _title;
+        set
+        {
+            _title = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Title)));
+        }
+    }
 
     [Required]
-    public string FilePath { get; set; }
+    public string FilePath 
+    { 
+        get => _filePath;
+        set
+        {
+            _filePath = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilePath)));
+        }
+    }
 
     public bool IsFavorite { get; set; }
 

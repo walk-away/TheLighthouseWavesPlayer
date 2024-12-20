@@ -61,7 +61,7 @@ public static class MauiProgram
 
     public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
     {
-        // More views registered here.
+        mauiAppBuilder.Services.AddTransient<MainPage>();
 
         return mauiAppBuilder;        
     }
