@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
+             x:DataType="viewmodels:VideoPlayerViewModel"
+             Title="{Binding Video.Title}">
+
+        <Grid RowDefinitions="*, Auto">
+                <toolkit:MediaElement 
+                        x:Name="mediaElement"
+                        Grid.Row="0"
+                        Source="{Binding Video.FilePath}"
+                        ShouldAutoPlay="True"
+                        ShouldShowPlaybackControls="False"
+                        Position="{Binding Position, Mode=TwoWay, Converter={StaticResource DoubleToTimeSpanConverter}}"
+                        MediaOpened="OnMediaOpened"
+                        MediaEnded="OnMediaEnded"
+                        HeightRequest="{Binding IsFullScreen, Converter={StaticResource BoolToHeightConverter}}" 
+                        IsVisible="{Binding Video, Converter={StaticResource NotNullToBoolConverter}}" />
+    
+                <Label 
+                        Text="No video selected. Please select a video from the Library or Favorites."
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        IsVisible="{Binding Video, Converter={StaticResource NullToBoolConverter}}" />
+
+        <Grid Grid.Row="1" 
+              RowDefinitions="Auto, Auto" 
+              Padding="10"
+              IsVisible="{Binding IsFullScreen, Converter={StaticResource InverseBoolConverter}}">
+            
+            <StackLayout Grid.Row="0" 
+                         Orientation="Horizontal" 
+                         HorizontalOptions="Center"
+                         Spacing="20">
+                
+                <Button Text="⏪" 
+                        Clicked="OnRewindClicked"
+                        FontSize="24" />
+                
+                <Button Text="{Binding IsPlaying, Converter={StaticResource BoolToPlayPauseConverter}}"
+                        Command="{Binding TogglePlayPauseCommand}"
+                        FontSize="24" />
+                
+                <Button Text="⏩" 
+                        Clicked="OnForwardClicked"
+                        FontSize="24" />
+                
+                <Button Text="⭐" 
+                        Command="{Binding ToggleFavoriteCommand}"
+                        BackgroundColor="{Binding Video.IsFavorite, Converter={StaticResource BoolToColorConverter}}"
+                        FontSize="24" />
+                
+                <Button Text="🔍" 
+                        Command="{Binding ToggleFullScreenCommand}"
+                        FontSize="24" />
+            </StackLayout>
+            
+            <Slider Grid.Row="1"
+                    Minimum="0"
+                    Maximum="{Binding Duration}"
+                    Value="{Binding Position}"
+                    ValueChanged="OnSliderValueChanged" />
+        </Grid>
+    </Grid>
+</ContentPage>

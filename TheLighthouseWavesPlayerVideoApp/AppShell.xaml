@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="TheLighthouseWavesPlayerVideoApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:TheLighthouseWavesPlayerVideoApp.Views"
+    Title="Video Player"
+    Shell.FlyoutBehavior="Disabled">
+
+    <TabBar>
+        <Tab Title="Player" Icon="player_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate views:VideoPlayerPage}" />
+        </Tab>
+        
+        <Tab Title="Library" Icon="library_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate views:VideoLibraryPage}" />
+        </Tab>
+        
+        <Tab Title="Favorites" Icon="favorites_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate views:FavoritesPage}" />
+        </Tab>
+    </TabBar>
+    
+    <ShellContent
+        Route="videoPlayer"
+        ContentTemplate="{DataTemplate views:VideoPlayerPage}"
+        FlyoutItemIsVisible="False" />
+</Shell>
