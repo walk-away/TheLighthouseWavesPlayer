@@ -5,31 +5,61 @@ namespace TheLighthouseWavesPlayerVideoApp.Views;
 public partial class VideoPlayerPage : ContentPage
 {
     private VideoPlayerViewModel _viewModel;
-    
+    private bool _isPropertyChanging = false;
+
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+    }
+
+    private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (_isPropertyChanging)
+            return;
+
+        _isPropertyChanging = true;
+        try
+        {
+            if (e.PropertyName == nameof(_viewModel.IsPlaying))
+            {
+                if (_viewModel.IsPlaying)
+                {
+                    mediaElement?.Play();
+                }
+                else
+                {
+                    mediaElement?.Pause();
+                }
+            }
+        }
+        finally
+        {
+            _isPropertyChanging = false;
+        }
     }
 
     private void OnMediaOpened(object sender, EventArgs e)
     {
         if (_viewModel != null && mediaElement != null)
         {
-            // Get duration from media element
             _viewModel.Duration = mediaElement.Duration.TotalSeconds;
-            
-            // If there's a saved position, seek to it
+
             if (_viewModel.Position > 0)
             {
                 mediaElement.SeekTo(TimeSpan.FromSeconds(_viewModel.Position));
             }
-            
-            // Start playing
+
             if (_viewModel.IsPlaying)
             {
                 mediaElement.Play();
+            }
+            else
+            {
+                mediaElement.Pause();
             }
         }
     }
@@ -38,7 +68,6 @@ public partial class VideoPlayerPage : ContentPage
     {
         if (_viewModel != null)
         {
-            // Reset position to beginning
             _viewModel.Position = 0;
             _viewModel.IsPlaying = false;
         }
@@ -48,7 +77,6 @@ public partial class VideoPlayerPage : ContentPage
     {
         if (mediaElement != null)
         {
-            // Rewind 10 seconds
             double newPosition = Math.Max(0, _viewModel.Position - 10);
             _viewModel.Position = newPosition;
             mediaElement.SeekTo(TimeSpan.FromSeconds(newPosition));
@@ -59,7 +87,6 @@ public partial class VideoPlayerPage : ContentPage
     {
         if (mediaElement != null && _viewModel != null)
         {
-            // Forward 10 seconds
             double newPosition = Math.Min(_viewModel.Duration, _viewModel.Position + 10);
             _viewModel.Position = newPosition;
             mediaElement.SeekTo(TimeSpan.FromSeconds(newPosition));
@@ -70,23 +97,20 @@ public partial class VideoPlayerPage : ContentPage
     {
         if (mediaElement != null && Math.Abs(e.NewValue - e.OldValue) > 1)
         {
-            // Only seek if the change is significant (to avoid constant seeking during normal playback)
             mediaElement.SeekTo(TimeSpan.FromSeconds(e.NewValue));
         }
     }
-    
+
     protected override void OnAppearing()
     {
         base.OnAppearing();
-    
-        // Display diagnostic information
+
         if (BindingContext is VideoPlayerViewModel vm)
         {
             if (vm.Video == null)
             {
                 DisplayAlert("Debug", "Video is null in OnAppearing", "OK");
-            
-                // Try manually setting the VideoId if navigation parameter failed
+
                 if (vm.VideoId <= 0)
                 {
                     // This is just for testing - remove in production
@@ -104,5 +128,17 @@ public partial class VideoPlayerPage : ContentPage
         {
             DisplayAlert("Debug", "ViewModel not set", "OK");
         }
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        if (_viewModel != null)
+        {
+            _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        }
+
+        mediaElement?.Pause();
     }
 }
