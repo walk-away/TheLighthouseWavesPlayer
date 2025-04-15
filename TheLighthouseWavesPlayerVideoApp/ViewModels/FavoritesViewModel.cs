@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Data;
@@ -42,6 +43,15 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             try
             {
                 var favorites = await _databaseService.GetFavoriteVideosAsync();
+                
+                foreach (var video in favorites)
+                {
+                    Console.WriteLine($"Video: {video.Title}, Duration: {video.Duration}");
+                    if (video.Duration.TotalSeconds < 1 && File.Exists(video.FilePath))
+                    {
+                        Console.WriteLine($"Video {video.Title} has zero duration but file exists");
+                    }
+                }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -86,24 +96,27 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         {
             if (video == null)
                 return;
-                
+        
             try
             {
-                video.IsFavorite = false;
-                await _databaseService.UpdateVideoAsync(video);
-                
-                await Shell.Current.DisplayAlert(
-                    "Removed", 
-                    $"'{video.Title}' removed from favorites", 
-                    "OK");
-                
                 MainThread.BeginInvokeOnMainThread(() => 
                 {
                     FavoriteVideos.Remove(video);
                 });
+
+                video.IsFavorite = false;
+                await _databaseService.UpdateVideoAsync(video);
+                
+                await Toast.Make($"'{video.Title}' removed from favorites").Show();
             }
             catch (Exception ex)
             {
+                MainThread.BeginInvokeOnMainThread(() => 
+                {
+                    if (!FavoriteVideos.Contains(video))
+                        FavoriteVideos.Add(video);
+                });
+        
                 await Shell.Current.DisplayAlert(
                     "Error", 
                     $"Failed to remove video: {ex.Message}", 

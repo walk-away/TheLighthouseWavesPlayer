@@ -78,6 +78,12 @@ namespace TheLighthouseWavesPlayerVideoApp.Data
             if (video != null)
             {
                 video.IsFavorite = !video.IsFavorite;
+                
+                if (video.IsFavorite && video.Duration.TotalSeconds < 1)
+                {
+                    Console.WriteLine($"Warning: Adding video to favorites with no duration: {video.Title}");
+                }
+        
                 await UpdateVideoAsync(video);
             }
         }

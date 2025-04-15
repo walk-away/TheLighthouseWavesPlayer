@@ -205,7 +205,13 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
                 return;
 
             Video.LastPosition = TimeSpan.FromSeconds(position);
-            Video.Duration = TimeSpan.FromSeconds(duration);
+
+            if (Math.Abs(Video.Duration.TotalSeconds - duration) > 1)
+            {
+                Video.Duration = TimeSpan.FromSeconds(duration);
+                Console.WriteLine($"Updated duration for {Video.Title}: {Video.Duration}");
+            }
+    
             Video.LastPlayed = DateTime.Now;
 
             await _databaseService.UpdateVideoAsync(Video);

@@ -7,74 +7,109 @@
              x:DataType="viewmodels:VideoLibraryViewModel"
              Title="Library">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*" Padding="0">
         <Button Grid.Row="0" 
                 Text="Import Video" 
                 Command="{Binding ImportVideoCommand}"
                 HorizontalOptions="Center"
-                Margin="0,10,0,10" />
+                Margin="0,16,0,16" />
         
         <RefreshView Grid.Row="1" 
                      Command="{Binding LoadVideosCommand}" 
-                     IsRefreshing="{Binding IsLoading}">
+                     IsRefreshing="{Binding IsLoading}"
+                     Padding="0">
             <CollectionView ItemsSource="{Binding Videos}"
-                            SelectionMode="None"
-                            EmptyView="No videos found. Import some videos to get started.">
+                           SelectionMode="None"
+                           Margin="0">
+                <CollectionView.EmptyView>
+                    <Grid VerticalOptions="Center" Padding="20">
+                        <VerticalStackLayout Spacing="12">
+                            <Image Source="video_empty.png" 
+                                   HeightRequest="100" 
+                                   HorizontalOptions="Center" />
+                            <Label Text="No videos found" 
+                                   HorizontalOptions="Center" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold" />
+                            <Label Text="Import some videos to get started" 
+                                   HorizontalOptions="Center" 
+                                   TextColor="{StaticResource Gray600}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </CollectionView.EmptyView>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Video">
-                        <Grid Padding="10" ColumnDefinitions="Auto,*,Auto,Auto">
-
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    NumberOfTapsRequired="1"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=PlayVideoCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </Grid.GestureRecognizers>
+                        <Frame Style="{StaticResource VideoItemFrame}"
+                               Margin="16,6">
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Delete"
+                                                   BackgroundColor="{StaticResource Error}"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=DeleteVideoCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                    
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                      Padding="12">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=PlayVideoCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
                             
-                            <Frame Grid.Column="0" 
-                                   CornerRadius="8" 
-                                   HeightRequest="60" 
-                                   WidthRequest="80"
-                                   Padding="0"
-                                   IsClippedToBounds="True">
-                                <!-- Video thumbnail would go here -->
-                                <Image Source="video_placeholder.png" 
-                                       Aspect="AspectFill"
-                                       HeightRequest="60" 
-                                       WidthRequest="80" />
-                            </Frame>
+                                    <Border Grid.Column="0" 
+                                           StrokeThickness="0"
+                                           StrokeShape="RoundRectangle 8,8,8,8"
+                                           HeightRequest="70" 
+                                           WidthRequest="90"
+                                           Shadow="{x:Null}">
+                                        <Image Source="video_placeholder.png" 
+                                               Aspect="AspectFill"
+                                               HeightRequest="70" 
+                                               WidthRequest="90" />
+                                    </Border>
                             
-                            <VerticalStackLayout Grid.Column="1" 
-                                                Padding="10,0"
-                                                VerticalOptions="Center">
-                                <Label Text="{Binding Title}" 
-                                       FontAttributes="Bold" />
-                                <Label Text="{Binding DateAdded, StringFormat='{0:d}'}" 
-                                       TextColor="Gray"
-                                       FontSize="Small" />
-                                <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" 
-                                       TextColor="Gray"
-                                       FontSize="Small" />
-                            </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" 
+                                                        Padding="14,0"
+                                                        VerticalOptions="Center"
+                                                        Spacing="3">
+                                        <Label Text="{Binding Title}" 
+                                               FontAttributes="Bold" 
+                                               MaxLines="1"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding DateAdded, StringFormat='{0:MMM dd, yyyy}'}" 
+                                               TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                               FontSize="12" />
+                                        <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" 
+                                               TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                               FontSize="12" />
+                                    </VerticalStackLayout>
                             
-                            <ImageButton Grid.Column="2"
-                                         Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
-                                         CommandParameter="{Binding .}"
-                                         HeightRequest="30"
-                                         WidthRequest="30"
-                                         Margin="5,0"
-                                         BackgroundColor="Transparent" />
+                                    <ImageButton Grid.Column="2"
+                                                 Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
+                                                 CommandParameter="{Binding .}"
+                                                 HeightRequest="30"
+                                                 WidthRequest="30"
+                                                 Margin="5,0"
+                                                 BackgroundColor="Transparent"
+                                                 Padding="0" />
                             
-                            <ImageButton Grid.Column="3"
-                                         Source="play_icon.png"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=PlayVideoCommand}"
-                                         CommandParameter="{Binding .}"
-                                         HeightRequest="40"
-                                         WidthRequest="40"
-                                         BackgroundColor="Transparent" />
-                        </Grid>
+                                    <ImageButton Grid.Column="3"
+                                                 Source="play_circle.png"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:VideoLibraryViewModel}}, Path=PlayVideoCommand}"
+                                                 CommandParameter="{Binding .}"
+                                                 HeightRequest="40"
+                                                 WidthRequest="40"
+                                                 BackgroundColor="Transparent"
+                                                 Padding="0" />
+                                </Grid>
+                            </SwipeView>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

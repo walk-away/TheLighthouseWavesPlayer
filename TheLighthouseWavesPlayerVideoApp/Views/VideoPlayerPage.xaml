@@ -5,66 +5,99 @@
              xmlns:viewmodels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
              x:DataType="viewmodels:VideoPlayerViewModel"
-             Title="{Binding Video.Title}">
+             Title="{Binding Video.Title}"
+             BackgroundColor="Black">
 
-        <Grid RowDefinitions="*, Auto">
-                <toolkit:MediaElement 
-                        x:Name="mediaElement"
-                        Grid.Row="0"
-                        Source="{Binding Video.FilePath}"
-                        ShouldAutoPlay="True"
-                        ShouldShowPlaybackControls="False"
-                        Position="{Binding Position, Mode=TwoWay, Converter={StaticResource DoubleToTimeSpanConverter}}"
-                        MediaOpened="OnMediaOpened"
-                        MediaEnded="OnMediaEnded"
-                        HeightRequest="{Binding IsFullScreen, Converter={StaticResource BoolToHeightConverter}}" 
-                        IsVisible="{Binding Video, Converter={StaticResource NotNullToBoolConverter}}" />
+    <Grid RowDefinitions="*, Auto">
+        <toolkit:MediaElement 
+            x:Name="mediaElement"
+            Grid.Row="0"
+            Source="{Binding Video.FilePath}"
+            ShouldAutoPlay="True"
+            ShouldShowPlaybackControls="False"
+            Position="{Binding Position, Mode=TwoWay, Converter={StaticResource DoubleToTimeSpanConverter}}"
+            MediaOpened="OnMediaOpened"
+            MediaEnded="OnMediaEnded"
+            HeightRequest="{Binding IsFullScreen, Converter={StaticResource BoolToHeightConverter}}" 
+            IsVisible="{Binding Video, Converter={StaticResource NotNullToBoolConverter}}" />
     
-                <Label 
-                        Text="No video selected. Please select a video from the Library or Favorites."
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        IsVisible="{Binding Video, Converter={StaticResource NullToBoolConverter}}" />
+        <Border Grid.Row="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                StrokeThickness="0"
+                BackgroundColor="#80000000"
+                Padding="20"
+                IsVisible="{Binding Video, Converter={StaticResource NullToBoolConverter}}">
+            <Label Text="No video selected. Please select a video from the Library or Favorites."
+                   TextColor="White"
+                   FontSize="16"
+                   HorizontalTextAlignment="Center" />
+        </Border>
 
         <Grid Grid.Row="1" 
               RowDefinitions="Auto, Auto" 
-              Padding="10"
+              Padding="16,12"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
               IsVisible="{Binding IsFullScreen, Converter={StaticResource InverseBoolConverter}}">
             
-            <StackLayout Grid.Row="0" 
-                         Orientation="Horizontal" 
-                         HorizontalOptions="Center"
-                         Spacing="20">
+            <HorizontalStackLayout Grid.Row="0" 
+                                   HorizontalOptions="Center"
+                                   Spacing="20">
                 
-                <Button Text="⏪" 
-                        Clicked="OnRewindClicked"
-                        FontSize="24" />
+                <Button Style="{StaticResource VideoControlButton}"
+                        Text="⏪" 
+                        Clicked="OnRewindClicked" />
                 
-                <Button Text="{Binding IsPlaying, Converter={StaticResource BoolToPlayPauseConverter}}"
-                        Command="{Binding TogglePlayPauseCommand}"
-                        FontSize="24" />
+                <Button Style="{StaticResource VideoControlButton}"
+                        Text="{Binding IsPlaying, Converter={StaticResource BoolToPlayPauseConverter}}"
+                        Command="{Binding TogglePlayPauseCommand}" />
                 
-                <Button Text="⏩" 
-                        Clicked="OnForwardClicked"
-                        FontSize="24" />
+                <Button Style="{StaticResource VideoControlButton}"
+                        Text="⏩" 
+                        Clicked="OnForwardClicked" />
                 
-                <Button Text="⭐" 
+                <Button Style="{StaticResource VideoControlButton}"
+                        Text="⭐" 
                         Command="{Binding ToggleFavoriteCommand}"
-                        BackgroundColor="{Binding Video.IsFavorite, Converter={StaticResource BoolToColorConverter}}"
-                        FontSize="24" />
+                        BackgroundColor="{Binding Video.IsFavorite, Converter={StaticResource BoolToColorConverter}}" />
                 
-                <Button Text="🔍" 
-                        Command="{Binding ToggleFullScreenCommand}"
-                        FontSize="24" />
-            </StackLayout>
+                <Button Style="{StaticResource VideoControlButton}"
+                        Text="🔍" 
+                        Command="{Binding ToggleFullScreenCommand}" />
+            </HorizontalStackLayout>
             
-                <Slider Grid.Row="1"
+            <Grid Grid.Row="1" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Label Grid.Column="0" 
+                       Text="{Binding Position, StringFormat='{0:mm\\:ss}'}" 
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       FontSize="12"
+                       VerticalOptions="Center"
+                       Margin="0,0,8,0" />
+                
+                <Slider Grid.Column="1"
                         Minimum="0"
                         Maximum="{Binding Duration}"
                         Value="{Binding Position}"
+                        MinimumTrackColor="{StaticResource Primary}"
+                        MaximumTrackColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
+                        ThumbColor="{StaticResource Primary}"
                         ValueChanged="OnSliderValueChanged"
                         DragStarted="OnSliderDragStarted"
                         DragCompleted="OnSliderDragCompleted" />
+                
+                <Label Grid.Column="2" 
+                       Text="{Binding Duration, StringFormat='{0:mm\\:ss}'}" 
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       FontSize="12"
+                       VerticalOptions="Center"
+                       Margin="8,0,0,0" />
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>
