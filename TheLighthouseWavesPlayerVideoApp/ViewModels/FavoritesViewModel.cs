@@ -24,11 +24,13 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             LoadFavoritesCommand = new AsyncRelayCommand(LoadFavorites);
             PlayVideoCommand = new AsyncRelayCommand<Video>(PlayVideo);
             ToggleFavoriteCommand = new AsyncRelayCommand<Video>(ToggleFavorite);
+            RemoveFromFavoritesCommand = new AsyncRelayCommand<Video>(RemoveFromFavorites);
         }
 
         public IAsyncRelayCommand LoadFavoritesCommand { get; }
         public IAsyncRelayCommand<Video> PlayVideoCommand { get; }
         public IAsyncRelayCommand<Video> ToggleFavoriteCommand { get; }
+        public IAsyncRelayCommand<Video> RemoveFromFavoritesCommand { get; }
 
         public async Task LoadFavorites()
         {
@@ -60,8 +62,14 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         {
             if (video == null)
                 return;
-
-            await Shell.Current.GoToAsync($"videoPlayer?id={video.Id}");
+            
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "id", video.Id },
+                { "path", video.FilePath }
+            };
+            
+            await Shell.Current.GoToAsync("videoPlayer", navigationParameter);
         }
 
         private async Task ToggleFavorite(Video video)
@@ -70,9 +78,37 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
                 return;
 
             await _databaseService.ToggleFavoriteAsync(video.Id);
-
-            // Remove from favorites list
-            MainThread.BeginInvokeOnMainThread(() => { FavoriteVideos.Remove(video); });
+            
+            await RemoveFromFavorites(video);
+        }
+        
+        private async Task RemoveFromFavorites(Video video)
+        {
+            if (video == null)
+                return;
+                
+            try
+            {
+                video.IsFavorite = false;
+                await _databaseService.UpdateVideoAsync(video);
+                
+                await Shell.Current.DisplayAlert(
+                    "Removed", 
+                    $"'{video.Title}' removed from favorites", 
+                    "OK");
+                
+                MainThread.BeginInvokeOnMainThread(() => 
+                {
+                    FavoriteVideos.Remove(video);
+                });
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Error", 
+                    $"Failed to remove video: {ex.Message}", 
+                    "OK");
+            }
         }
     }
 }

@@ -58,11 +58,13 @@
                         FontSize="24" />
             </StackLayout>
             
-            <Slider Grid.Row="1"
-                    Minimum="0"
-                    Maximum="{Binding Duration}"
-                    Value="{Binding Position}"
-                    ValueChanged="OnSliderValueChanged" />
+                <Slider Grid.Row="1"
+                        Minimum="0"
+                        Maximum="{Binding Duration}"
+                        Value="{Binding Position}"
+                        ValueChanged="OnSliderValueChanged"
+                        DragStarted="OnSliderDragStarted"
+                        DragCompleted="OnSliderDragCompleted" />
         </Grid>
     </Grid>
 </ContentPage>

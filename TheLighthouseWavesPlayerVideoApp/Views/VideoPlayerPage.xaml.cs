@@ -6,6 +6,7 @@ public partial class VideoPlayerPage : ContentPage
 {
     private VideoPlayerViewModel _viewModel;
     private bool _isPropertyChanging = false;
+    private bool _userIsDraggingSlider = false;
 
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
@@ -33,6 +34,20 @@ public partial class VideoPlayerPage : ContentPage
                 else
                 {
                     mediaElement?.Pause();
+                }
+            }
+
+            else if (e.PropertyName == nameof(_viewModel.Position) && !_userIsDraggingSlider)
+            {
+                if (mediaElement != null)
+                {
+                    TimeSpan currentPos = mediaElement.Position;
+                    TimeSpan targetPos = TimeSpan.FromSeconds(_viewModel.Position);
+                    
+                    if (Math.Abs((currentPos - targetPos).TotalSeconds) > 0.5)
+                    {
+                        mediaElement.SeekTo(targetPos);
+                    }
                 }
             }
         }
@@ -95,10 +110,36 @@ public partial class VideoPlayerPage : ContentPage
 
     private void OnSliderValueChanged(object sender, ValueChangedEventArgs e)
     {
-        if (mediaElement != null && Math.Abs(e.NewValue - e.OldValue) > 1)
+        if (mediaElement == null) return;
+        
+        if (Math.Abs(e.NewValue - e.OldValue) < 1 && !_userIsDraggingSlider) 
+            return;
+        
+        try
         {
+            _isPropertyChanging = true;
+            
             mediaElement.SeekTo(TimeSpan.FromSeconds(e.NewValue));
+            _viewModel.Position = e.NewValue;
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error seeking video: {ex.Message}");
+        }
+        finally
+        {
+            _isPropertyChanging = false;
+        }
+    }
+    
+    private void OnSliderDragStarted(object sender, EventArgs e)
+    {
+        _userIsDraggingSlider = true;
+    }
+    
+    private void OnSliderDragCompleted(object sender, EventArgs e)
+    {
+        _userIsDraggingSlider = false;
     }
 
     protected override void OnAppearing()
@@ -137,6 +178,13 @@ public partial class VideoPlayerPage : ContentPage
         if (_viewModel != null)
         {
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            
+            if (mediaElement != null && _viewModel.Video != null)
+            {
+                _viewModel.SaveCurrentPosition(
+                    mediaElement.Position.TotalSeconds,
+                    mediaElement.Duration.TotalSeconds);
+            }
         }
 
         mediaElement?.Pause();

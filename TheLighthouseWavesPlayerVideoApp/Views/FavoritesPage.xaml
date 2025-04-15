@@ -15,49 +15,60 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Video">
-                    <Grid Padding="10" ColumnDefinitions="Auto,*,Auto,Auto">
-                        <Frame Grid.Column="0" 
-                               CornerRadius="8" 
-                               HeightRequest="60" 
-                               WidthRequest="80"
-                               Padding="0"
-                               IsClippedToBounds="True">
-                            <Image Source="video_placeholder.png" 
-                                   Aspect="AspectFill"
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Remove"
+                                           BackgroundColor="Red"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=RemoveFromFavoritesCommand}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                    
+                        <Grid Padding="10" ColumnDefinitions="Auto,*,Auto,Auto">
+                            <Frame Grid.Column="0" 
+                                   CornerRadius="8" 
                                    HeightRequest="60" 
-                                   WidthRequest="80" />
-                        </Frame>
-                        
-                        <VerticalStackLayout Grid.Column="1" 
-                                            Padding="10,0"
-                                            VerticalOptions="Center">
-                            <Label Text="{Binding Title}" 
-                                   FontAttributes="Bold" />
-                            <Label Text="{Binding DateAdded, StringFormat='{0:d}'}" 
-                                   TextColor="Gray"
-                                   FontSize="Small" />
-                            <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" 
-                                   TextColor="Gray"
-                                   FontSize="Small" />
-                        </VerticalStackLayout>
-                        
-                        <ImageButton Grid.Column="2"
-                                     Source="favorite_filled.png"
-                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=ToggleFavoriteCommand}"
-                                     CommandParameter="{Binding .}"
-                                     HeightRequest="30"
-                                     WidthRequest="30"
-                                     Margin="5,0"
-                                     BackgroundColor="Transparent" />
-                        
-                        <ImageButton Grid.Column="3"
-                                     Source="play_icon.png"
-                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=PlayVideoCommand}"
-                                     CommandParameter="{Binding .}"
-                                     HeightRequest="40"
-                                     WidthRequest="40"
-                                     BackgroundColor="Transparent" />
-                    </Grid>
+                                   WidthRequest="80"
+                                   Padding="0"
+                                   IsClippedToBounds="True">
+                                <Image Source="video_placeholder.png" 
+                                       Aspect="AspectFill"
+                                       HeightRequest="60" 
+                                       WidthRequest="80" />
+                            </Frame>
+                            
+                            <VerticalStackLayout Grid.Column="1" 
+                                                Padding="10,0"
+                                                VerticalOptions="Center">
+                                <Label Text="{Binding Title}" 
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding DateAdded, StringFormat='{0:d}'}" 
+                                       TextColor="Gray"
+                                       FontSize="Small" />
+                                <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" 
+                                       TextColor="Gray"
+                                       FontSize="Small" />
+                            </VerticalStackLayout>
+                            
+                            <ImageButton Grid.Column="2"
+                                         Source="favorite_filled.png"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=RemoveFromFavoritesCommand}"
+                                         CommandParameter="{Binding .}"
+                                         HeightRequest="30"
+                                         WidthRequest="30"
+                                         Margin="5,0"
+                                         BackgroundColor="Transparent" />
+                            
+                            <ImageButton Grid.Column="3"
+                                         Source="play_icon.png"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=PlayVideoCommand}"
+                                         CommandParameter="{Binding .}"
+                                         HeightRequest="40"
+                                         WidthRequest="40"
+                                         BackgroundColor="Transparent" />
+                        </Grid>
+                    </SwipeView>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
