@@ -4,19 +4,22 @@ namespace TheLighthouseWavesPlayerVideoApp.Views;
 
 public partial class FavoritesPage : ContentPage
 {
-    private FavoritesViewModel _viewModel;
+    private readonly FavoritesViewModel _viewModel;
 
     public FavoritesPage(FavoritesViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
         _viewModel = viewModel;
-        BindingContext = _viewModel;
     }
 
+    // Load data when the page appears
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        await _viewModel.LoadFavorites();
+        if (_viewModel != null)
+        {
+            await _viewModel.OnAppearing();
+        }
     }
 }

@@ -1,127 +1,99 @@
 ﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
+using TheLighthouseWavesPlayerVideoApp.Views;
 
-namespace TheLighthouseWavesPlayerVideoApp.ViewModels
+// Needed for navigation
+
+namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
+
+public partial class FavoritesViewModel : BaseViewModel
 {
-    public partial class FavoritesViewModel : BaseViewModel
+    private readonly IFavoritesService _favoritesService;
+
+    [ObservableProperty]
+    ObservableCollection<VideoInfo> favoriteVideos;
+
+    public FavoritesViewModel(IFavoritesService favoritesService)
     {
-        private readonly IDatabaseService _databaseService;
+        _favoritesService = favoritesService;
+        Title = "Favorites";
+        FavoriteVideos = new ObservableCollection<VideoInfo>();
+    }
 
-        [ObservableProperty] private ObservableCollection<Video> _favoriteVideos;
+    [RelayCommand]
+    async Task LoadFavoritesAsync()
+    {
+        if (IsBusy) return;
 
-        [ObservableProperty] private Video _selectedVideo;
-
-        [ObservableProperty] private bool _isLoading;
-
-        public FavoritesViewModel(IDatabaseService databaseService)
+        IsBusy = true;
+        try
         {
-            _databaseService = databaseService;
-            FavoriteVideos = new ObservableCollection<Video>();
-
-            LoadFavoritesCommand = new AsyncRelayCommand(LoadFavorites);
-            PlayVideoCommand = new AsyncRelayCommand<Video>(PlayVideo);
-            ToggleFavoriteCommand = new AsyncRelayCommand<Video>(ToggleFavorite);
-            RemoveFromFavoritesCommand = new AsyncRelayCommand<Video>(RemoveFromFavorites);
-        }
-
-        public IAsyncRelayCommand LoadFavoritesCommand { get; }
-        public IAsyncRelayCommand<Video> PlayVideoCommand { get; }
-        public IAsyncRelayCommand<Video> ToggleFavoriteCommand { get; }
-        public IAsyncRelayCommand<Video> RemoveFromFavoritesCommand { get; }
-
-        public async Task LoadFavorites()
-        {
-            if (IsLoading)
-                return;
-
-            IsLoading = true;
-
-            try
+            FavoriteVideos.Clear();
+            var favs = await _favoritesService.GetFavoritesAsync();
+            if (favs != null)
             {
-                var favorites = await _databaseService.GetFavoriteVideosAsync();
-                
-                foreach (var video in favorites)
+                foreach (var video in favs)
                 {
-                    Console.WriteLine($"Video: {video.Title}, Duration: {video.Duration}");
-                    if (video.Duration.TotalSeconds < 1 && File.Exists(video.FilePath))
-                    {
-                        Console.WriteLine($"Video {video.Title} has zero duration but file exists");
-                    }
+                    // Ensure file still exists before adding? Optional.
+                    // if (File.Exists(video.FilePath))
+                    // {
+                         FavoriteVideos.Add(video);
+                    // }
+                    // else {
+                         // Optionally remove favorite if file is gone
+                         // await _favoritesService.RemoveFavoriteAsync(video);
+                    // }
                 }
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    FavoriteVideos.Clear();
-                    foreach (var video in favorites)
-                    {
-                        FavoriteVideos.Add(video);
-                    }
-                });
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
-
-        private async Task PlayVideo(Video video)
+        catch (Exception ex)
         {
-            if (video == null)
-                return;
-            
-            var navigationParameter = new Dictionary<string, object>
-            {
-                { "id", video.Id },
-                { "path", video.FilePath }
-            };
-            
-            await Shell.Current.GoToAsync("videoPlayer", navigationParameter);
+            System.Diagnostics.Debug.WriteLine($"Error loading favorites: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Failed to load favorites.", "OK");
         }
-
-        private async Task ToggleFavorite(Video video)
+        finally
         {
-            if (video == null)
-                return;
-
-            await _databaseService.ToggleFavoriteAsync(video.Id);
-            
-            await RemoveFromFavorites(video);
+            IsBusy = false;
         }
-        
-        private async Task RemoveFromFavorites(Video video)
+    }
+
+    // Command to handle item tapped/selected in the View
+    [RelayCommand]
+    async Task GoToDetailsAsync(VideoInfo video)
+    {
+        if (video == null || string.IsNullOrEmpty(video.FilePath))
+            return;
+
+        // Navigate to the player page, passing the file path
+        await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
+    }
+
+    // Command to remove from favorites
+    [RelayCommand]
+    async Task RemoveFavoriteAsync(VideoInfo video)
+    {
+        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+
+        try
         {
-            if (video == null)
-                return;
-        
-            try
-            {
-                MainThread.BeginInvokeOnMainThread(() => 
-                {
-                    FavoriteVideos.Remove(video);
-                });
-
-                video.IsFavorite = false;
-                await _databaseService.UpdateVideoAsync(video);
-                
-                await Toast.Make($"'{video.Title}' removed from favorites").Show();
-            }
-            catch (Exception ex)
-            {
-                MainThread.BeginInvokeOnMainThread(() => 
-                {
-                    if (!FavoriteVideos.Contains(video))
-                        FavoriteVideos.Add(video);
-                });
-        
-                await Shell.Current.DisplayAlert(
-                    "Error", 
-                    $"Failed to remove video: {ex.Message}", 
-                    "OK");
-            }
+            await _favoritesService.RemoveFavoriteAsync(video);
+            FavoriteVideos.Remove(video); // Update the collection immediately
+            // Optionally provide feedback
+            // await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
         }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error removing favorite: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Could not remove favorite.", "OK");
+        }
+    }
+
+    // Method called when the page appears
+    public async Task OnAppearing()
+    {
+       await LoadFavoritesAsync();
     }
 }

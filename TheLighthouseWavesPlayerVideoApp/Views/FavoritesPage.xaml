@@ -1,87 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
+             x:DataType="vm:FavoritesViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.FavoritesPage"
-             xmlns:viewmodels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
-             xmlns:models="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
-             x:DataType="viewmodels:FavoritesViewModel"
-             Title="Favorites">
+             Title="{Binding Title}">
+    <Grid RowDefinitions="*, Auto">
 
-    <RefreshView Command="{Binding LoadFavoritesCommand}"
-                 IsRefreshing="{Binding IsLoading}">
         <CollectionView ItemsSource="{Binding FavoriteVideos}"
                         SelectionMode="None"
-                        EmptyView="No favorite videos found.">
-
+                        EmptyView="No favorite videos yet.">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Video">
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems>
-                                <SwipeItem Text="Remove"
-                                           BackgroundColor="{StaticResource Error}"
-                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=RemoveFromFavoritesCommand}"
-                                           CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.RightItems>
+                <DataTemplate x:DataType="model:VideoInfo">
+                     <Grid Padding="10" ColumnDefinitions="*,Auto">
+                         <Grid.GestureRecognizers>
+                             <!-- Navigate when tapping the item -->
+                             <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=GoToDetailsCommand}"
+                                CommandParameter="{Binding .}"/>
+                         </Grid.GestureRecognizers>
 
-                        <Frame Style="{StaticResource VideoItemFrame}" Margin="16,6">
-                            <Grid Padding="12" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
-                                <Border Grid.Column="0"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 8,8,8,8"
-                                        HeightRequest="70"
-                                        WidthRequest="90"
-                                        Shadow="{x:Null}">
-                                    <Image Source="video_placeholder.png"
-                                           Aspect="AspectFill"
-                                           HeightRequest="70"
-                                           WidthRequest="90" />
-                                </Border>
+                        <StackLayout Grid.Column="0" VerticalOptions="Center">
+                            <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small" TextColor="Gray"/>
+                        </StackLayout>
 
-                                <VerticalStackLayout Grid.Column="1"
-                                                     Padding="14,0"
-                                                     VerticalOptions="Center"
-                                                     Spacing="3">
-                                    <Label Text="{Binding Title}"
-                                           FontAttributes="Bold"
-                                           MaxLines="1"
-                                           LineBreakMode="TailTruncation" />
-
-                                    <Label Text="{Binding DateAdded, StringFormat='{0:MMM dd, yyyy}'}"
-                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                           FontSize="12" />
-
-                                    <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}"
-                                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                           FontSize="12" />
-                                </VerticalStackLayout>
-
-                                <!-- Delete button -->
-                                <Button Grid.Column="2"
-                                        Text="🗑️"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=RemoveFromFavoritesCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Style="{StaticResource VideoControlButton}"
-                                        BackgroundColor="{StaticResource Error}"
-                                        HeightRequest="40"
-                                        WidthRequest="40"
-                                        Margin="0,0,8,0" />
-                                
-                                <!-- Play button -->
-                                <Button Grid.Column="3"
-                                        Text="▶"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FavoritesViewModel}}, Path=PlayVideoCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Style="{StaticResource VideoControlButton}"
-                                        HeightRequest="40"
-                                        WidthRequest="40"
-                                        Margin="0,0,4,0" />
-                            </Grid>
-                        </Frame>
-                    </SwipeView>
+                         <!-- Button to remove from favorites -->
+                         <Button Grid.Column="1"
+                                Text="Remove"
+                                FontSize="Micro"
+                                Padding="5" MinimumWidthRequest="70" HeightRequest="40"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
+                                CommandParameter="{Binding .}"
+                                VerticalOptions="Center"/>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </RefreshView>
+
+        <ActivityIndicator Grid.Row="0"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
+         <Button Grid.Row="1" Text="Refresh Favorites" Command="{Binding LoadFavoritesCommand}" IsEnabled="{Binding IsNotBusy}" Margin="10"/>
+
+    </Grid>
 </ContentPage>

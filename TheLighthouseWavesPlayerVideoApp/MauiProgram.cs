@@ -1,11 +1,16 @@
-﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using TheLighthouseWavesPlayerVideoApp;
 using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using TheLighthouseWavesPlayerVideoApp.Views;
+#if ANDROID
 
-namespace TheLighthouseWavesPlayerVideoApp;
+#endif
+
+namespace VideoPlayerApp;
 
 public static class MauiProgram
 {
@@ -14,11 +19,8 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit()
-            .UseMauiCommunityToolkitMediaElement()
-            .RegisterServices()
-            .RegisterViewModels()
-            .RegisterViews()
+            .UseMauiCommunityToolkit() // Use Community Toolkit helpers (MVVM, Converters, etc.)
+            .UseMauiCommunityToolkitMediaElement() // Use MediaElement
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,33 +31,33 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        // --- Dependency Injection Registration ---
+
+        // Data Layer
+        builder.Services.AddSingleton<VideoDatabase>(); // SQLite Database Context
+
+        // Services
+        builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
+
+        // Platform-specific Services
+#if ANDROID
+        builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
+#else
+        // Register a dummy or throw exception if building for other platforms
+        // builder.Services.AddSingleton<IVideoDiscoveryService, DummyVideoDiscoveryService>();
+#endif
+
+        // ViewModels
+        builder.Services.AddSingleton<VideoLibraryViewModel>();
+        builder.Services.AddSingleton<FavoritesViewModel>();
+        builder.Services.AddTransient<VideoPlayerViewModel>(); // Transient: New instance each time it's requested
+
+        // Views (Pages)
+        builder.Services.AddSingleton<VideoLibraryPage>();
+        builder.Services.AddSingleton<FavoritesPage>();
+        builder.Services.AddTransient<VideoPlayerPage>(); // Transient: New instance each time it's navigated to
+
+
         return builder.Build();
-    }
-
-    public static MauiAppBuilder RegisterServices(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<IDatabaseService, DatabaseService>();
-        mauiAppBuilder.Services.AddSingleton<IPermissionService, PermissionService>();
-        mauiAppBuilder.Services.AddSingleton<IMediaService, MediaService>();
-
-        return mauiAppBuilder;
-    }
-
-    public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<VideoLibraryViewModel>();
-        mauiAppBuilder.Services.AddSingleton<FavoritesViewModel>();
-        mauiAppBuilder.Services.AddTransient<VideoPlayerViewModel>();
-
-        return mauiAppBuilder;
-    }
-
-    public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<VideoLibraryPage>();
-        mauiAppBuilder.Services.AddSingleton<FavoritesPage>();
-        mauiAppBuilder.Services.AddTransient<VideoPlayerPage>();
-
-        return mauiAppBuilder;
     }
 }

@@ -4,28 +4,31 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:TheLighthouseWavesPlayerVideoApp.Views"
-    Title="Video Player"
-    Shell.FlyoutBehavior="Disabled">
+    Shell.FlyoutBehavior="Disabled"
+    Title="TheLighthouseWavesPlayerVideoApp">
 
     <TabBar>
+        <!-- Player Tab - Consider if this should be directly accessible or only via navigation -->
+        <!-- Hiding it initially might make more sense -->
+        <!--
         <Tab Title="Player" Icon="player_icon.png">
             <ShellContent
+                Title="Player"
                 ContentTemplate="{DataTemplate views:VideoPlayerPage}" />
         </Tab>
-        
+        -->
+
         <Tab Title="Library" Icon="library_icon.png">
             <ShellContent
+                Title="Library"
                 ContentTemplate="{DataTemplate views:VideoLibraryPage}" />
         </Tab>
-        
+
         <Tab Title="Favorites" Icon="favorites_icon.png">
             <ShellContent
+                Title="Favorites"
                 ContentTemplate="{DataTemplate views:FavoritesPage}" />
         </Tab>
     </TabBar>
-    
-    <ShellContent
-        Route="videoPlayer"
-        ContentTemplate="{DataTemplate views:VideoPlayerPage}"
-        FlyoutItemIsVisible="False" />
+
 </Shell>
