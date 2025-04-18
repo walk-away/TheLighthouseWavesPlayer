@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Runtime;
-using VideoPlayerApp;
 
 namespace TheLighthouseWavesPlayerVideoApp;
 

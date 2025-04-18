@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
-using TheLighthouseWavesPlayerVideoApp;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
@@ -10,7 +9,7 @@ using TheLighthouseWavesPlayerVideoApp.Views;
 
 #endif
 
-namespace VideoPlayerApp;
+namespace TheLighthouseWavesPlayerVideoApp;
 
 public static class MauiProgram
 {
@@ -19,8 +18,8 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit() // Use Community Toolkit helpers (MVVM, Converters, etc.)
-            .UseMauiCommunityToolkitMediaElement() // Use MediaElement
+            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkitMediaElement()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -31,31 +30,25 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        // --- Dependency Injection Registration ---
 
-        // Data Layer
-        builder.Services.AddSingleton<VideoDatabase>(); // SQLite Database Context
-
-        // Services
+        builder.Services.AddSingleton<VideoDatabase>();
+        
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
-
-        // Platform-specific Services
+        
 #if ANDROID
         builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
 #else
         // Register a dummy or throw exception if building for other platforms
         // builder.Services.AddSingleton<IVideoDiscoveryService, DummyVideoDiscoveryService>();
 #endif
-
-        // ViewModels
+        
         builder.Services.AddSingleton<VideoLibraryViewModel>();
         builder.Services.AddSingleton<FavoritesViewModel>();
-        builder.Services.AddTransient<VideoPlayerViewModel>(); // Transient: New instance each time it's requested
-
-        // Views (Pages)
+        builder.Services.AddTransient<VideoPlayerViewModel>();
+        
         builder.Services.AddSingleton<VideoLibraryPage>();
         builder.Services.AddSingleton<FavoritesPage>();
-        builder.Services.AddTransient<VideoPlayerPage>(); // Transient: New instance each time it's navigated to
+        builder.Services.AddTransient<VideoPlayerPage>();
 
 
         return builder.Build();

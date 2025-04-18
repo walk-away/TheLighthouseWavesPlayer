@@ -5,8 +5,6 @@ using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
 
-// Needed for navigation
-
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 public partial class FavoritesViewModel : BaseViewModel
@@ -59,19 +57,16 @@ public partial class FavoritesViewModel : BaseViewModel
             IsBusy = false;
         }
     }
-
-    // Command to handle item tapped/selected in the View
+    
     [RelayCommand]
     async Task GoToDetailsAsync(VideoInfo video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath))
             return;
-
-        // Navigate to the player page, passing the file path
+        
         await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
     }
-
-    // Command to remove from favorites
+    
     [RelayCommand]
     async Task RemoveFavoriteAsync(VideoInfo video)
     {
@@ -80,9 +75,9 @@ public partial class FavoritesViewModel : BaseViewModel
         try
         {
             await _favoritesService.RemoveFavoriteAsync(video);
-            FavoriteVideos.Remove(video); // Update the collection immediately
-            // Optionally provide feedback
-            // await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
+            FavoriteVideos.Remove(video);
+
+            await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
         }
         catch (Exception ex)
         {
@@ -90,8 +85,7 @@ public partial class FavoritesViewModel : BaseViewModel
             await Shell.Current.DisplayAlert("Error", "Could not remove favorite.", "OK");
         }
     }
-
-    // Method called when the page appears
+    
     public async Task OnAppearing()
     {
        await LoadFavoritesAsync();

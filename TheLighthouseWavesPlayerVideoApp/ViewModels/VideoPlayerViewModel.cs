@@ -4,29 +4,25 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
-// Required for MediaElementState
 
-// If needed to store full VideoInfo
+namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-namespace TheLighthouseWavesPlayerVideoApp.ViewModels; // Ensure this namespace matches your project
-
-// Apply QueryProperty to receive the FilePath from navigation
 [QueryProperty(nameof(FilePath), "FilePath")]
-public partial class VideoPlayerViewModel : BaseViewModel // Assuming you have BaseViewModel
+public partial class VideoPlayerViewModel : BaseViewModel
 {
     private readonly IFavoritesService _favoritesService;
 
     [ObservableProperty]
-    string filePath; // The raw file path received via navigation
+    string filePath;
 
     [ObservableProperty]
-    MediaSource videoSource; // Source for the MediaElement
-
-    [ObservableProperty] // Add this property
-    MediaElementState currentState = MediaElementState.None; // Track player state
+    MediaSource videoSource;
 
     [ObservableProperty]
-    bool isFavorite; // To show favorite status
+    MediaElementState currentState = MediaElementState.None;
+
+    [ObservableProperty]
+    bool isFavorite;
 
     // Optional: Store the full VideoInfo if needed for title display etc.
     // [ObservableProperty]

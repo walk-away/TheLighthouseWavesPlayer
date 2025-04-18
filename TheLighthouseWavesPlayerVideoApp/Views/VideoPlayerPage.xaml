@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -7,16 +8,14 @@
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="True">
-    <!-- Keep NavBar visible to show title and potentially back button -->
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- Optional: Display Title -->
         <Label Grid.Row="0"
                Text="{Binding Title}"
                FontSize="Large"
                HorizontalOptions="Center"
-               Margin="10"/>
+               Margin="10" />
 
         <toolkit:MediaElement Grid.Row="1"
                               x:Name="mediaElement"
@@ -24,23 +23,20 @@
                               ShouldAutoPlay="False"
                               ShouldShowPlaybackControls="True"
                               Aspect="AspectFit"
-                              StateChanged="MediaElement_StateChanged"
-        />
-        <!-- Removed State binding for simplicity, using event handler -->
+                              StateChanged="MediaElement_StateChanged" />
 
-        <!-- Favorite Button -->
         <Button Grid.Row="2"
                 Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
                 Command="{Binding ToggleFavoriteCommand}"
                 Margin="20"
-                HorizontalOptions="Center"/>
+                HorizontalOptions="Center" />
 
     </Grid>
 
-    <!-- Define Converter Resource -->
     <ContentPage.Resources>
         <ResourceDictionary>
-            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter" TrueObject="Unfavorite" FalseObject="Favorite" />
+            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter" TrueObject="Unfavorite"
+                                           FalseObject="Favorite" />
         </ResourceDictionary>
     </ContentPage.Resources>
 

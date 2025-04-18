@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
@@ -13,27 +14,26 @@
                         EmptyView="No favorite videos yet.">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:VideoInfo">
-                     <Grid Padding="10" ColumnDefinitions="*,Auto">
-                         <Grid.GestureRecognizers>
-                             <!-- Navigate when tapping the item -->
-                             <TapGestureRecognizer
+                    <Grid Padding="10" ColumnDefinitions="*,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=GoToDetailsCommand}"
-                                CommandParameter="{Binding .}"/>
-                         </Grid.GestureRecognizers>
+                                CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
 
                         <StackLayout Grid.Column="0" VerticalOptions="Center">
-                            <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small" TextColor="Gray"/>
+                            <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small"
+                                   TextColor="Gray" />
                         </StackLayout>
 
-                         <!-- Button to remove from favorites -->
-                         <Button Grid.Column="1"
+                        <Button Grid.Column="1"
                                 Text="Remove"
                                 FontSize="Micro"
                                 Padding="5" MinimumWidthRequest="70" HeightRequest="40"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
                                 CommandParameter="{Binding .}"
-                                VerticalOptions="Center"/>
+                                VerticalOptions="Center" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
@@ -45,7 +45,8 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-         <Button Grid.Row="1" Text="Refresh Favorites" Command="{Binding LoadFavoritesCommand}" IsEnabled="{Binding IsNotBusy}" Margin="10"/>
+        <Button Grid.Row="1" Text="Refresh Favorites" Command="{Binding LoadFavoritesCommand}"
+                IsEnabled="{Binding IsNotBusy}" Margin="10" />
 
     </Grid>
 </ContentPage>

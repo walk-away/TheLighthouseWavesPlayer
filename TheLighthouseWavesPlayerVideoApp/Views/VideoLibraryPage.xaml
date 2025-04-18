@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
@@ -16,29 +17,29 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:VideoInfo">
                     <Grid Padding="10" ColumnDefinitions="*,Auto">
-                         <Grid.GestureRecognizers>
-                             <!-- Navigate when tapping the item -->
-                             <TapGestureRecognizer
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=GoToDetailsCommand}"
-                                CommandParameter="{Binding .}"/>
-                         </Grid.GestureRecognizers>
+                                CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
 
                         <StackLayout Grid.Column="0" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
-                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small" TextColor="Gray"/>
+                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small"
+                                   TextColor="Gray" />
                         </StackLayout>
 
                         <!-- Add a button or image for favoriting -->
                         <!-- This button's command needs to target the ViewModel -->
                         <!-- A simple Button example: -->
-                         <Button Grid.Column="1"
+                        <Button Grid.Column="1"
                                 Text="Fav"
                                 FontSize="Micro"
                                 Padding="5" MinimumWidthRequest="50" HeightRequest="40"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                 CommandParameter="{Binding .}"
-                                VerticalOptions="Center"/>
-                         <!-- TODO: Change Button Text/Appearance based on favorite status -->
+                                VerticalOptions="Center" />
+                        <!-- TODO: Change Button Text/Appearance based on favorite status -->
 
                     </Grid>
                 </DataTemplate>
@@ -51,7 +52,8 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-         <Button Grid.Row="1" Text="Refresh Library" Command="{Binding LoadVideosCommand}" IsEnabled="{Binding IsNotBusy}" Margin="10"/>
+        <Button Grid.Row="1" Text="Refresh Library" Command="{Binding LoadVideosCommand}"
+                IsEnabled="{Binding IsNotBusy}" Margin="10" />
 
     </Grid>
 </ContentPage>

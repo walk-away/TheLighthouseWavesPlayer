@@ -13,7 +13,6 @@ public partial class FavoritesPage : ContentPage
         _viewModel = viewModel;
     }
 
-    // Load data when the page appears
     protected override async void OnAppearing()
     {
         base.OnAppearing();

@@ -14,7 +14,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 
         [ObservableProperty] ObservableCollection<VideoInfo> videos;
 
-        [ObservableProperty] VideoInfo selectedVideo; // For handling selection if needed directly in VM
+        [ObservableProperty] VideoInfo selectedVideo;
 
         public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService)
         {
@@ -53,18 +53,15 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             }
         }
 
-        // Command to handle item tapped/selected in the View
         [RelayCommand]
         async Task GoToDetailsAsync(VideoInfo video)
         {
             if (video == null || string.IsNullOrEmpty(video.FilePath))
                 return;
 
-            // Navigate to the player page, passing the file path
             await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
         }
 
-        // Command to toggle favorite status directly from the library list
         [RelayCommand]
         async Task ToggleFavoriteAsync(VideoInfo video)
         {
@@ -77,20 +74,11 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
                 if (isCurrentlyFavorite)
                 {
                     await _favoritesService.RemoveFavoriteAsync(video);
-                    // Optionally provide feedback
-                    // await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
                 }
                 else
                 {
                     await _favoritesService.AddFavoriteAsync(video);
-                    // Optionally provide feedback
-                    // await Shell.Current.DisplayAlert("Favorites", $"{video.Title} added to favorites.", "OK");
                 }
-                // We might need a way to update the UI element's visual state (e.g., the favorite icon)
-                // This often requires the VideoInfo object itself to have an IsFavorite property
-                // that the ViewModel updates after the service call. Let's modify VideoInfo slightly.
-                // For now, we assume the UI might refresh or handle this visually.
-                // A better approach involves an IsFavorite property on a wrapper ViewModel or VideoInfo itself.
             }
             catch (Exception ex)
             {
@@ -99,7 +87,6 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             }
         }
 
-        // Method called when the page appears
         public async Task OnAppearing()
         {
             await LoadVideosAsync();
