@@ -15,6 +15,7 @@
             <converters:DoubleToTimeSpanConverter x:Key="DoubleToTimeSpanConverter" />
             <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             
             
             <ResourceDictionary.MergedDictionaries>

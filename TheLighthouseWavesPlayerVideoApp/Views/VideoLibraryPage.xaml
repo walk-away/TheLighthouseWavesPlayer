@@ -1,6 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
@@ -9,9 +7,36 @@
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoLibraryPage"
              Title="{Binding Title}">
 
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="Auto, Auto, *, Auto">
+        
+        <!-- Search Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
+            <SearchBar Grid.Column="0" 
+                       Placeholder="Search videos..." 
+                       Text="{Binding SearchText}"
+                       HorizontalOptions="Fill" />
+            <Button Grid.Column="1" 
+                    Text="Clear" 
+                    Command="{Binding ClearSearchCommand}"
+                    IsVisible="{Binding SearchText, Converter={StaticResource StringNotEmptyConverter}}"
+                    Margin="0,0,5,0" 
+                    VerticalOptions="Center" />
+        </Grid>
+        
+        <!-- Sort Options -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, *" Margin="10,0,10,5">
+            <Label Grid.Column="0" 
+                   Text="Sort by:" 
+                   VerticalOptions="Center" />
+            <Picker Grid.Column="1" 
+                    ItemsSource="{Binding SortOptions}" 
+                    SelectedItem="{Binding SelectedSortOption}"
+                    HorizontalOptions="Fill" 
+                    Margin="5,0,0,0" />
+        </Grid>
 
-        <CollectionView ItemsSource="{Binding Videos}"
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Videos}"
                         SelectionMode="None"
                         EmptyView="No videos found. Ensure storage permission is granted.">
             <CollectionView.ItemTemplate>
@@ -29,9 +54,6 @@
                                    TextColor="Gray" />
                         </StackLayout>
 
-                        <!-- Add a button or image for favoriting -->
-                        <!-- This button's command needs to target the ViewModel -->
-                        <!-- A simple Button example: -->
                         <Button Grid.Column="1"
                                 Text="Fav"
                                 FontSize="Micro"
@@ -39,21 +61,33 @@
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                 CommandParameter="{Binding .}"
                                 VerticalOptions="Center" />
-                        <!-- TODO: Change Button Text/Appearance based on favorite status -->
-
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <ActivityIndicator Grid.Row="0"
+        <ActivityIndicator Grid.Row="2"
                            IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-        <Button Grid.Row="1" Text="Refresh Library" Command="{Binding LoadVideosCommand}"
+        <Button Grid.Row="3" Text="Refresh Library" Command="{Binding LoadVideosCommand}"
                 IsEnabled="{Binding IsNotBusy}" Margin="10" />
+        
+        
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
+            <SearchBar Grid.Column="0" 
+                       Placeholder="Search videos..." 
+                       Text="{Binding SearchText}"
+                       HorizontalOptions="Fill" />
+            <Button Grid.Column="1" 
+                    Text="Clear" 
+                    Command="{Binding ClearSearchCommand}"
+                    IsVisible="{Binding SearchText, Converter={StaticResource StringNotEmptyConverter}}"
+                    Margin="0,0,5,0" 
+                    VerticalOptions="Center" />
+        </Grid>
 
     </Grid>
 </ContentPage>

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
+using System.Linq;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 {
@@ -12,16 +13,85 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         private readonly IVideoDiscoveryService _videoDiscoveryService;
         private readonly IFavoritesService _favoritesService;
 
+        [ObservableProperty] ObservableCollection<VideoInfo> allVideos;
         [ObservableProperty] ObservableCollection<VideoInfo> videos;
-
         [ObservableProperty] VideoInfo selectedVideo;
+
+        [ObservableProperty] string searchText;
+
+        [ObservableProperty] ObservableCollection<SortOption> sortOptions;
+        [ObservableProperty] SortOption selectedSortOption;
 
         public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService)
         {
             _videoDiscoveryService = videoDiscoveryService;
             _favoritesService = favoritesService;
             Title = "Video Library";
+            
+            // Initialize collections
+            AllVideos = new ObservableCollection<VideoInfo>();
             Videos = new ObservableCollection<VideoInfo>();
+            
+            // Initialize sort options
+            SortOptions = new ObservableCollection<SortOption>
+            {
+                new SortOption("Title (A-Z)", "Title", true),
+                new SortOption("Title (Z-A)", "Title", false),
+                new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
+                new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
+            };
+            
+            // Set default sort option
+            SelectedSortOption = SortOptions[0];
+        }
+
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilters();
+        }
+
+        partial void OnSelectedSortOptionChanged(SortOption value)
+        {
+            ApplyFilters();
+        }
+
+        private void ApplyFilters()
+        {
+            // Create a new filtered and sorted collection
+            IEnumerable<VideoInfo> filteredVideos = AllVideos;
+            
+            // Apply search filter if search text is provided
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                string searchLower = SearchText.ToLowerInvariant();
+                filteredVideos = filteredVideos.Where(v => 
+                    v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+            }
+            
+            // Apply sorting
+            if (SelectedSortOption != null)
+            {
+                switch (SelectedSortOption.Property)
+                {
+                    case "Title":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.Title)
+                            : filteredVideos.OrderByDescending(v => v.Title);
+                        break;
+                    case "DurationMilliseconds":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
+                            : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
+                        break;
+                }
+            }
+            
+            // Update the Videos collection
+            Videos.Clear();
+            foreach (var video in filteredVideos)
+            {
+                Videos.Add(video);
+            }
         }
 
         [RelayCommand]
@@ -32,15 +102,20 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             IsBusy = true;
             try
             {
+                AllVideos.Clear();
                 Videos.Clear();
+                
                 var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
                 if (discoveredVideos != null)
                 {
                     foreach (var video in discoveredVideos)
                     {
-                        Videos.Add(video);
+                        AllVideos.Add(video);
                     }
                 }
+                
+                // Apply filters to update the Videos collection
+                ApplyFilters();
             }
             catch (Exception ex)
             {
@@ -53,6 +128,13 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             }
         }
 
+        [RelayCommand]
+        void ClearSearch()
+        {
+            SearchText = string.Empty;
+        }
+
+        // Keep existing commands
         [RelayCommand]
         async Task GoToDetailsAsync(VideoInfo video)
         {
