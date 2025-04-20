@@ -9,9 +9,35 @@
              Title="{Binding Title}"
              Shell.NavBarIsVisible="True">
 
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup Name="OrientationStates">
+            <VisualState Name="Portrait">
+                <VisualState.Setters>
+                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="True" />
+                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="True" />
+                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="1" />
+                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="1" />
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState Name="Landscape">
+                <VisualState.Setters>
+
+                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="False" />
+                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="False" />
+
+                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="0" />
+                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="3" />
+
+                    <Setter Property="Shell.NavBarIsVisible" Value="False" />
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
     <Grid RowDefinitions="Auto, *, Auto">
 
         <Label Grid.Row="0"
+               x:Name="TitleLabel"
                Text="{Binding Title}"
                FontSize="Large"
                HorizontalOptions="Center"
@@ -23,13 +49,30 @@
                               ShouldAutoPlay="False"
                               ShouldShowPlaybackControls="True"
                               Aspect="AspectFit"
-                              StateChanged="MediaElement_StateChanged" />
+                              StateChanged="MediaElement_StateChanged"
+                              Volume="1" />
 
-        <Button Grid.Row="2"
-                Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
-                Command="{Binding ToggleFavoriteCommand}"
-                Margin="20"
-                HorizontalOptions="Center" />
+
+        <Grid Grid.Row="2"
+              x:Name="BottomControlsGrid"
+              ColumnDefinitions="*, Auto"
+              Margin="10"
+              Padding="10,0"
+              VerticalOptions="Center">
+
+            <Slider Grid.Column="0"
+                    x:Name="VolumeSlider"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
+                    VerticalOptions="Center" />
+
+            <Button Grid.Column="1"
+                    Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
+                    Command="{Binding ToggleFavoriteCommand}"
+                    Margin="10,0,0,0"
+                    HorizontalOptions="End" />
+        </Grid>
 
     </Grid>
 
