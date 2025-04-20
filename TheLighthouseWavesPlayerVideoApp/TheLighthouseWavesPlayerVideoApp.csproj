@@ -68,9 +68,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Compile Update="Services\IMediaService.cs">
-        <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-      </Compile>
       <Compile Update="Services\MediaService.cs">
         <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
       </Compile>

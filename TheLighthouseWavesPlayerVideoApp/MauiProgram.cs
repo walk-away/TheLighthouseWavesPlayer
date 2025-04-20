@@ -31,7 +31,7 @@ public static class MauiProgram
 #endif
 
 
-        builder.Services.AddSingleton<VideoDatabase>();
+        builder.Services.AddSingleton<IVideoDatabase, VideoDatabase>();
         
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
         

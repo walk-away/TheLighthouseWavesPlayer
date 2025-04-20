@@ -6,9 +6,9 @@ namespace TheLighthouseWavesPlayerVideoApp.Services;
 
 public class FavoritesService : IFavoritesService
 {
-    private readonly VideoDatabase _database;
+    private readonly IVideoDatabase _database;
 
-    public FavoritesService(VideoDatabase database)
+    public FavoritesService(IVideoDatabase database)
     {
         _database = database;
     }

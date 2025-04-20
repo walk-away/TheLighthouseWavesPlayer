@@ -10,8 +10,10 @@ using Uri = Android.Net.Uri;
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
 
-public class MediaService : IMediaService
+public class MediaService
 {
+    
+    /*
     private readonly IDatabaseService _databaseService;
     private readonly IPermissionService _permissionService;
 
@@ -131,4 +133,6 @@ public class MediaService : IMediaService
             return false;
         }
     }
+    
+    */
 }
