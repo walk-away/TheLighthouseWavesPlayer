@@ -240,6 +240,60 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dark.
+        /// </summary>
+        internal static string Settings_ThemeDark {
+            get {
+                return ResourceManager.GetString("Settings_ThemeDark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The app will use the selected theme..
+        /// </summary>
+        internal static string Settings_ThemeHint {
+            get {
+                return ResourceManager.GetString("Settings_ThemeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Theme.
+        /// </summary>
+        internal static string Settings_ThemeLabel {
+            get {
+                return ResourceManager.GetString("Settings_ThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light.
+        /// </summary>
+        internal static string Settings_ThemeLight {
+            get {
+                return ResourceManager.GetString("Settings_ThemeLight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Theme.
+        /// </summary>
+        internal static string Settings_ThemePickerTitle {
+            get {
+                return ResourceManager.GetString("Settings_ThemePickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System (Auto).
+        /// </summary>
+        internal static string Settings_ThemeSystem {
+            get {
+                return ResourceManager.GetString("Settings_ThemeSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Favorites.
         /// </summary>
         internal static string Shell_Favorites {

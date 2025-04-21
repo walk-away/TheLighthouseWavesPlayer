@@ -35,7 +35,9 @@ public static class MauiProgram
 #endif
 
 
+        
         builder.Services.AddSingleton<IVideoDatabase, VideoDatabase>();
+        builder.Services.AddSingleton<IThemeService, ThemeService>();
         
         var resourceManager = new ResourceManager("TheLighthouseWavesPlayerVideoApp.Resources.Languages.AppResources", 
             typeof(MauiProgram).Assembly);
