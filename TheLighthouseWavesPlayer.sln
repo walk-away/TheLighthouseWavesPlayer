@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayer.Core", "TheLighthouseWavesPlayer.Core\TheLighthouseWavesPlayer.Core.csproj", "{FF830B85-4A8D-4B40-80C9-B71839CB7D61}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayer.Localization", "TheLighthouseWavesPlayer.Localization\TheLighthouseWavesPlayer.Localization.csproj", "{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLighthouseWavesPlayerVideoApp", "TheLighthouseWavesPlayerVideoApp\TheLighthouseWavesPlayerVideoApp.csproj", "{7BB5366B-424C-4FE3-B87C-BBBD4FC5EB1B}"
@@ -18,10 +16,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FF830B85-4A8D-4B40-80C9-B71839CB7D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FF830B85-4A8D-4B40-80C9-B71839CB7D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FF830B85-4A8D-4B40-80C9-B71839CB7D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FF830B85-4A8D-4B40-80C9-B71839CB7D61}.Release|Any CPU.Build.0 = Release|Any CPU
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{514B6F25-AA3F-4E5F-91CA-F3A98406FC7D}.Release|Any CPU.ActiveCfg = Release|Any CPU

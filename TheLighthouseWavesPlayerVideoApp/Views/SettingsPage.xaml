@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:extensions="clr-namespace:TheLighthouseWavesPlayer.Localization.Extensions;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             x:DataType="vm:SettingsViewModel"
+             x:Class="TheLighthouseWavesPlayerVideoApp.Views.SettingsPage">
+    
+    <ContentPage.Title>
+        <Binding Path="[Settings_PageTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+    </ContentPage.Title>
+    
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            
+            <Label FontSize="Large"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20">
+                <Label.Text>
+                    <Binding Path="[Settings_Header]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </Label.Text>
+            </Label>
+            
+            <Frame BorderColor="LightGray"
+                   BackgroundColor="White"
+                   CornerRadius="8"
+                   Padding="15">
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label FontSize="Medium"
+                           FontAttributes="Bold">
+                        <Label.Text>
+                            <Binding Path="[Settings_LanguageLabel]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Label.Text>
+                    </Label>
+                    
+                    <Picker ItemsSource="{Binding AvailableLanguages}"
+                            SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}">
+                        <Picker.Title>
+                            <Binding Path="[Settings_LanguagePickerTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Picker.Title>
+                    </Picker>
+                    
+                    <Label FontSize="Small"
+                           TextColor="Gray">
+                        <Label.Text>
+                            <Binding Path="[Settings_LanguageHint]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Label.Text>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+            
+            <Button Command="{Binding ResetSettingsCommand}"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0">
+                <Button.Text>
+                    <Binding Path="[Settings_ResetButton]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </Button.Text>
+            </Button>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

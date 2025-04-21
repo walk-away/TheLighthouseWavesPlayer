@@ -1,5 +1,9 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Resources;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using TheLighthouseWavesPlayer.Localization;
+using TheLighthouseWavesPlayer.Localization.Helpers;
+using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
@@ -33,6 +37,11 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IVideoDatabase, VideoDatabase>();
         
+        var resourceManager = new ResourceManager("TheLighthouseWavesPlayerVideoApp.Resources.Languages.AppResources", 
+            typeof(MauiProgram).Assembly);
+        builder.Services.AddSingleton<ILocalizedResourcesProvider>(new LocalizedResourcesProvider(resourceManager));
+        builder.Services.AddSingleton<ILocalizationManager, LocalizationManager>();
+        
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
         
 #if ANDROID
@@ -42,13 +51,15 @@ public static class MauiProgram
         // builder.Services.AddSingleton<IVideoDiscoveryService, DummyVideoDiscoveryService>();
 #endif
         
+        builder.Services.AddTransient<VideoPlayerViewModel>();
         builder.Services.AddSingleton<VideoLibraryViewModel>();
         builder.Services.AddSingleton<FavoritesViewModel>();
-        builder.Services.AddTransient<VideoPlayerViewModel>();
+        builder.Services.AddSingleton<SettingsViewModel>();
         
+        builder.Services.AddTransient<VideoPlayerPage>();
         builder.Services.AddSingleton<VideoLibraryPage>();
         builder.Services.AddSingleton<FavoritesPage>();
-        builder.Services.AddTransient<VideoPlayerPage>();
+        builder.Services.AddSingleton<SettingsPage>();
 
 
         return builder.Build();

@@ -18,6 +18,8 @@
         </Tab>
         -->
 
+        
+        <!--
         <Tab Title="Library" Icon="library_icon.png">
             <ShellContent
                 Title="Library"
@@ -29,6 +31,35 @@
                 Title="Favorites"
                 ContentTemplate="{DataTemplate views:FavoritesPage}" />
         </Tab>
+        
+        <Tab Title="Settings" Icon="settings_icon.png">
+            <ShellContent
+                Title="Settings"
+                ContentTemplate="{DataTemplate views:SettingsPage}" />
+        </Tab>
+        -->
+        
+        
+        
+        
+        <Tab Title="Library">
+            <ShellContent
+                Title="Library"
+                ContentTemplate="{DataTemplate views:VideoLibraryPage}" />
+        </Tab>
+
+        <Tab Title="Favorites">
+            <ShellContent
+                Title="Favorites"
+                ContentTemplate="{DataTemplate views:FavoritesPage}" />
+        </Tab>
+        
+        <Tab Title="Settings">
+            <ShellContent
+                Title="Settings"
+                ContentTemplate="{DataTemplate views:SettingsPage}" />
+        </Tab>
     </TabBar>
+    
 
 </Shell>
