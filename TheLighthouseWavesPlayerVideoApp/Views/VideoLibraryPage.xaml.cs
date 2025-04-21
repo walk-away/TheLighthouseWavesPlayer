@@ -4,23 +4,21 @@ namespace TheLighthouseWavesPlayerVideoApp.Views;
 
 public partial class VideoLibraryPage : ContentPage
 {
-    private VideoLibraryViewModel _viewModel;
-    
+    private readonly VideoLibraryViewModel _viewModel;
+
     public VideoLibraryPage(VideoLibraryViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
         _viewModel = viewModel;
-        BindingContext = _viewModel;
     }
-    
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
-
-        if (_viewModel.Videos.Count == 0)
+        if (_viewModel != null)
         {
-            await _viewModel.LoadVideos();
+            await _viewModel.OnAppearing();
         }
     }
 }

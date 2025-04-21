@@ -39,6 +39,54 @@ public class LocalizationManager : ILocalizationManager
     {
         Preferences.Default.Set("UserCulture", cultureInfo.Name);
         SetCulture(cultureInfo);
+        
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            if (Application.Current.MainPage is Shell shell)
+            {
+                UpdateShellLabels(shell);
+            }
+        });
+    }
+
+    private void UpdateShellLabels(Shell shell)
+    {
+        var provider = LocalizedResourcesProvider.Instance;
+
+        shell.Title = provider["Shell_Title"];
+
+        foreach (var item in shell.Items)
+        {
+            if (item is TabBar tabBar)
+            {
+                foreach (var tab in tabBar.Items)
+                {
+                    if (tab is Tab tabItem)
+                    {
+                        switch (tabItem.Title)
+                        {
+                            case "Library":
+                            case "Библиотека":
+                                tabItem.Title = provider["Shell_Library"];
+                                break;
+                            case "Favorites":
+                            case "Избранное":
+                                tabItem.Title = provider["Shell_Favorites"];
+                                break;
+                            case "Settings":
+                            case "Настройки":
+                                tabItem.Title = provider["Shell_Settings"];
+                                break;
+                        }
+                        
+                        if (tabItem.Items.Count > 0 && tabItem.Items[0] is ShellContent content)
+                        {
+                            content.Title = tabItem.Title;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void SetCulture(CultureInfo cultureInfo)

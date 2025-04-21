@@ -68,12 +68,34 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Compile Update="Services\IMediaService.cs">
-        <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-      </Compile>
       <Compile Update="Services\MediaService.cs">
         <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
       </Compile>
+      <Compile Update="Resources\Languages\AppResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Languages\AppResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppResources.ru.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\TheLighthouseWavesPlayer.Localization\TheLighthouseWavesPlayer.Localization.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Languages\AppResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Languages\AppResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

@@ -7,13 +7,10 @@ public partial class AppShell : Shell
     public AppShell()
     {
         InitializeComponent();
-        RegisterRoutes();
-    }
-    
-    private void RegisterRoutes()
-    {
-        Routing.RegisterRoute("videoPlayer", typeof(VideoPlayerPage));
-        Routing.RegisterRoute("videoLibrary", typeof(VideoLibraryPage));
-        Routing.RegisterRoute("favorites", typeof(FavoritesPage));
+
+        Routing.RegisterRoute(nameof(VideoPlayerPage), typeof(VideoPlayerPage));
+        Routing.RegisterRoute(nameof(VideoLibraryPage), typeof(VideoLibraryPage));
+        Routing.RegisterRoute(nameof(FavoritesPage), typeof(FavoritesPage));
+        Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
     }
 }

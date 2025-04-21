@@ -1,9 +1,17 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Resources;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using TheLighthouseWavesPlayer.Localization;
+using TheLighthouseWavesPlayer.Localization.Helpers;
+using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using TheLighthouseWavesPlayerVideoApp.Views;
+#if ANDROID
+
+#endif
 
 namespace TheLighthouseWavesPlayerVideoApp;
 
@@ -16,9 +24,6 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .UseMauiCommunityToolkitMediaElement()
-            .RegisterServices()
-            .RegisterViewModels()
-            .RegisterViews()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,33 +34,34 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+
+        builder.Services.AddSingleton<IVideoDatabase, VideoDatabase>();
+        
+        var resourceManager = new ResourceManager("TheLighthouseWavesPlayerVideoApp.Resources.Languages.AppResources", 
+            typeof(MauiProgram).Assembly);
+        builder.Services.AddSingleton<ILocalizedResourcesProvider>(new LocalizedResourcesProvider(resourceManager));
+        builder.Services.AddSingleton<ILocalizationManager, LocalizationManager>();
+        
+        builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
+        
+#if ANDROID
+        builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
+#else
+        // Register a dummy or throw exception if building for other platforms
+        // builder.Services.AddSingleton<IVideoDiscoveryService, DummyVideoDiscoveryService>();
+#endif
+        
+        builder.Services.AddTransient<VideoPlayerViewModel>();
+        builder.Services.AddSingleton<VideoLibraryViewModel>();
+        builder.Services.AddSingleton<FavoritesViewModel>();
+        builder.Services.AddSingleton<SettingsViewModel>();
+        
+        builder.Services.AddTransient<VideoPlayerPage>();
+        builder.Services.AddSingleton<VideoLibraryPage>();
+        builder.Services.AddSingleton<FavoritesPage>();
+        builder.Services.AddSingleton<SettingsPage>();
+
+
         return builder.Build();
-    }
-
-    public static MauiAppBuilder RegisterServices(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<IDatabaseService, DatabaseService>();
-        mauiAppBuilder.Services.AddSingleton<IPermissionService, PermissionService>();
-        mauiAppBuilder.Services.AddSingleton<IMediaService, MediaService>();
-
-        return mauiAppBuilder;
-    }
-
-    public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<VideoLibraryViewModel>();
-        mauiAppBuilder.Services.AddSingleton<FavoritesViewModel>();
-        mauiAppBuilder.Services.AddTransient<VideoPlayerViewModel>();
-
-        return mauiAppBuilder;
-    }
-
-    public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
-    {
-        mauiAppBuilder.Services.AddSingleton<VideoLibraryPage>();
-        mauiAppBuilder.Services.AddSingleton<FavoritesPage>();
-        mauiAppBuilder.Services.AddTransient<VideoPlayerPage>();
-
-        return mauiAppBuilder;
     }
 }

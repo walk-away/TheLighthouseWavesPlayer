@@ -1,220 +1,120 @@
-﻿using System.Diagnostics;
+﻿using CommunityToolkit.Maui.Core.Primitives;
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
-namespace TheLighthouseWavesPlayerVideoApp.ViewModels
+namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
+
+[QueryProperty(nameof(FilePath), "FilePath")]
+public partial class VideoPlayerViewModel : BaseViewModel
 {
-    [QueryProperty(nameof(VideoId), "id")]
-    [QueryProperty(nameof(FilePath), "path")]
-    public partial class VideoPlayerViewModel : BaseViewModel
+    private readonly IFavoritesService _favoritesService;
+
+    [ObservableProperty]
+    string filePath;
+
+    [ObservableProperty]
+    MediaSource videoSource;
+
+    [ObservableProperty]
+    MediaElementState currentState = MediaElementState.None;
+
+    [ObservableProperty]
+    bool isFavorite;
+
+    // Optional: Store the full VideoInfo if needed for title display etc.
+    // [ObservableProperty]
+    // VideoInfo currentVideo;
+
+    public VideoPlayerViewModel(IFavoritesService favoritesService)
     {
-        private string _filePath;
+        _favoritesService = favoritesService;
+        Title = "Player";
+    }
 
-        public string FilePath
+    // This method is called when the FilePath property is set by navigation
+    async partial void OnFilePathChanged(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
         {
-            get => _filePath;
-            set
+            // Set the source for the MediaElement
+            VideoSource = MediaSource.FromFile(value);
+            Title = Path.GetFileName(value); // Set title based on file name
+
+            // Check favorite status
+            await CheckFavoriteStatusAsync(); // Call the method here
+
+            // Optional: Load full VideoInfo if needed
+            // This might require another service or passing more data
+        }
+        else // Handle case where FilePath becomes null/empty
+        {
+             VideoSource = null;
+             Title = "Player";
+             IsFavorite = false;
+             CurrentState = MediaElementState.None;
+        }
+    }
+
+    // Add this method
+    public async Task CheckFavoriteStatusAsync()
+    {
+        if (!string.IsNullOrEmpty(FilePath))
+        {
+            IsFavorite = await _favoritesService.IsFavoriteAsync(FilePath);
+        }
+        else
+        {
+            IsFavorite = false;
+        }
+    }
+
+    [RelayCommand]
+    async Task ToggleFavoriteAsync()
+    {
+        if (string.IsNullOrEmpty(FilePath)) return;
+
+        try
+        {
+             // We need a VideoInfo object to add/remove.
+             // If we only have the path, we might need to fetch/create one.
+             // For simplicity, let's assume we can create a basic one here.
+             // A better way is to pass the full VideoInfo object during navigation.
+             var video = new VideoInfo { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath) }; // Basic info
+
+            if (IsFavorite)
             {
-                _filePath = value;
-                Debug.WriteLine($"FilePath property set to: {value}");
-
-                if (string.IsNullOrEmpty(value))
-                    return;
-
-                // If we have a file path but no video yet, load from path
-                if (Video == null)
-                {
-                    MainThread.BeginInvokeOnMainThread(async () => { await LoadVideoFromPathAsync(value); });
-                }
+                await _favoritesService.RemoveFavoriteAsync(video);
+                IsFavorite = false;
+                 // await Shell.Current.DisplayAlert("Favorites", "Removed from favorites.", "OK");
+            }
+            else
+            {
+                await _favoritesService.AddFavoriteAsync(video);
+                IsFavorite = true;
+                 // await Shell.Current.DisplayAlert("Favorites", "Added to favorites.", "OK");
             }
         }
-
-        private readonly IDatabaseService _databaseService;
-
-        [ObservableProperty] private Video _video;
-
-        [ObservableProperty] private bool _isPlaying;
-
-        [ObservableProperty] private double _position;
-
-        [ObservableProperty] private double _duration;
-
-        [ObservableProperty] private bool _isFullScreen;
-
-        [ObservableProperty] private Video? _currentVideo;
-
-        private int _videoId;
-
-        public int VideoId
+        catch (Exception ex)
         {
-            get => _videoId;
-            set
-            {
-                _videoId = value;
-                Debug.WriteLine($"VideoId property set to: {value}");
-
-                // Don't use Task.Run here - it can cause issues with property change notifications
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    try
-                    {
-                        await LoadVideoAsync(value);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error in VideoId setter: {ex}");
-                        await Shell.Current.DisplayAlert("Error", $"Failed to load video: {ex.Message}", "OK");
-                    }
-                });
-            }
+            System.Diagnostics.Debug.WriteLine($"Error toggling favorite in player: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
         }
+    }
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(CanSkipForward))]
-        [NotifyPropertyChangedFor(nameof(CanSkipBackward))]
-        private double _currentPosition;
+    // Note: Play/Pause/Stop commands can be handled directly by the MediaElement controls
+    // If you need custom logic, add RelayCommands here and bind them.
 
-        public bool CanSkipForward => CurrentPosition < Duration - 10;
-        public bool CanSkipBackward => CurrentPosition > 10;
-
-        [RelayCommand(CanExecute = nameof(CanSkipForward))]
-        private void SkipForward()
-        {
-            CurrentPosition = Math.Min(Duration, CurrentPosition + 10);
-        }
-
-        public VideoPlayerViewModel(IDatabaseService databaseService)
-        {
-            _databaseService = databaseService;
-
-            TogglePlayPauseCommand = new RelayCommand(TogglePlayPause);
-            ToggleFavoriteCommand = new AsyncRelayCommand(ToggleFavorite);
-            ToggleFullScreenCommand = new RelayCommand(ToggleFullScreen);
-            UpdatePositionCommand = new AsyncRelayCommand<double>(UpdatePosition);
-        }
-
-        public IRelayCommand TogglePlayPauseCommand { get; }
-        public IAsyncRelayCommand ToggleFavoriteCommand { get; }
-        public IRelayCommand ToggleFullScreenCommand { get; }
-        public IAsyncRelayCommand<double> UpdatePositionCommand { get; }
-
-        private async Task LoadVideoFromPathAsync(string path)
-        {
-            try
-            {
-                Debug.WriteLine($"Loading video from path: {path}");
-
-                // Check if file exists
-                if (!File.Exists(path))
-                {
-                    Debug.WriteLine($"File does not exist: {path}");
-                    await Shell.Current.DisplayAlert("Error", "Video file not found", "OK");
-                    return;
-                }
-
-                // First check if it's already in the database by path
-                var existingVideo = await _databaseService.GetVideoByPathAsync(path);
-
-                if (existingVideo != null)
-                {
-                    Debug.WriteLine($"Found existing video in database: {existingVideo.Title}");
-                    Video = existingVideo;
-                    IsPlaying = true;
-                    Position = existingVideo.LastPosition.TotalSeconds;
-                    return;
-                }
-
-                // If not in database, create a new video object
-                var fileName = Path.GetFileName(path);
-                Debug.WriteLine($"Creating new video object for: {fileName}");
-
-                var video = new Video
-                {
-                    Title = fileName,
-                    FilePath = path,
-                    DateAdded = DateTime.Now,
-                    IsFavorite = false,
-                    Duration = TimeSpan.Zero, // Will be updated when media loads
-                    LastPosition = TimeSpan.Zero
-                };
-
-                // Optionally add to database for future reference
-                await _databaseService.AddVideoAsync(video);
-
-                Video = video;
-                IsPlaying = true;
-                Position = 0;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error loading video from path: {ex}");
-                await Shell.Current.DisplayAlert("Error", $"Failed to load video: {ex.Message}", "OK");
-            }
-        }
-
-        // Keep your existing LoadVideoAsync method, but modify it to fall back to file path if needed
-        private async Task LoadVideoAsync(int id)
-        {
-            // Existing implementation...
-
-            // If video wasn't found in the database and we have a file path, try that
-            if (Video == null && !string.IsNullOrEmpty(FilePath))
-            {
-                await LoadVideoFromPathAsync(FilePath);
-            }
-        }
-
-
-        private void TogglePlayPause()
-        {
-            IsPlaying = !IsPlaying;
-        }
-
-        private async Task ToggleFavorite()
-        {
-            if (Video == null)
-                return;
-
-            await _databaseService.ToggleFavoriteAsync(Video.Id);
-            Video.IsFavorite = !Video.IsFavorite;
-            OnPropertyChanged(nameof(TheLighthouseWavesPlayerVideoApp.ViewModels.VideoPlayerViewModel.Video));
-        }
-
-        private void ToggleFullScreen()
-        {
-            IsFullScreen = !IsFullScreen;
-        }
-
-        private async Task UpdatePosition(double position)
-        {
-            if (Video == null)
-                return;
-
-            Position = position;
-            Video.LastPosition = TimeSpan.FromSeconds(position);
-            Video.LastPlayed = DateTime.Now;
-
-            await _databaseService.UpdateVideoAsync(Video);
-        }
-
-        public async Task SaveCurrentPosition(double position, double duration)
-        {
-            if (Video == null)
-                return;
-
-            Video.LastPosition = TimeSpan.FromSeconds(position);
-
-            if (Math.Abs(Video.Duration.TotalSeconds - duration) > 1)
-            {
-                Video.Duration = TimeSpan.FromSeconds(duration);
-                Console.WriteLine($"Updated duration for {Video.Title}: {Video.Duration}");
-            }
-    
-            Video.LastPlayed = DateTime.Now;
-
-            await _databaseService.UpdateVideoAsync(Video);
-        }
+    // Add this method for cleanup
+    public void OnNavigatedFrom()
+    {
+        // Stop and release media resources
+        // Setting Source to null might be enough if MediaElement handles it well.
+        // Explicitly setting state helps ensure cleanup.
+        VideoSource = null;
+        CurrentState = MediaElementState.None; // Reset state in ViewModel
+        System.Diagnostics.Debug.WriteLine("VideoPlayerViewModel.OnNavigatedFrom called.");
     }
 }

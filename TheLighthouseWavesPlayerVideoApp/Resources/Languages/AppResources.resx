@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+
+    <data name="Settings_PageTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+    <data name="Settings_Header" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+    <data name="Settings_LanguageLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+    <data name="Settings_LanguagePickerTitle" xml:space="preserve">
+    <value>Select Language</value>
+  </data>
+    <data name="Settings_LanguageHint" xml:space="preserve">
+    <value>The app will use the selected language.</value>
+  </data>
+    <data name="Settings_ResetButton" xml:space="preserve">
+    <value>Reset to Default</value>
+  </data>
+    
+    
+    <data name="Search_Clear" xml:space="preserve">
+  <value>Clear</value>
+</data>
+    <data name="Sort_By" xml:space="preserve">
+  <value>Sort by:</value>
+</data>
+
+    <data name="Library_Title" xml:space="preserve">
+  <value>Video Library</value>
+</data>
+    <data name="Library_Search" xml:space="preserve">
+  <value>Search videos...</value>
+</data>
+    <data name="Library_NoVideos" xml:space="preserve">
+  <value>No videos found. Ensure storage permission is granted.</value>
+</data>
+    <data name="Library_AddFavorite" xml:space="preserve">
+  <value>Fav</value>
+</data>
+    <data name="Library_Refresh" xml:space="preserve">
+  <value>Refresh Library</value>
+</data>
+    
+    <data name="Favorites_Title" xml:space="preserve">
+  <value>Favorites</value>
+</data>
+    <data name="Favorites_Search" xml:space="preserve">
+  <value>Search favorites...</value>
+</data>
+    <data name="Favorites_NoVideos" xml:space="preserve">
+  <value>No favorite videos yet.</value>
+</data>
+    <data name="Favorites_Remove" xml:space="preserve">
+  <value>Remove</value>
+</data>
+    <data name="Favorites_Refresh" xml:space="preserve">
+  <value>Refresh Favorites</value>
+</data>
+    
+    <data name="Player_Title" xml:space="preserve">
+  <value>Player</value>
+</data>
+    <data name="Player_AddFavorite" xml:space="preserve">
+  <value>Favorite</value>
+</data>
+    <data name="Player_RemoveFavorite" xml:space="preserve">
+  <value>Unfavorite</value>
+</data>
+    
+    <data name="Shell_Library" xml:space="preserve">
+  <value>Library</value>
+</data>
+    <data name="Shell_Favorites" xml:space="preserve">
+  <value>Favorites</value>
+</data>
+    <data name="Shell_Settings" xml:space="preserve">
+  <value>Settings</value>
+</data>
+
+    <data name="Shell_Title" xml:space="preserve">
+  <value>Video Player</value>
+</data>
+</root>

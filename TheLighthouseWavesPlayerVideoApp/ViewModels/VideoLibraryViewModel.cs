@@ -1,166 +1,126 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
-using TheLighthouseWavesPlayerVideoApp.Services;
+using TheLighthouseWavesPlayerVideoApp.Views;
+using System.Linq;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 {
     public partial class VideoLibraryViewModel : BaseViewModel
     {
-        private readonly IDatabaseService _databaseService;
-        private readonly IPermissionService _permissionService;
-        private readonly IMediaService _mediaService;
+        private readonly IVideoDiscoveryService _videoDiscoveryService;
+        private readonly IFavoritesService _favoritesService;
 
-        [ObservableProperty] private ObservableCollection<Video> _videos;
+        [ObservableProperty] ObservableCollection<VideoInfo> allVideos;
+        [ObservableProperty] ObservableCollection<VideoInfo> videos;
+        [ObservableProperty] VideoInfo selectedVideo;
 
-        [ObservableProperty] private Video _selectedVideo;
+        [ObservableProperty] string searchText;
 
-        [ObservableProperty] private bool _isLoading;
+        [ObservableProperty] ObservableCollection<SortOption> sortOptions;
+        [ObservableProperty] SortOption selectedSortOption;
 
-        public VideoLibraryViewModel(
-            IDatabaseService databaseService,
-            IPermissionService permissionService,
-            IMediaService mediaService)
+        public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService)
         {
-            _databaseService = databaseService;
-            _permissionService = permissionService;
-            _mediaService = mediaService;
-            Videos = new ObservableCollection<Video>();
-
-            LoadVideosCommand = new AsyncRelayCommand(LoadVideos);
-            ImportVideoCommand = new AsyncRelayCommand(ImportVideo);
-            PlayVideoCommand = new AsyncRelayCommand<Video>(PlayVideo);
-            ToggleFavoriteCommand = new AsyncRelayCommand<Video>(ToggleFavorite);
-            DeleteVideoCommand = new AsyncRelayCommand<Video>(DeleteVideo);
+            _videoDiscoveryService = videoDiscoveryService;
+            _favoritesService = favoritesService;
+            Title = "Video Library";
+            
+            // Initialize collections
+            AllVideos = new ObservableCollection<VideoInfo>();
+            Videos = new ObservableCollection<VideoInfo>();
+            
+            // Initialize sort options
+            SortOptions = new ObservableCollection<SortOption>
+            {
+                new SortOption("Title (A-Z)", "Title", true),
+                new SortOption("Title (Z-A)", "Title", false),
+                new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
+                new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
+            };
+            
+            // Set default sort option
+            SelectedSortOption = SortOptions[0];
         }
 
-        public IAsyncRelayCommand LoadVideosCommand { get; }
-        public IAsyncRelayCommand ImportVideoCommand { get; }
-        public IAsyncRelayCommand<Video> PlayVideoCommand { get; }
-        public IAsyncRelayCommand<Video> ToggleFavoriteCommand { get; }
-        public IAsyncRelayCommand<Video> DeleteVideoCommand { get; }
-
-        public async Task LoadVideos()
+        partial void OnSearchTextChanged(string value)
         {
-            if (IsLoading)
-                return;
+            ApplyFilters();
+        }
 
-            IsLoading = true;
+        partial void OnSelectedSortOptionChanged(SortOption value)
+        {
+            ApplyFilters();
+        }
 
-            try
+        private void ApplyFilters()
+        {
+            // Create a new filtered and sorted collection
+            IEnumerable<VideoInfo> filteredVideos = AllVideos;
+            
+            // Apply search filter if search text is provided
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                // First check if we have permission
-                bool hasPermission = await _permissionService.CheckAndRequestVideoPermissions();
-
-                if (!hasPermission)
+                string searchLower = SearchText.ToLowerInvariant();
+                filteredVideos = filteredVideos.Where(v => 
+                    v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+            }
+            
+            // Apply sorting
+            if (SelectedSortOption != null)
+            {
+                switch (SelectedSortOption.Property)
                 {
-                    // Show message to user about missing permissions
-                    await Shell.Current.DisplayAlert(
-                        "Permission Required",
-                        "Storage permission is needed to access videos",
-                        "OK");
-                    return;
+                    case "Title":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.Title)
+                            : filteredVideos.OrderByDescending(v => v.Title);
+                        break;
+                    case "DurationMilliseconds":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
+                            : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
+                        break;
                 }
-
-                // Get videos from MediaStore (for scoped storage support)
-                var mediaStoreVideos = await _mediaService.GetVideosFromMediaStore();
-
-                // Also get videos from your database
-                var savedVideos = await _databaseService.GetVideosAsync();
-
-                // Combine and deduplicate if needed
-                var allVideos = mediaStoreVideos.Concat(savedVideos)
-                    .GroupBy(v => v.FilePath)
-                    .Select(g => g.First())
-                    .ToList();
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    Videos.Clear();
-                    foreach (var video in allVideos)
-                    {
-                        Videos.Add(video);
-                    }
-                });
             }
-            catch (Exception ex)
+            
+            // Update the Videos collection
+            Videos.Clear();
+            foreach (var video in filteredVideos)
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to load videos: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsLoading = false;
+                Videos.Add(video);
             }
         }
 
-        private async Task ImportVideo()
+        [RelayCommand]
+        async Task LoadVideosAsync()
         {
+            if (IsBusy) return;
+
+            IsBusy = true;
             try
             {
-                IsBusy = true;
-                await Shell.Current.DisplayAlert("Info", "Starting video import process...", "OK");
-
-                bool hasPermission = await _permissionService.CheckAndRequestVideoPermissions();
-
-                if (!hasPermission)
+                AllVideos.Clear();
+                Videos.Clear();
+                
+                var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
+                if (discoveredVideos != null)
                 {
-                    await Shell.Current.DisplayAlert(
-                        "Permission Required",
-                        "Storage permission is needed to import videos",
-                        "OK");
-                    return;
+                    foreach (var video in discoveredVideos)
+                    {
+                        AllVideos.Add(video);
+                    }
                 }
                 
-                try
-                {
-                    var customFileType = new FilePickerFileType(
-                        new Dictionary<DevicePlatform, IEnumerable<string>>
-                        {
-                            { DevicePlatform.Android, new[] { "video/*" } }
-                        });
-
-                    var options = new PickOptions
-                    {
-                        PickerTitle = "Please select a video file",
-                        FileTypes = customFileType,
-                    };
-
-                    var result = await FilePicker.Default.PickAsync(options);
-
-                    if (result != null)
-                    {
-                        string fileName = Path.GetFileName(result.FullPath);
-
-                        await Shell.Current.DisplayAlert("Debug", $"Selected file: {fileName}", "OK");
-
-                        var video = new Video
-                        {
-                            Title = fileName,
-                            FilePath = result.FullPath,
-                            DateAdded = DateTime.Now,
-                            IsFavorite = false
-                        };
-
-                        await _databaseService.AddVideoAsync(video);
-                        await LoadVideos();
-
-                        await Shell.Current.DisplayAlert("Success", "Video imported successfully!", "OK");
-                    }
-                    else
-                    {
-                        await Shell.Current.DisplayAlert("Info", "No file was selected", "OK");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await Shell.Current.DisplayAlert("Error", $"FilePicker error: {ex.Message}", "OK");
-                }
+                // Apply filters to update the Videos collection
+                ApplyFilters();
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"Error loading videos: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to load video library.", "OK");
             }
             finally
             {
@@ -168,62 +128,50 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             }
         }
 
-        private async Task PlayVideo(Video video)
+        [RelayCommand]
+        void ClearSearch()
         {
-            if (video == null)
-            {
-                await Shell.Current.DisplayAlert("Error", "Cannot play: video is null", "OK");
+            SearchText = string.Empty;
+        }
+
+        // Keep existing commands
+        [RelayCommand]
+        async Task GoToDetailsAsync(VideoInfo video)
+        {
+            if (video == null || string.IsNullOrEmpty(video.FilePath))
                 return;
-            }
-    
+
+            await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
+        }
+
+        [RelayCommand]
+        async Task ToggleFavoriteAsync(VideoInfo video)
+        {
+            if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+
+            bool isCurrentlyFavorite = await _favoritesService.IsFavoriteAsync(video.FilePath);
+
             try
             {
-                await Shell.Current.DisplayAlert("Debug", $"Attempting to play video ID: {video.Id}, Path: {video.FilePath}", "OK");
-        
-                // Pass both ID and file path for better reliability
-                var navigationParameter = new Dictionary<string, object>
+                if (isCurrentlyFavorite)
                 {
-                    { "id", video.Id },
-                    { "path", video.FilePath }
-                };
-        
-                await Shell.Current.GoToAsync("videoPlayer", navigationParameter);
+                    await _favoritesService.RemoveFavoriteAsync(video);
+                }
+                else
+                {
+                    await _favoritesService.AddFavoriteAsync(video);
+                }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to navigate to player: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"Error toggling favorite: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
             }
         }
 
-        private async Task ToggleFavorite(Video video)
+        public async Task OnAppearing()
         {
-            if (video == null)
-                return;
-
-            await _databaseService.ToggleFavoriteAsync(video.Id);
-            video.IsFavorite = !video.IsFavorite;
-            
-            int index = Videos.IndexOf(video);
-            if (index >= 0)
-            {
-                Videos.Remove(video);
-                Videos.Insert(index, video);
-            }
-        }
-
-        private async Task DeleteVideo(Video video)
-        {
-            if (video == null)
-                return;
-
-            bool answer = await Shell.Current.DisplayAlert("Confirm",
-                "Are you sure you want to delete this video?", "Yes", "No");
-
-            if (answer)
-            {
-                await _databaseService.DeleteVideoAsync(video);
-                Videos.Remove(video);
-            }
+            await LoadVideosAsync();
         }
     }
 }

@@ -4,28 +4,45 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:TheLighthouseWavesPlayerVideoApp.Views"
-    Title="Video Player"
+    xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
     Shell.FlyoutBehavior="Disabled">
 
+    <Shell.Title>
+        <Binding Path="[Shell_Title]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+    </Shell.Title>
+
     <TabBar>
-        <Tab Title="Player" Icon="player_icon.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:VideoPlayerPage}" />
+        <Tab>
+            <Tab.Title>
+                <Binding Path="[Shell_Library]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+            </Tab.Title>
+            <ShellContent ContentTemplate="{DataTemplate views:VideoLibraryPage}">
+                <ShellContent.Title>
+                    <Binding Path="[Shell_Library]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </ShellContent.Title>
+            </ShellContent>
+        </Tab>
+
+        <Tab>
+            <Tab.Title>
+                <Binding Path="[Shell_Favorites]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+            </Tab.Title>
+            <ShellContent ContentTemplate="{DataTemplate views:FavoritesPage}">
+                <ShellContent.Title>
+                    <Binding Path="[Shell_Favorites]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </ShellContent.Title>
+            </ShellContent>
         </Tab>
         
-        <Tab Title="Library" Icon="library_icon.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:VideoLibraryPage}" />
-        </Tab>
-        
-        <Tab Title="Favorites" Icon="favorites_icon.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:FavoritesPage}" />
+        <Tab>
+            <Tab.Title>
+                <Binding Path="[Shell_Settings]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+            </Tab.Title>
+            <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}">
+                <ShellContent.Title>
+                    <Binding Path="[Shell_Settings]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </ShellContent.Title>
+            </ShellContent>
         </Tab>
     </TabBar>
-    
-    <ShellContent
-        Route="videoPlayer"
-        ContentTemplate="{DataTemplate views:VideoPlayerPage}"
-        FlyoutItemIsVisible="False" />
 </Shell>

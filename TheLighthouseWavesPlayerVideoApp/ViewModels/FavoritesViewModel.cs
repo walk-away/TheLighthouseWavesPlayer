@@ -1,127 +1,183 @@
 ﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
+using TheLighthouseWavesPlayerVideoApp.Views;
+using System.Linq;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 {
     public partial class FavoritesViewModel : BaseViewModel
     {
-        private readonly IDatabaseService _databaseService;
+        private readonly IFavoritesService _favoritesService;
 
-        [ObservableProperty] private ObservableCollection<Video> _favoriteVideos;
+        [ObservableProperty]
+        ObservableCollection<VideoInfo> allFavoriteVideos;
+        
+        [ObservableProperty]
+        ObservableCollection<VideoInfo> favoriteVideos;
+        
+        [ObservableProperty]
+        string searchText;
+        
+        [ObservableProperty]
+        ObservableCollection<SortOption> sortOptions;
+        
+        [ObservableProperty]
+        SortOption selectedSortOption;
 
-        [ObservableProperty] private Video _selectedVideo;
-
-        [ObservableProperty] private bool _isLoading;
-
-        public FavoritesViewModel(IDatabaseService databaseService)
+        public FavoritesViewModel(IFavoritesService favoritesService)
         {
-            _databaseService = databaseService;
-            FavoriteVideos = new ObservableCollection<Video>();
-
-            LoadFavoritesCommand = new AsyncRelayCommand(LoadFavorites);
-            PlayVideoCommand = new AsyncRelayCommand<Video>(PlayVideo);
-            ToggleFavoriteCommand = new AsyncRelayCommand<Video>(ToggleFavorite);
-            RemoveFromFavoritesCommand = new AsyncRelayCommand<Video>(RemoveFromFavorites);
-        }
-
-        public IAsyncRelayCommand LoadFavoritesCommand { get; }
-        public IAsyncRelayCommand<Video> PlayVideoCommand { get; }
-        public IAsyncRelayCommand<Video> ToggleFavoriteCommand { get; }
-        public IAsyncRelayCommand<Video> RemoveFromFavoritesCommand { get; }
-
-        public async Task LoadFavorites()
-        {
-            if (IsLoading)
-                return;
-
-            IsLoading = true;
-
-            try
-            {
-                var favorites = await _databaseService.GetFavoriteVideosAsync();
-                
-                foreach (var video in favorites)
-                {
-                    Console.WriteLine($"Video: {video.Title}, Duration: {video.Duration}");
-                    if (video.Duration.TotalSeconds < 1 && File.Exists(video.FilePath))
-                    {
-                        Console.WriteLine($"Video {video.Title} has zero duration but file exists");
-                    }
-                }
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    FavoriteVideos.Clear();
-                    foreach (var video in favorites)
-                    {
-                        FavoriteVideos.Add(video);
-                    }
-                });
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        private async Task PlayVideo(Video video)
-        {
-            if (video == null)
-                return;
+            _favoritesService = favoritesService;
+            Title = "Favorites";
             
-            var navigationParameter = new Dictionary<string, object>
+            // Initialize collections
+            AllFavoriteVideos = new ObservableCollection<VideoInfo>();
+            FavoriteVideos = new ObservableCollection<VideoInfo>();
+            
+            // Initialize sort options
+            SortOptions = new ObservableCollection<SortOption>
             {
-                { "id", video.Id },
-                { "path", video.FilePath }
+                new SortOption("Title (A-Z)", "Title", true),
+                new SortOption("Title (Z-A)", "Title", false),
+                new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
+                new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
             };
             
-            await Shell.Current.GoToAsync("videoPlayer", navigationParameter);
+            // Set default sort option
+            SelectedSortOption = SortOptions[0];
+        }
+        
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFilters();
         }
 
-        private async Task ToggleFavorite(Video video)
+        partial void OnSelectedSortOptionChanged(SortOption value)
         {
-            if (video == null)
-                return;
+            ApplyFilters();
+        }
 
-            await _databaseService.ToggleFavoriteAsync(video.Id);
+        private void ApplyFilters()
+        {
+            // Create a new filtered and sorted collection
+            IEnumerable<VideoInfo> filteredVideos = AllFavoriteVideos;
             
-            await RemoveFromFavorites(video);
+            // Apply search filter if search text is provided
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                string searchLower = SearchText.ToLowerInvariant();
+                filteredVideos = filteredVideos.Where(v => 
+                    v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+            }
+            
+            // Apply sorting
+            if (SelectedSortOption != null)
+            {
+                switch (SelectedSortOption.Property)
+                {
+                    case "Title":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.Title)
+                            : filteredVideos.OrderByDescending(v => v.Title);
+                        break;
+                    case "DurationMilliseconds":
+                        filteredVideos = SelectedSortOption.IsAscending 
+                            ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
+                            : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
+                        break;
+                }
+            }
+            
+            // Update the FavoriteVideos collection
+            FavoriteVideos.Clear();
+            foreach (var video in filteredVideos)
+            {
+                FavoriteVideos.Add(video);
+            }
         }
-        
-        private async Task RemoveFromFavorites(Video video)
+
+        [RelayCommand]
+        async Task LoadFavoritesAsync()
         {
-            if (video == null)
-                return;
-        
+            if (IsBusy) return;
+
+            IsBusy = true;
             try
             {
-                MainThread.BeginInvokeOnMainThread(() => 
-                {
-                    FavoriteVideos.Remove(video);
-                });
-
-                video.IsFavorite = false;
-                await _databaseService.UpdateVideoAsync(video);
+                AllFavoriteVideos.Clear();
+                FavoriteVideos.Clear();
                 
-                await Toast.Make($"'{video.Title}' removed from favorites").Show();
+                var favs = await _favoritesService.GetFavoritesAsync();
+                if (favs != null)
+                {
+                    foreach (var video in favs)
+                    {
+                        AllFavoriteVideos.Add(video);
+                    }
+                }
+                
+                // Apply filters to update the FavoriteVideos collection
+                ApplyFilters();
             }
             catch (Exception ex)
             {
-                MainThread.BeginInvokeOnMainThread(() => 
-                {
-                    if (!FavoriteVideos.Contains(video))
-                        FavoriteVideos.Add(video);
-                });
-        
-                await Shell.Current.DisplayAlert(
-                    "Error", 
-                    $"Failed to remove video: {ex.Message}", 
-                    "OK");
+                System.Diagnostics.Debug.WriteLine($"Error loading favorites: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to load favorites.", "OK");
             }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        
+        [RelayCommand]
+        void ClearSearch()
+        {
+            SearchText = string.Empty;
+        }
+        
+        // Keep existing commands
+        [RelayCommand]
+        async Task GoToDetailsAsync(VideoInfo video)
+        {
+            if (video == null || string.IsNullOrEmpty(video.FilePath))
+                return;
+            
+            await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
+        }
+        
+        [RelayCommand]
+        async Task RemoveFavoriteAsync(VideoInfo video)
+        {
+            if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+
+            try
+            {
+                await _favoritesService.RemoveFavoriteAsync(video);
+                
+                // Remove from both collections
+                var itemToRemove = AllFavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
+                if (itemToRemove != null)
+                    AllFavoriteVideos.Remove(itemToRemove);
+                
+                var filteredItemToRemove = FavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
+                if (filteredItemToRemove != null)
+                    FavoriteVideos.Remove(filteredItemToRemove);
+                
+                await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error removing favorite: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Could not remove favorite.", "OK");
+            }
+        }
+        
+        public async Task OnAppearing()
+        {
+           await LoadFavoritesAsync();
         }
     }
 }

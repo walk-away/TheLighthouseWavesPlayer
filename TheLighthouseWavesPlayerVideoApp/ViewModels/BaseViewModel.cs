@@ -2,17 +2,12 @@
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public abstract partial class BaseViewModel : ObservableObject
+public partial class BaseViewModel : ObservableObject
 {
-    [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsNotBusy))]
+    bool isBusy;
 
-    [ObservableProperty] private string _title = string.Empty;
+    [ObservableProperty] string title;
 
-    [ObservableProperty] private bool _isInitialized;
-
-    public virtual Task InitializeAsync()
-    {
-        IsInitialized = true;
-        return Task.CompletedTask;
-    }
+    public bool IsNotBusy => !IsBusy;
 }

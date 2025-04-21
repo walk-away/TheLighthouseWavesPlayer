@@ -1,103 +1,86 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:viewmodels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
-             x:DataType="viewmodels:VideoPlayerViewModel"
-             Title="{Binding Video.Title}"
-             BackgroundColor="Black">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="True">
 
-    <Grid RowDefinitions="*, Auto">
-        <toolkit:MediaElement 
-            x:Name="mediaElement"
-            Grid.Row="0"
-            Source="{Binding Video.FilePath}"
-            ShouldAutoPlay="True"
-            ShouldShowPlaybackControls="False"
-            Position="{Binding Position, Mode=TwoWay, Converter={StaticResource DoubleToTimeSpanConverter}}"
-            MediaOpened="OnMediaOpened"
-            MediaEnded="OnMediaEnded"
-            HeightRequest="{Binding IsFullScreen, Converter={StaticResource BoolToHeightConverter}}" 
-            IsVisible="{Binding Video, Converter={StaticResource NotNullToBoolConverter}}" />
-    
-        <Border Grid.Row="0"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                StrokeThickness="0"
-                BackgroundColor="#80000000"
-                Padding="20"
-                IsVisible="{Binding Video, Converter={StaticResource NullToBoolConverter}}">
-            <Label Text="No video selected. Please select a video from the Library or Favorites."
-                   TextColor="White"
-                   FontSize="16"
-                   HorizontalTextAlignment="Center" />
-        </Border>
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup Name="OrientationStates">
+            <VisualState Name="Portrait">
+                <VisualState.Setters>
+                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="True" />
+                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="True" />
+                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="1" />
+                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="1" />
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState Name="Landscape">
+                <VisualState.Setters>
 
-        <Grid Grid.Row="1" 
-              RowDefinitions="Auto, Auto" 
-              Padding="16,12"
-              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
-              IsVisible="{Binding IsFullScreen, Converter={StaticResource InverseBoolConverter}}">
-            
-            <HorizontalStackLayout Grid.Row="0" 
-                                   HorizontalOptions="Center"
-                                   Spacing="20">
-                
-                <Button Style="{StaticResource VideoControlButton}"
-                        Text="⏪" 
-                        Clicked="OnRewindClicked" />
-                
-                <Button Style="{StaticResource VideoControlButton}"
-                        Text="{Binding IsPlaying, Converter={StaticResource BoolToPlayPauseConverter}}"
-                        Command="{Binding TogglePlayPauseCommand}" />
-                
-                <Button Style="{StaticResource VideoControlButton}"
-                        Text="⏩" 
-                        Clicked="OnForwardClicked" />
-                
-                <Button Style="{StaticResource VideoControlButton}"
-                        Text="⭐" 
-                        Command="{Binding ToggleFavoriteCommand}"
-                        BackgroundColor="{Binding Video.IsFavorite, Converter={StaticResource BoolToColorConverter}}" />
-                
-                <Button Style="{StaticResource VideoControlButton}"
-                        Text="🔍" 
-                        Command="{Binding ToggleFullScreenCommand}" />
-            </HorizontalStackLayout>
-            
-            <Grid Grid.Row="1" Margin="0,12,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                
-                <Label Grid.Column="0" 
-                       Text="{Binding Position, StringFormat='{0:mm\\:ss}'}" 
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                       FontSize="12"
-                       VerticalOptions="Center"
-                       Margin="0,0,8,0" />
-                
-                <Slider Grid.Column="1"
-                        Minimum="0"
-                        Maximum="{Binding Duration}"
-                        Value="{Binding Position}"
-                        MinimumTrackColor="{StaticResource Primary}"
-                        MaximumTrackColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
-                        ThumbColor="{StaticResource Primary}"
-                        ValueChanged="OnSliderValueChanged"
-                        DragStarted="OnSliderDragStarted"
-                        DragCompleted="OnSliderDragCompleted" />
-                
-                <Label Grid.Column="2" 
-                       Text="{Binding Duration, StringFormat='{0:mm\\:ss}'}" 
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                       FontSize="12"
-                       VerticalOptions="Center"
-                       Margin="8,0,0,0" />
-            </Grid>
+                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="False" />
+                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="False" />
+
+                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="0" />
+                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="3" />
+
+                    <Setter Property="Shell.NavBarIsVisible" Value="False" />
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Label Grid.Row="0"
+               x:Name="TitleLabel"
+               Text="{Binding Title}"
+               FontSize="Large"
+               HorizontalOptions="Center"
+               Margin="10" />
+
+        <toolkit:MediaElement Grid.Row="1"
+                              x:Name="mediaElement"
+                              Source="{Binding VideoSource}"
+                              ShouldAutoPlay="False"
+                              ShouldShowPlaybackControls="True"
+                              Aspect="AspectFit"
+                              StateChanged="MediaElement_StateChanged"
+                              Volume="1" />
+
+
+        <Grid Grid.Row="2"
+              x:Name="BottomControlsGrid"
+              ColumnDefinitions="*, Auto"
+              Margin="10"
+              Padding="10,0"
+              VerticalOptions="Center">
+
+            <Slider Grid.Column="0"
+                    x:Name="VolumeSlider"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
+                    VerticalOptions="Center" />
+
+            <Button Grid.Column="1"
+                    Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
+                    Command="{Binding ToggleFavoriteCommand}"
+                    Margin="10,0,0,0"
+                    HorizontalOptions="End" />
         </Grid>
+
     </Grid>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter" TrueObject="Unfavorite"
+                                           FalseObject="Favorite" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
 </ContentPage>
