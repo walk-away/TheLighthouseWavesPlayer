@@ -60,6 +60,132 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Избранных видео пока нет..
+        /// </summary>
+        internal static string Favorites_NoVideos {
+            get {
+                return ResourceManager.GetString("Favorites_NoVideos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить избранное.
+        /// </summary>
+        internal static string Favorites_Refresh {
+            get {
+                return ResourceManager.GetString("Favorites_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        internal static string Favorites_Remove {
+            get {
+                return ResourceManager.GetString("Favorites_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поиск в избранном....
+        /// </summary>
+        internal static string Favorites_Search {
+            get {
+                return ResourceManager.GetString("Favorites_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Избранное.
+        /// </summary>
+        internal static string Favorites_Title {
+            get {
+                return ResourceManager.GetString("Favorites_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Избр.
+        /// </summary>
+        internal static string Library_AddFavorite {
+            get {
+                return ResourceManager.GetString("Library_AddFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Видео не найдены. Убедитесь, что предоставлены разрешения на хранилище..
+        /// </summary>
+        internal static string Library_NoVideos {
+            get {
+                return ResourceManager.GetString("Library_NoVideos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить библиотеку.
+        /// </summary>
+        internal static string Library_Refresh {
+            get {
+                return ResourceManager.GetString("Library_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поиск видео....
+        /// </summary>
+        internal static string Library_Search {
+            get {
+                return ResourceManager.GetString("Library_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Видеотека.
+        /// </summary>
+        internal static string Library_Title {
+            get {
+                return ResourceManager.GetString("Library_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В избранное.
+        /// </summary>
+        internal static string Player_AddFavorite {
+            get {
+                return ResourceManager.GetString("Player_AddFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Из избранного.
+        /// </summary>
+        internal static string Player_RemoveFavorite {
+            get {
+                return ResourceManager.GetString("Player_RemoveFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Плеер.
+        /// </summary>
+        internal static string Player_Title {
+            get {
+                return ResourceManager.GetString("Player_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить.
+        /// </summary>
+        internal static string Search_Clear {
+            get {
+                return ResourceManager.GetString("Search_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Настройки приложения.
         /// </summary>
         internal static string Settings_Header {
@@ -110,6 +236,51 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Settings_ResetButton {
             get {
                 return ResourceManager.GetString("Settings_ResetButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Избранное.
+        /// </summary>
+        internal static string Shell_Favorites {
+            get {
+                return ResourceManager.GetString("Shell_Favorites", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Библиотека.
+        /// </summary>
+        internal static string Shell_Library {
+            get {
+                return ResourceManager.GetString("Shell_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Настройки.
+        /// </summary>
+        internal static string Shell_Settings {
+            get {
+                return ResourceManager.GetString("Shell_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Видео плеер.
+        /// </summary>
+        internal static string Shell_Title {
+            get {
+                return ResourceManager.GetString("Shell_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сортировать по:.
+        /// </summary>
+        internal static string Sort_By {
+            get {
+                return ResourceManager.GetString("Sort_By", resourceCulture);
             }
         }
     }

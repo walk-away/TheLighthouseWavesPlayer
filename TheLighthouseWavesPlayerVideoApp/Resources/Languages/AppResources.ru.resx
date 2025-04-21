@@ -37,4 +37,68 @@
     <data name="Settings_ResetButton" xml:space="preserve">
     <value>Сбросить настройки</value>
   </data>
+
+    
+    <data name="Search_Clear" xml:space="preserve">
+  <value>Очистить</value>
+</data>
+    <data name="Sort_By" xml:space="preserve">
+  <value>Сортировать по:</value>
+</data>
+    
+    <data name="Library_Title" xml:space="preserve">
+  <value>Видеотека</value>
+</data>
+    <data name="Library_Search" xml:space="preserve">
+  <value>Поиск видео...</value>
+</data>
+    <data name="Library_NoVideos" xml:space="preserve">
+  <value>Видео не найдены. Убедитесь, что предоставлены разрешения на хранилище.</value>
+</data>
+    <data name="Library_AddFavorite" xml:space="preserve">
+  <value>Избр</value>
+</data>
+    <data name="Library_Refresh" xml:space="preserve">
+  <value>Обновить библиотеку</value>
+</data>
+    
+    <data name="Favorites_Title" xml:space="preserve">
+  <value>Избранное</value>
+</data>
+    <data name="Favorites_Search" xml:space="preserve">
+  <value>Поиск в избранном...</value>
+</data>
+    <data name="Favorites_NoVideos" xml:space="preserve">
+  <value>Избранных видео пока нет.</value>
+</data>
+    <data name="Favorites_Remove" xml:space="preserve">
+  <value>Удалить</value>
+</data>
+    <data name="Favorites_Refresh" xml:space="preserve">
+  <value>Обновить избранное</value>
+</data>
+    
+    <data name="Player_Title" xml:space="preserve">
+  <value>Плеер</value>
+</data>
+    <data name="Player_AddFavorite" xml:space="preserve">
+  <value>В избранное</value>
+</data>
+    <data name="Player_RemoveFavorite" xml:space="preserve">
+  <value>Из избранного</value>
+</data>
+    
+    <data name="Shell_Library" xml:space="preserve">
+  <value>Библиотека</value>
+</data>
+    <data name="Shell_Favorites" xml:space="preserve">
+  <value>Избранное</value>
+</data>
+    <data name="Shell_Settings" xml:space="preserve">
+  <value>Настройки</value>
+</data>
+
+    <data name="Shell_Title" xml:space="preserve">
+  <value>Видео плеер</value>
+</data>
 </root>

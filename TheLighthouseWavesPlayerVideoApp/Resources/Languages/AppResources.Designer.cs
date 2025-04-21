@@ -60,6 +60,132 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No favorite videos yet..
+        /// </summary>
+        internal static string Favorites_NoVideos {
+            get {
+                return ResourceManager.GetString("Favorites_NoVideos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh Favorites.
+        /// </summary>
+        internal static string Favorites_Refresh {
+            get {
+                return ResourceManager.GetString("Favorites_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string Favorites_Remove {
+            get {
+                return ResourceManager.GetString("Favorites_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search favorites....
+        /// </summary>
+        internal static string Favorites_Search {
+            get {
+                return ResourceManager.GetString("Favorites_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Favorites.
+        /// </summary>
+        internal static string Favorites_Title {
+            get {
+                return ResourceManager.GetString("Favorites_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fav.
+        /// </summary>
+        internal static string Library_AddFavorite {
+            get {
+                return ResourceManager.GetString("Library_AddFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No videos found. Ensure storage permission is granted..
+        /// </summary>
+        internal static string Library_NoVideos {
+            get {
+                return ResourceManager.GetString("Library_NoVideos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh Library.
+        /// </summary>
+        internal static string Library_Refresh {
+            get {
+                return ResourceManager.GetString("Library_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search videos....
+        /// </summary>
+        internal static string Library_Search {
+            get {
+                return ResourceManager.GetString("Library_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video Library.
+        /// </summary>
+        internal static string Library_Title {
+            get {
+                return ResourceManager.GetString("Library_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Favorite.
+        /// </summary>
+        internal static string Player_AddFavorite {
+            get {
+                return ResourceManager.GetString("Player_AddFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unfavorite.
+        /// </summary>
+        internal static string Player_RemoveFavorite {
+            get {
+                return ResourceManager.GetString("Player_RemoveFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player.
+        /// </summary>
+        internal static string Player_Title {
+            get {
+                return ResourceManager.GetString("Player_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        internal static string Search_Clear {
+            get {
+                return ResourceManager.GetString("Search_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application Settings.
         /// </summary>
         internal static string Settings_Header {
@@ -110,6 +236,51 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Settings_ResetButton {
             get {
                 return ResourceManager.GetString("Settings_ResetButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Favorites.
+        /// </summary>
+        internal static string Shell_Favorites {
+            get {
+                return ResourceManager.GetString("Shell_Favorites", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        internal static string Shell_Library {
+            get {
+                return ResourceManager.GetString("Shell_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Shell_Settings {
+            get {
+                return ResourceManager.GetString("Shell_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video Player.
+        /// </summary>
+        internal static string Shell_Title {
+            get {
+                return ResourceManager.GetString("Shell_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort by:.
+        /// </summary>
+        internal static string Sort_By {
+            get {
+                return ResourceManager.GetString("Sort_By", resourceCulture);
             }
         }
     }

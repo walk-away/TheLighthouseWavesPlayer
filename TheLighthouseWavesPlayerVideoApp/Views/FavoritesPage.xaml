@@ -1,32 +1,45 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
+             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
              x:DataType="vm:FavoritesViewModel"
-             x:Class="TheLighthouseWavesPlayerVideoApp.Views.FavoritesPage"
-             Title="{Binding Title}">
+             x:Class="TheLighthouseWavesPlayerVideoApp.Views.FavoritesPage">
+    
+    <ContentPage.Title>
+        <Binding Path="[Favorites_Title]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+    </ContentPage.Title>
     
     <Grid RowDefinitions="Auto, Auto, *, Auto">
         
-        <!-- Search Bar -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
             <SearchBar Grid.Column="0" 
-                       Placeholder="Search favorites..." 
                        Text="{Binding SearchText}"
-                       HorizontalOptions="Fill" />
+                       HorizontalOptions="Fill">
+                <SearchBar.Placeholder>
+                    <Binding Path="[Favorites_Search]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </SearchBar.Placeholder>
+            </SearchBar>
             <Button Grid.Column="1" 
-                    Text="Clear" 
                     Command="{Binding ClearSearchCommand}"
                     IsVisible="{Binding SearchText, Converter={StaticResource StringNotEmptyConverter}}"
                     Margin="0,0,5,0" 
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center">
+                <Button.Text>
+                    <Binding Path="[Search_Clear]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </Button.Text>
+            </Button>
         </Grid>
         
         <!-- Sort Options -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto, *" Margin="10,0,10,5">
             <Label Grid.Column="0" 
-                   Text="Sort by:" 
-                   VerticalOptions="Center" />
+                   VerticalOptions="Center">
+                <Label.Text>
+                    <Binding Path="[Sort_By]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                </Label.Text>
+            </Label>
             <Picker Grid.Column="1" 
                     ItemsSource="{Binding SortOptions}" 
                     SelectedItem="{Binding SelectedSortOption}"
@@ -36,8 +49,14 @@
 
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding FavoriteVideos}"
-                        SelectionMode="None"
-                        EmptyView="No favorite videos yet.">
+                        SelectionMode="None">
+            <CollectionView.EmptyView>
+                <Label HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label.Text>
+                        <Binding Path="[Favorites_NoVideos]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                    </Label.Text>
+                </Label>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:VideoInfo">
                     <Grid Padding="10" ColumnDefinitions="*,Auto">
@@ -54,12 +73,15 @@
                         </StackLayout>
 
                         <Button Grid.Column="1"
-                                Text="Remove"
                                 FontSize="Micro"
                                 Padding="5" MinimumWidthRequest="70" HeightRequest="40"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
                                 CommandParameter="{Binding .}"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center">
+                            <Button.Text>
+                                <Binding Path="[Favorites_Remove]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            </Button.Text>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
@@ -71,21 +93,11 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-        <Button Grid.Row="3" Text="Refresh Favorites" Command="{Binding LoadFavoritesCommand}"
-                IsEnabled="{Binding IsNotBusy}" Margin="10" />
-        
-        
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
-            <SearchBar Grid.Column="0" 
-                       Placeholder="Search favorites..." 
-                       Text="{Binding SearchText}"
-                       HorizontalOptions="Fill" />
-            <Button Grid.Column="1" 
-                    Text="Clear" 
-                    Command="{Binding ClearSearchCommand}"
-                    IsVisible="{Binding SearchText, Converter={StaticResource StringNotEmptyConverter}}"
-                    Margin="0,0,5,0" 
-                    VerticalOptions="Center" />
-        </Grid>
+        <Button Grid.Row="3" Command="{Binding LoadFavoritesCommand}"
+                IsEnabled="{Binding IsNotBusy}" Margin="10">
+            <Button.Text>
+                <Binding Path="[Favorites_Refresh]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+            </Button.Text>
+        </Button>
     </Grid>
 </ContentPage>

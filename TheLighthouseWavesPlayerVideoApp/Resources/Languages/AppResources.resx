@@ -38,4 +38,68 @@
     <data name="Settings_ResetButton" xml:space="preserve">
     <value>Reset to Default</value>
   </data>
+    
+    
+    <data name="Search_Clear" xml:space="preserve">
+  <value>Clear</value>
+</data>
+    <data name="Sort_By" xml:space="preserve">
+  <value>Sort by:</value>
+</data>
+
+    <data name="Library_Title" xml:space="preserve">
+  <value>Video Library</value>
+</data>
+    <data name="Library_Search" xml:space="preserve">
+  <value>Search videos...</value>
+</data>
+    <data name="Library_NoVideos" xml:space="preserve">
+  <value>No videos found. Ensure storage permission is granted.</value>
+</data>
+    <data name="Library_AddFavorite" xml:space="preserve">
+  <value>Fav</value>
+</data>
+    <data name="Library_Refresh" xml:space="preserve">
+  <value>Refresh Library</value>
+</data>
+    
+    <data name="Favorites_Title" xml:space="preserve">
+  <value>Favorites</value>
+</data>
+    <data name="Favorites_Search" xml:space="preserve">
+  <value>Search favorites...</value>
+</data>
+    <data name="Favorites_NoVideos" xml:space="preserve">
+  <value>No favorite videos yet.</value>
+</data>
+    <data name="Favorites_Remove" xml:space="preserve">
+  <value>Remove</value>
+</data>
+    <data name="Favorites_Refresh" xml:space="preserve">
+  <value>Refresh Favorites</value>
+</data>
+    
+    <data name="Player_Title" xml:space="preserve">
+  <value>Player</value>
+</data>
+    <data name="Player_AddFavorite" xml:space="preserve">
+  <value>Favorite</value>
+</data>
+    <data name="Player_RemoveFavorite" xml:space="preserve">
+  <value>Unfavorite</value>
+</data>
+    
+    <data name="Shell_Library" xml:space="preserve">
+  <value>Library</value>
+</data>
+    <data name="Shell_Favorites" xml:space="preserve">
+  <value>Favorites</value>
+</data>
+    <data name="Shell_Settings" xml:space="preserve">
+  <value>Settings</value>
+</data>
+
+    <data name="Shell_Title" xml:space="preserve">
+  <value>Video Player</value>
+</data>
 </root>
