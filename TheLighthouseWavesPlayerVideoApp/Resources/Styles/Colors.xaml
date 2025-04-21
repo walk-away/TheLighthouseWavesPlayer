@@ -5,9 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Modern Monochrome Color Palette -->
-    <Color x:Key="Primary">#0078D7</Color>             <!-- Accent blue -->
-    <Color x:Key="PrimaryDark">#005a9e</Color>
-    <Color x:Key="PrimaryLight">#47a3ff</Color>
+    <Color x:Key="Primary">#1E1E1E</Color>             <!-- Accent blue -->
+    <Color x:Key="PrimaryDark">#FFFFFF</Color>
+    <Color x:Key="PrimaryLight">#1E1E1E</Color>
     
     <Color x:Key="Surface">#FFFFFF</Color>             <!-- Pure white for surfaces -->
     <Color x:Key="Background">#F9F9F9</Color>          <!-- Off-white for backgrounds -->
@@ -18,7 +18,7 @@
     <Color x:Key="TextPrimary">#212121</Color>         <!-- Near black for text -->
     <Color x:Key="TextSecondary">#757575</Color>       <!-- Medium gray for secondary text -->
     <Color x:Key="TextHint">#9E9E9E</Color>            <!-- Light gray for hints/placeholders -->
-    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>     <!-- White text for dark mode -->
+    <Color x:Key="TextPrimaryDark">#212121</Color>     <!-- White text for dark mode -->
     <Color x:Key="TextSecondaryDark">#DADADA</Color>   <!-- Light gray text for dark mode -->
     
     <!-- System Colors -->

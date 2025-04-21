@@ -8,6 +8,24 @@
              x:DataType="viewModels:VideoLibraryViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoLibraryPage">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="FavoriteButton" TargetType="Button" BasedOn="{StaticResource OutlineButton}">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="Micro" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="MinimumWidthRequest" Value="70" />
+                <Setter Property="HeightRequest" Value="40" />
+            </Style>
+            
+            <Style x:Key="RemoveFavoriteButton" TargetType="Button" BasedOn="{StaticResource FavoriteButton}">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Error}, Dark=IndianRed}" />
+                <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Error}, Dark=IndianRed}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.Title>
         <Binding Path="[Library_Title]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
     </ContentPage.Title>
@@ -69,19 +87,21 @@
                         <StackLayout Grid.Column="0" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
                             <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small"
-                                   TextColor="Gray" />
+                                   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
                         </StackLayout>
-
+                        
                         <Button Grid.Column="1"
-                                FontSize="Micro"
-                                Padding="5" MinimumWidthRequest="50" HeightRequest="40"
+                                Style="{StaticResource FavoriteButton}"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                 CommandParameter="{Binding .}"
-                                VerticalOptions="Center">
+                                VerticalOptions="Center"
+                                IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
                             <Button.Text>
                                 <Binding Path="[Library_AddFavorite]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
                             </Button.Text>
                         </Button>
+
+
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

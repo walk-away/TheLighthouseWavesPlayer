@@ -132,6 +132,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string Library_RemoveFavorite {
+            get {
+                return ResourceManager.GetString("Library_RemoveFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search videos....
         /// </summary>
         internal static string Library_Search {

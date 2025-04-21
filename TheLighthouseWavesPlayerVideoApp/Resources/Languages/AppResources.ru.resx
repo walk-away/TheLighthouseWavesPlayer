@@ -120,4 +120,8 @@
     <data name="Settings_ThemeSystem" xml:space="preserve">
   <value>Системная (Авто)</value>
 </data>
+
+    <data name="Library_RemoveFavorite" xml:space="preserve">
+  <value>Удалить</value>
+</data>
 </root>

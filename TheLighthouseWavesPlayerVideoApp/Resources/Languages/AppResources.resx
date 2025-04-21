@@ -121,4 +121,8 @@
     <data name="Settings_ThemeSystem" xml:space="preserve">
   <value>System (Auto)</value>
 </data>
+
+    <data name="Library_RemoveFavorite" xml:space="preserve">
+  <value>Remove</value>
+</data>
 </root>
