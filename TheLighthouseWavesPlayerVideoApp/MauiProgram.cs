@@ -9,9 +9,6 @@ using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using TheLighthouseWavesPlayerVideoApp.Views;
-#if ANDROID
-
-#endif
 
 namespace TheLighthouseWavesPlayerVideoApp;
 
@@ -33,8 +30,6 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
-
         
         builder.Services.AddSingleton<IVideoDatabase, VideoDatabase>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
@@ -45,13 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILocalizationManager, LocalizationManager>();
         
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
-        
-#if ANDROID
         builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
-#else
-        // Register a dummy or throw exception if building for other platforms
-        // builder.Services.AddSingleton<IVideoDiscoveryService, DummyVideoDiscoveryService>();
-#endif
         
         builder.Services.AddTransient<VideoPlayerViewModel>();
         builder.Services.AddSingleton<VideoLibraryViewModel>();
@@ -62,7 +51,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<VideoLibraryPage>();
         builder.Services.AddSingleton<FavoritesPage>();
         builder.Services.AddSingleton<SettingsPage>();
-
 
         return builder.Build();
     }
