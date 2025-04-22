@@ -65,7 +65,7 @@
             <Picker Grid.Column="1"
                     ItemsSource="{Binding SortOptions}"
                     SelectedItem="{Binding SelectedSortOption}"
-                    ItemDisplayBinding="{Binding DisplayName}"
+                    ItemDisplayBinding="{Binding Name}"
                     HorizontalOptions="Fill"
                     Margin="5,0,0,0" />
         </Grid>
