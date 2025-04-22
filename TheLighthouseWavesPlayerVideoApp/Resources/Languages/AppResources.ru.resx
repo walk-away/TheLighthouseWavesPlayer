@@ -101,4 +101,27 @@
     <data name="Shell_Title" xml:space="preserve">
   <value>Видео плеер</value>
 </data>
+
+    <data name="Settings_ThemeLabel" xml:space="preserve">
+  <value>Тема</value>
+</data>
+    <data name="Settings_ThemePickerTitle" xml:space="preserve">
+  <value>Выберите тему</value>
+</data>
+    <data name="Settings_ThemeHint" xml:space="preserve">
+  <value>Приложение будет использовать выбранную тему.</value>
+</data>
+    <data name="Settings_ThemeLight" xml:space="preserve">
+  <value>Светлая</value>
+</data>
+    <data name="Settings_ThemeDark" xml:space="preserve">
+  <value>Темная</value>
+</data>
+    <data name="Settings_ThemeSystem" xml:space="preserve">
+  <value>Системная (Авто)</value>
+</data>
+
+    <data name="Library_RemoveFavorite" xml:space="preserve">
+  <value>Удалить</value>
+</data>
 </root>

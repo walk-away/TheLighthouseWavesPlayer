@@ -132,6 +132,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        internal static string Library_RemoveFavorite {
+            get {
+                return ResourceManager.GetString("Library_RemoveFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Поиск видео....
         /// </summary>
         internal static string Library_Search {
@@ -236,6 +245,60 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Settings_ResetButton {
             get {
                 return ResourceManager.GetString("Settings_ResetButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Темная.
+        /// </summary>
+        internal static string Settings_ThemeDark {
+            get {
+                return ResourceManager.GetString("Settings_ThemeDark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Приложение будет использовать выбранную тему..
+        /// </summary>
+        internal static string Settings_ThemeHint {
+            get {
+                return ResourceManager.GetString("Settings_ThemeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тема.
+        /// </summary>
+        internal static string Settings_ThemeLabel {
+            get {
+                return ResourceManager.GetString("Settings_ThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Светлая.
+        /// </summary>
+        internal static string Settings_ThemeLight {
+            get {
+                return ResourceManager.GetString("Settings_ThemeLight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выберите тему.
+        /// </summary>
+        internal static string Settings_ThemePickerTitle {
+            get {
+                return ResourceManager.GetString("Settings_ThemePickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Системная (Авто).
+        /// </summary>
+        internal static string Settings_ThemeSystem {
+            get {
+                return ResourceManager.GetString("Settings_ThemeSystem", resourceCulture);
             }
         }
         

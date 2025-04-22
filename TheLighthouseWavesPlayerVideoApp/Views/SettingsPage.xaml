@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
-             xmlns:extensions="clr-namespace:TheLighthouseWavesPlayer.Localization.Extensions;assembly=TheLighthouseWavesPlayer.Localization"
              xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
              x:DataType="vm:SettingsViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.SettingsPage">
@@ -23,8 +22,8 @@
                 </Label.Text>
             </Label>
             
-            <Frame BorderColor="LightGray"
-                   BackgroundColor="White"
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D2D}"
+                   BorderColor="{AppThemeBinding Light=LightGray, Dark=#444444}"
                    CornerRadius="8"
                    Padding="15">
                 
@@ -44,9 +43,38 @@
                     </Picker>
                     
                     <Label FontSize="Small"
-                           TextColor="Gray">
+                           TextColor="{AppThemeBinding Light=Gray, Dark=#BBBBBB}">
                         <Label.Text>
                             <Binding Path="[Settings_LanguageHint]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Label.Text>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+            
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D2D}"
+                   BorderColor="{AppThemeBinding Light=LightGray, Dark=#444444}"
+                   CornerRadius="8"
+                   Padding="15">
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label FontSize="Medium"
+                           FontAttributes="Bold">
+                        <Label.Text>
+                            <Binding Path="[Settings_ThemeLabel]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Label.Text>
+                    </Label>
+                    
+                    <Picker ItemsSource="{Binding AvailableThemes}"
+                            SelectedItem="{Binding SelectedTheme, Mode=TwoWay}">
+                        <Picker.Title>
+                            <Binding Path="[Settings_ThemePickerTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        </Picker.Title>
+                    </Picker>
+                    
+                    <Label FontSize="Small"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=#BBBBBB}">
+                        <Label.Text>
+                            <Binding Path="[Settings_ThemeHint]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
                         </Label.Text>
                     </Label>
                 </VerticalStackLayout>

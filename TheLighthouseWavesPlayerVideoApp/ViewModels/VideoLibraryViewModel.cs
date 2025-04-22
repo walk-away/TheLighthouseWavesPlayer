@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
-using System.Linq;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 {
@@ -17,7 +16,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         [ObservableProperty] ObservableCollection<VideoInfo> videos;
         [ObservableProperty] VideoInfo selectedVideo;
 
-        [ObservableProperty] string searchText;
+        [ObservableProperty] string searchText = string.Empty;
 
         [ObservableProperty] ObservableCollection<SortOption> sortOptions;
         [ObservableProperty] SortOption selectedSortOption;
@@ -27,12 +26,10 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             _videoDiscoveryService = videoDiscoveryService;
             _favoritesService = favoritesService;
             Title = "Video Library";
-            
-            // Initialize collections
+
             AllVideos = new ObservableCollection<VideoInfo>();
             Videos = new ObservableCollection<VideoInfo>();
-            
-            // Initialize sort options
+
             SortOptions = new ObservableCollection<SortOption>
             {
                 new SortOption("Title (A-Z)", "Title", true),
@@ -40,8 +37,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
                 new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
                 new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
             };
-            
-            // Set default sort option
+
             SelectedSortOption = SortOptions[0];
         }
 
@@ -57,36 +53,32 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 
         private void ApplyFilters()
         {
-            // Create a new filtered and sorted collection
             IEnumerable<VideoInfo> filteredVideos = AllVideos;
-            
-            // Apply search filter if search text is provided
+
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 string searchLower = SearchText.ToLowerInvariant();
-                filteredVideos = filteredVideos.Where(v => 
+                filteredVideos = filteredVideos.Where(v =>
                     v.Title?.ToLowerInvariant().Contains(searchLower) == true);
             }
-            
-            // Apply sorting
+
             if (SelectedSortOption != null)
             {
                 switch (SelectedSortOption.Property)
                 {
                     case "Title":
-                        filteredVideos = SelectedSortOption.IsAscending 
+                        filteredVideos = SelectedSortOption.IsAscending
                             ? filteredVideos.OrderBy(v => v.Title)
                             : filteredVideos.OrderByDescending(v => v.Title);
                         break;
                     case "DurationMilliseconds":
-                        filteredVideos = SelectedSortOption.IsAscending 
+                        filteredVideos = SelectedSortOption.IsAscending
                             ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
                             : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
                         break;
                 }
             }
-            
-            // Update the Videos collection
+
             Videos.Clear();
             foreach (var video in filteredVideos)
             {
@@ -95,7 +87,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         }
 
         [RelayCommand]
-        async Task LoadVideosAsync()
+        async Task LoadVideos()
         {
             if (IsBusy) return;
 
@@ -104,17 +96,20 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             {
                 AllVideos.Clear();
                 Videos.Clear();
-                
+
                 var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
                 if (discoveredVideos != null)
                 {
+                    var favoritePaths = await _favoritesService.GetFavoritesAsync();
+                    var favoritePathsSet = new HashSet<string>(favoritePaths.Select(f => f.FilePath));
+
                     foreach (var video in discoveredVideos)
                     {
+                        video.IsFavorite = favoritePathsSet.Contains(video.FilePath);
                         AllVideos.Add(video);
                     }
                 }
-                
-                // Apply filters to update the Videos collection
+
                 ApplyFilters();
             }
             catch (Exception ex)
@@ -134,9 +129,8 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             SearchText = string.Empty;
         }
 
-        // Keep existing commands
         [RelayCommand]
-        async Task GoToDetailsAsync(VideoInfo video)
+        async Task GoToDetails(VideoInfo video)
         {
             if (video == null || string.IsNullOrEmpty(video.FilePath))
                 return;
@@ -145,21 +139,23 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         }
 
         [RelayCommand]
-        async Task ToggleFavoriteAsync(VideoInfo video)
+        async Task ToggleFavorite(VideoInfo video)
         {
             if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
 
-            bool isCurrentlyFavorite = await _favoritesService.IsFavoriteAsync(video.FilePath);
-
             try
             {
-                if (isCurrentlyFavorite)
+                if (video.IsFavorite)
                 {
                     await _favoritesService.RemoveFavoriteAsync(video);
+                    video.IsFavorite = false;
+                    await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
                 }
                 else
                 {
                     await _favoritesService.AddFavoriteAsync(video);
+                    video.IsFavorite = true;
+                    await Shell.Current.DisplayAlert("Favorites", $"{video.Title} added to favorites.", "OK");
                 }
             }
             catch (Exception ex)
@@ -171,7 +167,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 
         public async Task OnAppearing()
         {
-            await LoadVideosAsync();
+            await LoadVideos();
         }
     }
 }

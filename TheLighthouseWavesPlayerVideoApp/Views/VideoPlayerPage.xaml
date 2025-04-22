@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -17,14 +16,14 @@
                     <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="True" />
                     <Setter TargetName="mediaElement" Property="Grid.Row" Value="1" />
                     <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="1" />
+
+                    <Setter Property="Shell.NavBarIsVisible" Value="True" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState Name="Landscape">
                 <VisualState.Setters>
-
                     <Setter TargetName="TitleLabel" Property="IsVisible" Value="False" />
                     <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="False" />
-
                     <Setter TargetName="mediaElement" Property="Grid.Row" Value="0" />
                     <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="3" />
 
@@ -50,6 +49,8 @@
                               ShouldShowPlaybackControls="True"
                               Aspect="AspectFit"
                               StateChanged="MediaElement_StateChanged"
+                              MediaOpened="MediaElement_MediaOpened"
+                              MediaEnded="MediaElement_MediaEnded"
                               Volume="1" />
 
 
@@ -78,7 +79,8 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter" TrueObject="Unfavorite"
+            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter"
+                                           TrueObject="Unfavorite"
                                            FalseObject="Favorite" />
         </ResourceDictionary>
     </ContentPage.Resources>

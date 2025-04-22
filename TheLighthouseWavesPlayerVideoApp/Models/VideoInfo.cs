@@ -12,6 +12,9 @@ public partial class VideoInfo : ObservableObject
     public string FilePath { get; set; } = null!;
     public string? ThumbnailPath { get; set; }
     public long DurationMilliseconds { get; set; }
+    
+    [ObservableProperty]
+    private bool isFavorite;
 
     [Ignore] public TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMilliseconds);
 }
