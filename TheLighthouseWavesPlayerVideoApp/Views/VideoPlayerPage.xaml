@@ -50,30 +50,29 @@
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
             </Border>
-
+            
             <!-- Video Info Overlay -->
             <Border IsVisible="{Binding IsVideoInfoVisible}"
-                    BackgroundColor="#80000000"
                     StrokeShape="RoundRectangle 10"
                     Padding="15"
                     HorizontalOptions="End"
                     VerticalOptions="Start"
-                    Margin="10">
+                    Margin="10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource OverlayBackgroundLight}, Dark={StaticResource OverlayBackgroundDark}}"
+                    StrokeThickness="0">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Video Information" 
-                           TextColor="White" 
-                           FontSize="16" 
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
-                    <BoxView HeightRequest="1" 
-                             BackgroundColor="White" 
-                             Opacity="0.5" 
-                             Margin="0,2,0,5"/>
-                    <Label Text="{Binding VideoInfo.FileName}" TextColor="White"/>
-                    <Label Text="{Binding VideoInfo.FormattedFileSize}" TextColor="White"/>
-                    <Label Text="{Binding VideoInfo.Resolution}" TextColor="White"/>
-                    <Label Text="{Binding VideoInfo.Duration, StringFormat='Duration: {0:hh\\:mm\\:ss}'}" TextColor="White"/>
-                    <Label Text="{Binding VideoInfo.LastModified, StringFormat='Modified: {0:d}'}" TextColor="White"/>
+                    <Label Text="Video Information" Style="{StaticResource OverlayHeaderLabelStyle}"/>
+                    
+                    <BoxView HeightRequest="1"
+                             Opacity="0.5"
+                             Margin="0,2,0,5"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource OverlayTextLight}, Dark={StaticResource OverlayTextDark}}"/>
+
+                    <Label Text="{Binding VideoInfo.FileName}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.FormattedFileSize}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.Resolution}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.Duration, StringFormat='Duration: {0:hh\\:mm\\:ss}'}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.LastModified, StringFormat='Modified: {0:d}'}" Style="{StaticResource OverlayLabelStyle}"/>
                 </VerticalStackLayout>
             </Border>
             
@@ -119,7 +118,6 @@
                     Command="{Binding ToggleVideoInfoCommand}"
                     Margin="5,0"
                     WidthRequest="50"
-                    BackgroundColor="{Binding IsVideoInfoVisible, Converter={StaticResource BoolToInfoButtonColorConverter}}"
                     ToolTipProperties.Text="Video Information" />
 
             <Button Grid.Column="4"
