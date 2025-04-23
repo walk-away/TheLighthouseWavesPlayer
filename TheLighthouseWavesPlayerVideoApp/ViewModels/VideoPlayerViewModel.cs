@@ -13,9 +13,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
 {
     private readonly IFavoritesService _favoritesService;
     private readonly ISubtitleService _subtitleService;
+    private readonly IScreenshotService _screenshotService;
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
-
+    [ObservableProperty]
+    VideoMetadata videoInfo = new VideoMetadata();
     [ObservableProperty] string filePath;
     [ObservableProperty] MediaSource videoSource;
     [ObservableProperty] MediaElementState currentState = MediaElementState.None;
@@ -26,12 +28,100 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] bool hasSubtitles = false;
     [ObservableProperty] bool areSubtitlesEnabled = true;
 
-    public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService)
+    public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService, 
+        IScreenshotService screenshotService)
     {
         _favoritesService = favoritesService;
         _subtitleService = subtitleService;
+        _screenshotService = screenshotService;
         Title = "Player";
     }
+    
+   public void UpdateVideoMetadata(double width, double height, TimeSpan duration)
+    {
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            System.Diagnostics.Debug.WriteLine("UpdateVideoMetadata skipped: FilePath is empty.");
+            return;
+        }
+        
+        if (width <= 0 || height <= 0 || duration <= TimeSpan.Zero)
+        {
+             System.Diagnostics.Debug.WriteLine($"UpdateVideoMetadata skipped: Invalid dimensions or duration (W:{width}, H:{height}, D:{duration}). Waiting for valid data.");
+             return;
+        }
+
+        try
+        {
+            var fileInfo = new FileInfo(FilePath);
+            VideoInfo = new VideoMetadata
+            {
+                FileName = Path.GetFileName(FilePath),
+                FilePath = FilePath,
+                FileSize = fileInfo.Length,
+                LastModified = fileInfo.LastWriteTime,
+                Resolution = $"{width}x{height}",
+                Duration = duration
+            };
+
+            System.Diagnostics.Debug.WriteLine($"Video metadata updated: {VideoInfo.FileName}, {VideoInfo.Resolution}, {VideoInfo.FormattedFileSize}, Duration: {VideoInfo.Duration}");
+        }
+        catch (FileNotFoundException fnfEx)
+        {
+             System.Diagnostics.Debug.WriteLine($"Error loading video metadata (File Not Found): {fnfEx.Message}");
+             VideoInfo = new VideoMetadata { FileName = "Error: File not found" };
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading video metadata: {ex.Message}");
+            VideoInfo = new VideoMetadata { FileName = "Error loading metadata" };
+        }
+    }
+    
+    [ObservableProperty] bool isVideoInfoVisible = false;
+
+    [RelayCommand]
+    void ToggleVideoInfo()
+    {
+        IsVideoInfoVisible = !IsVideoInfoVisible;
+    }
+
+    [RelayCommand]
+    async Task CaptureScreenshot()
+    {
+        if (MediaElement == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Media player not ready.", "OK");
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+
+            string filePathOrUri = await _screenshotService.CaptureScreenshotAsync(MediaElement);
+            
+            await Shell.Current.DisplayAlert("Success",
+                $"Screenshot saved to gallery", "OK");
+        }
+        catch (UnauthorizedAccessException authEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Screenshot permission error: {authEx.Message}");
+            await Shell.Current.DisplayAlert("Permission Error", "Storage permission is required to save screenshots to the gallery. Please grant permission in app settings.", "OK");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Screenshot error: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Failed to take screenshot.", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    [ObservableProperty]
+    private MediaElement mediaElement;
 
     async partial void OnFilePathChanged(string value)
     {

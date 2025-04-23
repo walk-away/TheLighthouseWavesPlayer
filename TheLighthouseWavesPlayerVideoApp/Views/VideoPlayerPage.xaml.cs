@@ -63,6 +63,14 @@ public partial class VideoPlayerPage : ContentPage
     private async void MediaElement_MediaOpened(object sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
+        
+        if (_viewModel != null)
+        {
+            _viewModel.MediaElement = mediaElement;
+            
+            _viewModel.UpdateVideoMetadata(mediaElement.Width, mediaElement.Height, mediaElement.Duration);
+        }
+        
         if (_viewModel != null && _viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
         {
             bool resume = await DisplayAlert("Resume Playback?",
