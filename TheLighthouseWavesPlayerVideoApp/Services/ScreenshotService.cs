@@ -11,9 +11,12 @@ using Android.Content;
 using Android.Provider;
 using Android.OS;
 using Android.Graphics;
+using Android.Views;
 using Application = Android.App.Application;
 using Environment = Android.OS.Environment;
 using Uri = Android.Net.Uri;
+using CommunityToolkit.Maui.Core.Handlers;
+using Microsoft.Maui.Platform;
 #endif
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
@@ -28,36 +31,28 @@ public class ScreenshotService : IScreenshotService
 #if ANDROID
         try
         {
-            if (Build.VERSION.SdkInt <= BuildVersionCodes.P)
+            Bitmap? videoFrameBitmap = await TryCaptureVideoFrameAsync(mediaElement);
+
+            if (videoFrameBitmap != null)
             {
-                var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
-                if (status != PermissionStatus.Granted)
+                System.Diagnostics.Debug.WriteLine("Successfully captured video frame.");
+                string fileName = $"VideoFrame_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
+                try
                 {
-                    System.Diagnostics.Debug.WriteLine("Requesting StorageWrite permission for Android 9 or older.");
-                    status = await Permissions.RequestAsync<Permissions.StorageWrite>();
-                    if (status != PermissionStatus.Granted)
-                    {
-                        System.Diagnostics.Debug.WriteLine("StorageWrite permission denied (Android 9 or older).");
-                        throw new UnauthorizedAccessException("Storage permission is required for older Android versions to save screenshots to gallery.");
-                    }
+                    string savedPath = await SaveBitmapToGalleryUsingMediaStoreAsync(videoFrameBitmap, fileName);
+                    System.Diagnostics.Debug.WriteLine($"Video frame saved via MediaStore: {savedPath}");
+                    return savedPath;
+                }
+                finally
+                {
+                    videoFrameBitmap.Recycle();
                 }
             }
-
-            var screenshot = await Screenshot.CaptureAsync();
-            if (screenshot == null)
+            else
             {
-                System.Diagnostics.Debug.WriteLine("Screenshot.CaptureAsync returned null.");
-                throw new InvalidOperationException("Failed to capture screenshot.");
+                System.Diagnostics.Debug.WriteLine("Failed to capture video frame directly. Falling back to screen capture.");
+                return await CaptureScreenFallbackAsync();
             }
-
-            System.Diagnostics.Debug.WriteLine("Screenshot captured successfully.");
-
-            string fileName = $"Screenshot_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
-            string savedPath = await SaveScreenshotToGalleryUsingMediaStoreAsync(screenshot, fileName);
-
-            System.Diagnostics.Debug.WriteLine($"Screenshot saved via MediaStore: {savedPath}");
-            return savedPath;
-
         }
         catch (Exception ex)
         {
@@ -65,31 +60,129 @@ public class ScreenshotService : IScreenshotService
             throw;
         }
 #else
-        System.Diagnostics.Debug.WriteLine("Screenshot capture is only implemented for Android in this service.");
-        await Task.CompletedTask;
-        throw new PlatformNotSupportedException("Screenshot capture is only implemented for Android.");
+        // Для других платформ или если Android не определен, используем стандартный скриншот
+        System.Diagnostics.Debug.WriteLine("Platform is not Android. Using standard screen capture.");
+        return await CaptureScreenFallbackAsync();
 #endif
     }
 
 #if ANDROID
-    private async Task<string> SaveScreenshotToGalleryUsingMediaStoreAsync(IScreenshotResult screenshot, string fileName)
+
+    private async Task<Bitmap?> TryCaptureVideoFrameAsync(MediaElement mediaElement)
+    {
+        if (Build.VERSION.SdkInt < BuildVersionCodes.N)
+        {
+            System.Diagnostics.Debug.WriteLine("PixelCopy requires Android API 24+. Frame capture skipped.");
+            return null;
+        }
+
+        Android.Views.View? platformView = mediaElement.Handler?.PlatformView as Android.Views.View;
+        if (platformView == null)
+        {
+            System.Diagnostics.Debug.WriteLine("Could not get PlatformView from MediaElement Handler.");
+            return null;
+        }
+        
+        SurfaceView? surfaceView = FindSurfaceView(platformView);
+
+        if (surfaceView == null || surfaceView.Holder?.Surface == null || !surfaceView.Holder.Surface.IsValid || surfaceView.Width <= 0 || surfaceView.Height <= 0)
+        {
+            System.Diagnostics.Debug.WriteLine("Suitable SurfaceView not found or not ready for PixelCopy.");
+            return null;
+        }
+
+        Bitmap? bitmap = null;
+        try
+        {
+            bitmap = Bitmap.CreateBitmap(surfaceView.Width, surfaceView.Height, Bitmap.Config.Argb8888!);
+            if (bitmap == null)
+            {
+                 System.Diagnostics.Debug.WriteLine("Failed to create Bitmap for PixelCopy.");
+                 return null;
+            }
+
+            var listener = new PixelCopyListener();
+            var tcs = new TaskCompletionSource<bool>();
+            listener.TaskCompletionSource = tcs;
+            
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                try
+                {
+                    PixelCopy.Request(surfaceView.Holder.Surface, bitmap, listener, surfaceView.Handler ?? platformView.Handler);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"PixelCopy.Request failed: {ex.Message}");
+                    tcs.TrySetResult(false);
+                }
+            });
+
+            bool success = await tcs.Task;
+
+            if (success)
+            {
+                System.Diagnostics.Debug.WriteLine("PixelCopy successful.");
+                return bitmap;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("PixelCopy failed.");
+                bitmap.Recycle();
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error during PixelCopy attempt: {ex}");
+            bitmap?.Recycle();
+            return null;
+        }
+    }
+    
+    private SurfaceView? FindSurfaceView(Android.Views.View parent)
+    {
+        if (parent is SurfaceView sv)
+        {
+            return sv;
+        }
+        if (parent is ViewGroup vg)
+        {
+            for (int i = 0; i < vg.ChildCount; i++)
+            {
+                var child = vg.GetChildAt(i);
+                var found = FindSurfaceView(child);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+    
+    private class PixelCopyListener : Java.Lang.Object, PixelCopy.IOnPixelCopyFinishedListener
+    {
+        public TaskCompletionSource<bool>? TaskCompletionSource { get; set; }
+
+        public void OnPixelCopyFinished(int copyResult)
+        {
+            System.Diagnostics.Debug.WriteLine($"PixelCopy finished with result: {copyResult}");
+            TaskCompletionSource?.TrySetResult(copyResult == (int)PixelCopyResult.Success);
+        }
+    }
+    
+    private async Task<string> SaveBitmapToGalleryUsingMediaStoreAsync(Bitmap bitmap, string fileName)
     {
         Uri? imageUri = null;
         Stream? outputStream = null;
-        Stream? inputStream = null;
-        ContentResolver? contentResolver = Application.Context.ContentResolver; // Get resolver once
+        ContentResolver? contentResolver = Application.Context.ContentResolver;
 
-        if (contentResolver == null)
-        {
-             throw new InvalidOperationException("ContentResolver is null.");
-        }
+        if (contentResolver == null) throw new InvalidOperationException("ContentResolver is null.");
 
         try
         {
             ContentValues values = new ContentValues();
             values.Put(MediaStore.IMediaColumns.DisplayName, fileName);
             values.Put(MediaStore.IMediaColumns.MimeType, "image/jpeg");
-            
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
             {
                 values.Put(MediaStore.IMediaColumns.RelativePath, Path.Combine(Environment.DirectoryPictures, "VideoPlayerScreenshots"));
@@ -98,61 +191,114 @@ public class ScreenshotService : IScreenshotService
             }
             else
             {
-                string directory = Path.Combine(
-                    Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures).AbsolutePath,
-                    "VideoPlayerScreenshots");
-                
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
+                string directory = Path.Combine(Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures).AbsolutePath, "VideoPlayerScreenshots");
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
                 string filePath = Path.Combine(directory, fileName);
                 values.Put(MediaStore.IMediaColumns.Data, filePath);
                 imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
             }
 
-
-            if (imageUri == null)
-            {
-                throw new IOException("Failed to create new MediaStore record.");
-            }
-            System.Diagnostics.Debug.WriteLine($"MediaStore URI created/found: {imageUri}");
+            if (imageUri == null) throw new IOException("Failed to create new MediaStore record for Bitmap.");
 
             outputStream = contentResolver.OpenOutputStream(imageUri);
-            if (outputStream == null)
-            {
-                throw new IOException($"Failed to get output stream for URI: {imageUri}");
-            }
+            if (outputStream == null) throw new IOException($"Failed to get output stream for Bitmap URI: {imageUri}");
 
-            inputStream = await screenshot.OpenReadAsync();
-            await inputStream.CopyToAsync(outputStream);
+            bool success = bitmap.Compress(Bitmap.CompressFormat.Jpeg, 95, outputStream);
+            if (!success) throw new IOException("Failed to compress Bitmap.");
+
             await outputStream.FlushAsync();
-            System.Diagnostics.Debug.WriteLine($"Screenshot data copied to MediaStore URI.");
-            
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
             {
                 values.Clear();
                 values.Put(MediaStore.IMediaColumns.IsPending, 0);
-                var updatedRows = contentResolver.Update(imageUri, values, null, null);
-                System.Diagnostics.Debug.WriteLine($"MediaStore entry updated (IsPending=0): {updatedRows} rows affected.");
+                contentResolver.Update(imageUri, values, null, null);
             }
 
             return imageUri.ToString();
         }
         catch(Exception ex)
         {
-             System.Diagnostics.Debug.WriteLine($"Error saving to MediaStore: {ex}");
+             System.Diagnostics.Debug.WriteLine($"Error saving Bitmap to MediaStore: {ex}");
              if (imageUri != null && Build.VERSION.SdkInt >= BuildVersionCodes.Q)
              {
-                 try
-                 {
-                     contentResolver.Delete(imageUri, null, null);
-                     System.Diagnostics.Debug.WriteLine($"Attempted to delete pending MediaStore entry: {imageUri}");
-                 }
-                 catch(Exception deleteEx)
-                 {
-                     System.Diagnostics.Debug.WriteLine($"Error deleting pending MediaStore entry: {deleteEx.Message}");
-                 }
+                 try { contentResolver.Delete(imageUri, null, null); } catch { /* Ignore delete error */ }
+             }
+             throw;
+        }
+        finally
+        {
+            outputStream?.Close();
+        }
+    }
+    
+    private async Task<string> CaptureScreenFallbackAsync()
+    {
+        var screenshot = await Screenshot.CaptureAsync();
+        if (screenshot == null)
+        {
+            System.Diagnostics.Debug.WriteLine("Fallback screen capture failed (Screenshot.CaptureAsync returned null).");
+            throw new InvalidOperationException("Failed to capture screen.");
+        }
+        System.Diagnostics.Debug.WriteLine("Captured screen as fallback.");
+        string fileName = $"Screen_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
+        return await SaveScreenshotResultToGalleryUsingMediaStoreAsync(screenshot, fileName);
+    }
+    
+    private async Task<string> SaveScreenshotResultToGalleryUsingMediaStoreAsync(IScreenshotResult screenshot, string fileName)
+    {
+        Uri? imageUri = null;
+        Stream? outputStream = null;
+        Stream? inputStream = null;
+        ContentResolver? contentResolver = Application.Context.ContentResolver;
+
+        if (contentResolver == null) throw new InvalidOperationException("ContentResolver is null.");
+
+        try
+        {
+            ContentValues values = new ContentValues();
+            values.Put(MediaStore.IMediaColumns.DisplayName, fileName);
+            values.Put(MediaStore.IMediaColumns.MimeType, "image/jpeg");
+            
+             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+            {
+                values.Put(MediaStore.IMediaColumns.RelativePath, Path.Combine(Environment.DirectoryPictures, "VideoPlayerScreenshots"));
+                values.Put(MediaStore.IMediaColumns.IsPending, 1);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+            }
+            else
+            {
+                string directory = Path.Combine(Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures).AbsolutePath, "VideoPlayerScreenshots");
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                string filePath = Path.Combine(directory, fileName);
+                values.Put(MediaStore.IMediaColumns.Data, filePath);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+            }
+
+            if (imageUri == null) throw new IOException("Failed to create new MediaStore record for ScreenshotResult.");
+
+            outputStream = contentResolver.OpenOutputStream(imageUri);
+            if (outputStream == null) throw new IOException($"Failed to get output stream for ScreenshotResult URI: {imageUri}");
+
+            inputStream = await screenshot.OpenReadAsync();
+            await inputStream.CopyToAsync(outputStream);
+            await outputStream.FlushAsync();
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+            {
+                values.Clear();
+                values.Put(MediaStore.IMediaColumns.IsPending, 0);
+                contentResolver.Update(imageUri, values, null, null);
+            }
+
+            return imageUri.ToString();
+        }
+        catch(Exception ex)
+        {
+             System.Diagnostics.Debug.WriteLine($"Error saving ScreenshotResult to MediaStore: {ex}");
+             if (imageUri != null && Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+             {
+                 try { contentResolver.Delete(imageUri, null, null); } catch { /* Ignore delete error */ }
              }
              throw;
         }
@@ -162,5 +308,6 @@ public class ScreenshotService : IScreenshotService
             outputStream?.Close();
         }
     }
+
 #endif
 }
