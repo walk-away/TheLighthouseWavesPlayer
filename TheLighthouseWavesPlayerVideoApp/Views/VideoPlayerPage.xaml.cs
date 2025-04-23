@@ -8,6 +8,7 @@ public partial class VideoPlayerPage : ContentPage
 {
     private readonly VideoPlayerViewModel _viewModel;
     private bool _isSeekingFromResume = false;
+    private DateTime _lastSubtitleUpdate = DateTime.MinValue;
 
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
@@ -49,6 +50,15 @@ public partial class VideoPlayerPage : ContentPage
         }
     }
 
+    private void MediaElement_PositionChanged(object sender, MediaPositionChangedEventArgs e)
+    {
+        var now = DateTime.UtcNow;
+        if ((now - _lastSubtitleUpdate).TotalMilliseconds > 100)
+        {
+            _viewModel?.UpdateSubtitles(e.Position);
+            _lastSubtitleUpdate = now;
+        }
+    }
 
     private async void MediaElement_MediaOpened(object sender, EventArgs e)
     {
@@ -82,7 +92,6 @@ public partial class VideoPlayerPage : ContentPage
         _viewModel?.ClearSavedPosition();
     }
 
-
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         var currentPosition = mediaElement.Position;
@@ -98,6 +107,7 @@ public partial class VideoPlayerPage : ContentPage
         mediaElement.StateChanged -= MediaElement_StateChanged;
         mediaElement.MediaOpened -= MediaElement_MediaOpened;
         mediaElement.MediaEnded -= MediaElement_MediaEnded;
+        mediaElement.PositionChanged -= MediaElement_PositionChanged;
 
         base.OnNavigatedFrom(args);
     }
@@ -114,7 +124,8 @@ public partial class VideoPlayerPage : ContentPage
         mediaElement.MediaOpened += MediaElement_MediaOpened;
         mediaElement.MediaEnded -= MediaElement_MediaEnded;
         mediaElement.MediaEnded += MediaElement_MediaEnded;
-
+        mediaElement.PositionChanged -= MediaElement_PositionChanged;
+        mediaElement.PositionChanged += MediaElement_PositionChanged;
 
         if (_viewModel != null)
         {

@@ -41,6 +41,7 @@ public static class MauiProgram
         
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
         builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
+        builder.Services.AddSingleton<ISubtitleService, SubtitleService>();
         
         builder.Services.AddTransient<VideoPlayerViewModel>();
         builder.Services.AddSingleton<VideoLibraryViewModel>();

@@ -12,24 +12,24 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 public partial class VideoPlayerViewModel : BaseViewModel
 {
     private readonly IFavoritesService _favoritesService;
+    private readonly ISubtitleService _subtitleService;
     private const string PositionPreferenceKeyPrefix = "lastpos_";
+    private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
 
     [ObservableProperty] string filePath;
-
     [ObservableProperty] MediaSource videoSource;
-
     [ObservableProperty] MediaElementState currentState = MediaElementState.None;
-
     [ObservableProperty] bool isFavorite;
-
     [ObservableProperty] bool shouldResumePlayback = false;
-
     [ObservableProperty] TimeSpan resumePosition = TimeSpan.Zero;
+    [ObservableProperty] string currentSubtitleText = string.Empty;
+    [ObservableProperty] bool hasSubtitles = false;
+    [ObservableProperty] bool areSubtitlesEnabled = true;
 
-
-    public VideoPlayerViewModel(IFavoritesService favoritesService)
+    public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService)
     {
         _favoritesService = favoritesService;
+        _subtitleService = subtitleService;
         Title = "Player";
     }
 
@@ -40,8 +40,8 @@ public partial class VideoPlayerViewModel : BaseViewModel
             VideoSource = MediaSource.FromFile(value);
             Title = Path.GetFileName(value);
             await CheckFavoriteStatusAsync();
-
             CheckForSavedPosition();
+            await LoadSubtitlesAsync();
         }
         else
         {
@@ -51,6 +51,47 @@ public partial class VideoPlayerViewModel : BaseViewModel
             CurrentState = MediaElementState.None;
             ShouldResumePlayback = false;
             ResumePosition = TimeSpan.Zero;
+            CurrentSubtitleText = string.Empty;
+            HasSubtitles = false;
+        }
+    }
+
+    private async Task LoadSubtitlesAsync()
+    {
+        if (string.IsNullOrEmpty(FilePath)) return;
+
+        string directory = Path.GetDirectoryName(FilePath) ?? string.Empty;
+        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(FilePath);
+        string srtFilePath = Path.Combine(directory, $"{fileNameWithoutExt}.srt");
+
+        _subtitles = await _subtitleService.LoadSubtitlesAsync(srtFilePath);
+        HasSubtitles = _subtitles.Count > 0;
+
+        if (HasSubtitles)
+        {
+            System.Diagnostics.Debug.WriteLine($"Loaded {_subtitles.Count} subtitles from {srtFilePath}");
+        }
+    }
+
+    public void UpdateSubtitles(TimeSpan position)
+    {
+        if (!HasSubtitles || !AreSubtitlesEnabled)
+        {
+            CurrentSubtitleText = string.Empty;
+            return;
+        }
+
+        var subtitle = _subtitles.FirstOrDefault(s => s.IsActiveAt(position));
+        CurrentSubtitleText = subtitle?.Text ?? string.Empty;
+    }
+
+    [RelayCommand]
+    void ToggleSubtitles()
+    {
+        AreSubtitlesEnabled = !AreSubtitlesEnabled;
+        if (!AreSubtitlesEnabled)
+        {
+            CurrentSubtitleText = string.Empty;
         }
     }
 

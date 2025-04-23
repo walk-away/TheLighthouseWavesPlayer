@@ -16,7 +16,6 @@
                     <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="True" />
                     <Setter TargetName="mediaElement" Property="Grid.Row" Value="1" />
                     <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="1" />
-
                     <Setter Property="Shell.NavBarIsVisible" Value="True" />
                 </VisualState.Setters>
             </VisualState>
@@ -26,7 +25,6 @@
                     <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="False" />
                     <Setter TargetName="mediaElement" Property="Grid.Row" Value="0" />
                     <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="3" />
-
                     <Setter Property="Shell.NavBarIsVisible" Value="False" />
                 </VisualState.Setters>
             </VisualState>
@@ -42,7 +40,9 @@
                HorizontalOptions="Center"
                Margin="10" />
 
-        <toolkit:MediaElement Grid.Row="1"
+        <Grid Grid.Row="1">
+            <!-- Media Element -->
+            <toolkit:MediaElement Grid.Row="1"
                               x:Name="mediaElement"
                               Source="{Binding VideoSource}"
                               ShouldAutoPlay="False"
@@ -51,12 +51,29 @@
                               StateChanged="MediaElement_StateChanged"
                               MediaOpened="MediaElement_MediaOpened"
                               MediaEnded="MediaElement_MediaEnded"
+                              PositionChanged="MediaElement_PositionChanged"
                               Volume="1" />
 
+            <!-- Subtitle overlay -->
+            <Border IsVisible="{Binding HasSubtitles}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="End"
+                   Margin="0,0,0,20"
+                   StrokeShape="RoundRectangle 10"
+                   BackgroundColor="#80000000"
+                   Padding="10,5"
+                   MaximumWidthRequest="600">
+                <Label Text="{Binding CurrentSubtitleText}" 
+                       TextColor="White" 
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+            </Border>
+        </Grid>
 
         <Grid Grid.Row="2"
               x:Name="BottomControlsGrid"
-              ColumnDefinitions="*, Auto"
+              ColumnDefinitions="*, Auto, Auto"
               Margin="10"
               Padding="10,0"
               VerticalOptions="Center">
@@ -69,9 +86,19 @@
                     VerticalOptions="Center" />
 
             <Button Grid.Column="1"
+                    Text="CC"
+                    Command="{Binding ToggleSubtitlesCommand}"
+                    IsVisible="{Binding HasSubtitles}"
+                    Margin="10,0"
+                    WidthRequest="50"
+                    BackgroundColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
+                    TextColor="White"
+                    HorizontalOptions="End" />
+
+            <Button Grid.Column="2"
                     Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
                     Command="{Binding ToggleFavoriteCommand}"
-                    Margin="10,0,0,0"
+                    Margin="0,0,0,0"
                     HorizontalOptions="End" />
         </Grid>
 
@@ -80,8 +107,12 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter"
-                                           TrueObject="Unfavorite"
-                                           FalseObject="Favorite" />
+                                          TrueObject="Unfavorite"
+                                          FalseObject="Favorite" />
+                                          
+            <toolkit:BoolToObjectConverter x:Key="BoolToSubtitleButtonColorConverter"
+                                          TrueObject="#008080"
+                                          FalseObject="#808080" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
