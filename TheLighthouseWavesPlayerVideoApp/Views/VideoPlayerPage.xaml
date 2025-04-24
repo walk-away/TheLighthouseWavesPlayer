@@ -9,40 +9,13 @@
              Shell.NavBarIsVisible="True">
 
     <VisualStateManager.VisualStateGroups>
-        <VisualStateGroup Name="OrientationStates">
-            <VisualState Name="Portrait">
-                <VisualState.Setters>
-                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="True" />
-                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="True" />
-                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="1" />
-                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="1" />
-
-                    <Setter Property="Shell.NavBarIsVisible" Value="True" />
-                </VisualState.Setters>
-            </VisualState>
-            <VisualState Name="Landscape">
-                <VisualState.Setters>
-                    <Setter TargetName="TitleLabel" Property="IsVisible" Value="False" />
-                    <Setter TargetName="BottomControlsGrid" Property="IsVisible" Value="False" />
-                    <Setter TargetName="mediaElement" Property="Grid.Row" Value="0" />
-                    <Setter TargetName="mediaElement" Property="Grid.RowSpan" Value="3" />
-
-                    <Setter Property="Shell.NavBarIsVisible" Value="False" />
-                </VisualState.Setters>
-            </VisualState>
-        </VisualStateGroup>
+        <!-- Existing visual states -->
     </VisualStateManager.VisualStateGroups>
 
     <Grid RowDefinitions="Auto, *, Auto">
-
-        <Label Grid.Row="0"
-               x:Name="TitleLabel"
-               Text="{Binding Title}"
-               FontSize="Large"
-               HorizontalOptions="Center"
-               Margin="10" />
-
-        <toolkit:MediaElement Grid.Row="1"
+        <Grid Grid.Row="1">
+            <!-- Media Element -->
+            <toolkit:MediaElement Grid.Row="1"
                               x:Name="mediaElement"
                               Source="{Binding VideoSource}"
                               ShouldAutoPlay="False"
@@ -51,12 +24,60 @@
                               StateChanged="MediaElement_StateChanged"
                               MediaOpened="MediaElement_MediaOpened"
                               MediaEnded="MediaElement_MediaEnded"
+                              PositionChanged="MediaElement_PositionChanged"
                               Volume="1" />
 
+            <!-- Subtitle overlay -->
+            <Border IsVisible="{Binding HasSubtitles}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="End"
+                   Margin="0,0,0,20"
+                   StrokeShape="RoundRectangle 10"
+                   BackgroundColor="#80000000"
+                   Padding="10,5"
+                   MaximumWidthRequest="600">
+                <Label Text="{Binding CurrentSubtitleText}" 
+                       TextColor="White" 
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+            </Border>
+            
+            <!-- Video Info Overlay -->
+            <Border IsVisible="{Binding IsVideoInfoVisible}"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="15"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Margin="10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource OverlayBackgroundLight}, Dark={StaticResource OverlayBackgroundDark}}"
+                    StrokeThickness="0">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Video Information" Style="{StaticResource OverlayHeaderLabelStyle}"/>
+                    
+                    <BoxView HeightRequest="1"
+                             Opacity="0.5"
+                             Margin="0,2,0,5"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource OverlayTextLight}, Dark={StaticResource OverlayTextDark}}"/>
+
+                    <Label Text="{Binding VideoInfo.FileName}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.FormattedFileSize}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.Resolution}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.Duration, StringFormat='Duration: {0:hh\\:mm\\:ss}'}" Style="{StaticResource OverlayLabelStyle}"/>
+                    <Label Text="{Binding VideoInfo.LastModified, StringFormat='Modified: {0:d}'}" Style="{StaticResource OverlayLabelStyle}"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Loading overlay -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             IsVisible="{Binding IsBusy}"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"/>
+        </Grid>
 
         <Grid Grid.Row="2"
               x:Name="BottomControlsGrid"
-              ColumnDefinitions="*, Auto"
+              ColumnDefinitions="*, Auto, Auto, Auto, Auto"
               Margin="10"
               Padding="10,0"
               VerticalOptions="Center">
@@ -69,10 +90,32 @@
                     VerticalOptions="Center" />
 
             <Button Grid.Column="1"
+                    Text="CC"
+                    Command="{Binding ToggleSubtitlesCommand}"
+                    IsVisible="{Binding HasSubtitles}"
+                    Margin="5,0"
+                    WidthRequest="50"
+                    BackgroundColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
+                    TextColor="White" />
+
+            <Button Grid.Column="2"
+                    Text="📷"
+                    Command="{Binding CaptureScreenshotCommand}"
+                    Margin="5,0"
+                    WidthRequest="50"
+                    ToolTipProperties.Text="Take Screenshot" />
+
+            <Button Grid.Column="3"
+                    Text="ℹ️"
+                    Command="{Binding ToggleVideoInfoCommand}"
+                    Margin="5,0"
+                    WidthRequest="50"
+                    ToolTipProperties.Text="Video Information" />
+
+            <Button Grid.Column="4"
                     Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
                     Command="{Binding ToggleFavoriteCommand}"
-                    Margin="10,0,0,0"
-                    HorizontalOptions="End" />
+                    Margin="5,0,0,0" />
         </Grid>
 
     </Grid>
@@ -80,8 +123,16 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter"
-                                           TrueObject="Unfavorite"
-                                           FalseObject="Favorite" />
+                                          TrueObject="Unfavorite"
+                                          FalseObject="Favorite" />
+                                          
+            <toolkit:BoolToObjectConverter x:Key="BoolToSubtitleButtonColorConverter"
+                                          TrueObject="#008080"
+                                          FalseObject="#808080" />
+                                          
+            <toolkit:BoolToObjectConverter x:Key="BoolToInfoButtonColorConverter"
+                                          TrueObject="#008080"
+                                          FalseObject="#808080" />
         </ResourceDictionary>
     </ContentPage.Resources>
 

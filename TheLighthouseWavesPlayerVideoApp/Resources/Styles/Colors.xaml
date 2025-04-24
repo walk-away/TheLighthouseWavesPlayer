@@ -63,4 +63,11 @@
     <SolidColorBrush x:Key="Gray700Brush" Color="{StaticResource Gray700}"/>
     <SolidColorBrush x:Key="Gray800Brush" Color="{StaticResource Gray800}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
+    
+    
+    
+    <Color x:Key="OverlayTextLight">#1E1E1E</Color>  
+    <Color x:Key="OverlayTextDark">#D0FFFFFF</Color>    
+    <Color x:Key="OverlayBackgroundLight">#D0FFFFFF</Color> 
+    <Color x:Key="OverlayBackgroundDark">#1E1E1E</Color> 
 </ResourceDictionary>

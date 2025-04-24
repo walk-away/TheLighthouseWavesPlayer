@@ -243,4 +243,16 @@
                     Opacity="0.2" />
         </Setter>
     </Style>
+    
+    
+    <Style x:Key="OverlayLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OverlayTextLight}, Dark={StaticResource OverlayTextDark}}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    
+    <Style x:Key="OverlayHeaderLabelStyle" TargetType="Label" BasedOn="{StaticResource OverlayLabelStyle}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+    </Style>
 </ResourceDictionary>

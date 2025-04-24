@@ -32,12 +32,6 @@ google-services.json
 # Android Profiling
 *.hprof
 
-TheLighthouseWavesPlayerApp/bin/
-TheLighthouseWavesPlayerApp/obj/
-
-TheLighthouseWavesPlayer.Core/bin/
-TheLighthouseWavesPlayer.Core/obj/
-
 TheLighthouseWavesPlayer.Localization/bin/
 TheLighthouseWavesPlayer.Localization/obj/
 

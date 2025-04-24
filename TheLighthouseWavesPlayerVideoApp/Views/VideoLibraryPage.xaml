@@ -127,9 +127,8 @@
                              <Button Style="{StaticResource RemoveFavoriteButton}"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                     CommandParameter="{Binding .}"
-                                    IsVisible="{Binding IsFavorite}"> <!-- No converter needed here -->
+                                    IsVisible="{Binding IsFavorite}">
                                 <Button.Text>
-                                    <!-- Make sure you have a corresponding resource key -->
                                     <Binding Path="[Library_RemoveFavorite]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
                                 </Button.Text>
                             </Button>
@@ -138,6 +137,10 @@
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+            
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
         </CollectionView>
         
         <ActivityIndicator Grid.Row="2"
