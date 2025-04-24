@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:SettingsViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.SettingsPage">
     
@@ -13,14 +14,16 @@
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
             
-            <Label FontSize="Large"
-                   FontAttributes="Bold"
+            <Image Source="edit.svg"
                    HorizontalOptions="Center"
-                   Margin="0,0,0,20">
-                <Label.Text>
-                    <Binding Path="[Settings_Header]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
-                </Label.Text>
-            </Label>
+                   Margin="0,0,0,20"
+                   HeightRequest="48" 
+                   WidthRequest="48"
+                   SemanticProperties.Description="{Binding Path=[Settings_Header], Source={x:Static localization:LocalizedResourcesProvider.Instance}}">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource White}}" /> 
+                </Image.Behaviors>
+            </Image> 
             
             <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D2D}"
                    BorderColor="{AppThemeBinding Light=LightGray, Dark=#444444}"
