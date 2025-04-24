@@ -13,14 +13,6 @@
     </VisualStateManager.VisualStateGroups>
 
     <Grid RowDefinitions="Auto, *, Auto">
-
-        <Label Grid.Row="0"
-               x:Name="TitleLabel"
-               Text="{Binding Title}"
-               FontSize="Large"
-               HorizontalOptions="Center"
-               Margin="10" />
-
         <Grid Grid.Row="1">
             <!-- Media Element -->
             <toolkit:MediaElement Grid.Row="1"
