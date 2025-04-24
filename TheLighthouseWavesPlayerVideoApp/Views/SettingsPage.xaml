@@ -20,9 +20,6 @@
                    HeightRequest="48" 
                    WidthRequest="48"
                    SemanticProperties.Description="{Binding Path=[Settings_Header], Source={x:Static localization:LocalizedResourcesProvider.Instance}}">
-                <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource White}}" /> 
-                </Image.Behaviors>
             </Image> 
             
             <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D2D}"

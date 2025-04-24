@@ -89,5 +89,6 @@
         <None Remove="Resources\Images\star.svg" />
         <None Remove="Resources\Images\film.svg" />
         <None Remove="Resources\Images\edit.svg" />
+        <None Remove="Resources\Images\trash.svg" />
     </ItemGroup>
 </Project>

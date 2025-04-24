@@ -5,9 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Modern Monochrome Color Palette -->
-    <Color x:Key="Primary">#1E1E1E</Color>             <!-- Accent blue -->
-    <Color x:Key="PrimaryDark">#FFFFFF</Color>
-    <Color x:Key="PrimaryLight">#1E1E1E</Color>
+    <Color x:Key="Primary">#1E1E1E</Color>             <!-- Dark accent -->
+    <Color x:Key="PrimaryDark">#000000</Color>         <!-- Darker version for dark theme -->
+    <Color x:Key="PrimaryLight">#3E3E3E</Color>        <!-- Lighter version of primary -->
     
     <Color x:Key="Surface">#FFFFFF</Color>             <!-- Pure white for surfaces -->
     <Color x:Key="Background">#F9F9F9</Color>          <!-- Off-white for backgrounds -->
@@ -18,7 +18,7 @@
     <Color x:Key="TextPrimary">#212121</Color>         <!-- Near black for text -->
     <Color x:Key="TextSecondary">#757575</Color>       <!-- Medium gray for secondary text -->
     <Color x:Key="TextHint">#9E9E9E</Color>            <!-- Light gray for hints/placeholders -->
-    <Color x:Key="TextPrimaryDark">#212121</Color>     <!-- White text for dark mode -->
+    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>     <!-- White text for dark mode -->
     <Color x:Key="TextSecondaryDark">#DADADA</Color>   <!-- Light gray text for dark mode -->
     
     <!-- System Colors -->
@@ -46,14 +46,23 @@
     
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}"/>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Background}"/>
+    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}"/>
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
+    <SolidColorBrush x:Key="TextPrimaryDarkBrush" Color="{StaticResource TextPrimaryDark}"/>
+    <SolidColorBrush x:Key="TextSecondaryDarkBrush" Color="{StaticResource TextSecondaryDark}"/>
     
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
     
+    <SolidColorBrush x:Key="Gray50Brush" Color="{StaticResource Gray50}"/>
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
     <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
@@ -63,11 +72,11 @@
     <SolidColorBrush x:Key="Gray700Brush" Color="{StaticResource Gray700}"/>
     <SolidColorBrush x:Key="Gray800Brush" Color="{StaticResource Gray800}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
+    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
     
-    
-    
+    <!-- Overlay Colors with Consistent Transparency -->
     <Color x:Key="OverlayTextLight">#1E1E1E</Color>  
-    <Color x:Key="OverlayTextDark">#D0FFFFFF</Color>    
-    <Color x:Key="OverlayBackgroundLight">#D0FFFFFF</Color> 
-    <Color x:Key="OverlayBackgroundDark">#1E1E1E</Color> 
+    <Color x:Key="OverlayTextDark">#FFFFFF</Color>    
+    <Color x:Key="OverlayBackgroundLight">#D0FFFFFF</Color> <!-- 82% opacity white -->
+    <Color x:Key="OverlayBackgroundDark">#D01E1E1E</Color>  <!-- 82% opacity dark -->
 </ResourceDictionary>

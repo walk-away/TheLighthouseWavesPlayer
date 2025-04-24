@@ -72,16 +72,12 @@
                                    TextColor="Gray" />
                         </StackLayout>
 
-                        <Button Grid.Column="1"
-                                FontSize="Micro"
-                                Padding="5" MinimumWidthRequest="70" HeightRequest="40"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
-                                CommandParameter="{Binding .}"
-                                VerticalOptions="Center">
-                            <Button.Text>
-                                <Binding Path="[Favorites_Remove]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
-                            </Button.Text>
-                        </Button>
+                        <ImageButton Grid.Column="1"
+                                     Source="trash.svg"
+                                     Padding="5" WidthRequest="44" HeightRequest="40"
+                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
+                                     CommandParameter="{Binding .}"
+                                     VerticalOptions="Center"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
