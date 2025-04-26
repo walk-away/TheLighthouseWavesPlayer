@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
@@ -15,7 +16,8 @@
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
 
             <Style x:Key="FavoriteButton" TargetType="Button" BasedOn="{StaticResource OutlineButton}">
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
                 <Setter Property="BackgroundColor" Value="Transparent" />
                 <Setter Property="FontSize" Value="Micro" />
                 <Setter Property="Padding" Value="5" />
@@ -35,13 +37,14 @@
     </ContentPage.Title>
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        
+
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
             <SearchBar Grid.Column="0"
                        Text="{Binding SearchText}"
                        HorizontalOptions="Fill">
                 <SearchBar.Placeholder>
-                    <Binding Path="[Library_Search]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Library_Search]"
+                             Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
                 </SearchBar.Placeholder>
             </SearchBar>
             <Button Grid.Column="1"
@@ -54,7 +57,7 @@
                 </Button.Text>
             </Button>
         </Grid>
-        
+
         <Grid Grid.Row="1" ColumnDefinitions="Auto, *" Margin="10,0,10,5">
             <Label Grid.Column="0"
                    VerticalOptions="Center">
@@ -69,14 +72,15 @@
                     HorizontalOptions="Fill"
                     Margin="5,0,0,0" />
         </Grid>
-        
+
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding Videos}"
                         SelectionMode="None">
             <CollectionView.EmptyView>
                 <Label HorizontalOptions="Center" VerticalOptions="Center">
                     <Label.Text>
-                        <Binding Path="[Library_NoVideos]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                        <Binding Path="[Library_NoVideos]"
+                                 Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
                     </Label.Text>
                 </Label>
             </CollectionView.EmptyView>
@@ -88,7 +92,7 @@
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=GoToDetailsCommand}"
                                 CommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
-                        
+
                         <Image Grid.Column="0"
                                Source="{Binding ThumbnailPath}"
                                Aspect="AspectFill"
@@ -100,7 +104,8 @@
                             </Image.Clip>
                             <Image.Triggers>
                                 <DataTrigger TargetType="Image" Binding="{Binding ThumbnailPath}" Value="{x:Null}">
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightGray, Dark=DarkGray}" />
+                                    <Setter Property="BackgroundColor"
+                                            Value="{AppThemeBinding Light=LightGray, Dark=DarkGray}" />
                                 </DataTrigger>
                             </Image.Triggers>
                         </Image>
@@ -115,40 +120,56 @@
                         <!-- Favorite Buttons Stack -->
                         <StackLayout Grid.Column="2" VerticalOptions="Center">
                             <!-- Add Favorite Button -->
-                            <Button Style="{StaticResource FavoriteButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
-                                    CommandParameter="{Binding .}"
-                                    IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                                <Button.Text>
-                                    <Binding Path="[Library_AddFavorite]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
-                                </Button.Text>
-                            </Button>
-                            
-                             <Button Style="{StaticResource RemoveFavoriteButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
-                                    CommandParameter="{Binding .}"
-                                    IsVisible="{Binding IsFavorite}">
-                                <Button.Text>
-                                    <Binding Path="[Library_RemoveFavorite]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
-                                </Button.Text>
-                            </Button>
+                            <Frame
+                                BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                BackgroundColor="Transparent"
+                                Padding="3"
+                                CornerRadius="8"
+                                HasShadow="False"
+                                IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
+                                <ImageButton Source="bookmark.png"
+                                             BackgroundColor="Transparent"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
+                                             CommandParameter="{Binding .}"
+                                             HeightRequest="28"
+                                             WidthRequest="28"
+                                             Padding="0"
+                                             Aspect="AspectFit" />
+                            </Frame>
+
+                            <Frame
+                                BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                BackgroundColor="Transparent"
+                                Padding="3"
+                                CornerRadius="8"
+                                HasShadow="False"
+                                IsVisible="{Binding IsFavorite}">
+                                <ImageButton Source="trash.png"
+                                             BackgroundColor="Transparent"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
+                                             CommandParameter="{Binding .}"
+                                             HeightRequest="28"
+                                             WidthRequest="28"
+                                             Padding="0"
+                                             Aspect="AspectFit" />
+                            </Frame>
                         </StackLayout>
 
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-            
+
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
             </CollectionView.ItemsLayout>
         </CollectionView>
-        
+
         <ActivityIndicator Grid.Row="2"
                            IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
-        
+
         <Button Grid.Row="3" Command="{Binding LoadVideosCommand}"
                 IsEnabled="{Binding IsNotBusy}" Margin="10">
             <Button.Text>

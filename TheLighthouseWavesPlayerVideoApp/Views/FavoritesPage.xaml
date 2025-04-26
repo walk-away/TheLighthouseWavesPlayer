@@ -72,12 +72,22 @@
                                    TextColor="Gray" />
                         </StackLayout>
 
-                        <ImageButton Grid.Column="1"
-                                     Source="trash.svg"
-                                     Padding="5" WidthRequest="44" HeightRequest="40"
-                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
-                                     CommandParameter="{Binding .}"
-                                     VerticalOptions="Center"/>
+                        <Frame Grid.Column="1"
+                               BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                               BackgroundColor="Transparent"
+                               Padding="3"
+                               CornerRadius="8"
+                               HasShadow="False"
+                               VerticalOptions="Center">
+                            <ImageButton Source="trash.png"
+                                         BackgroundColor="Transparent"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
+                                         CommandParameter="{Binding .}"
+                                         HeightRequest="28"
+                                         WidthRequest="28"
+                                         Padding="0"
+                                         Aspect="AspectFit" />
+                        </Frame>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
