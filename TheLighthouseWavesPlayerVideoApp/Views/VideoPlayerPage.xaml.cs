@@ -180,8 +180,7 @@ public partial class VideoPlayerPage : ContentPage
         _metadataRetryTimer?.Dispose();
         _metadataRetryTimer = null;
     }
-
-
+    
     private void MediaElement_MediaEnded(object sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");

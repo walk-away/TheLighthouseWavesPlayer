@@ -6,92 +6,90 @@ using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
-namespace TheLighthouseWavesPlayerVideoApp.ViewModels
+namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
+
+public partial class SettingsViewModel : BaseViewModel
 {
-    public partial class SettingsViewModel : BaseViewModel
+    private readonly ILocalizationManager _localizationManager;
+    private readonly IThemeService _themeService;
+    private readonly ILocalizedResourcesProvider _resourcesProvider;
+
+    [ObservableProperty] private ObservableCollection<LanguageOption> _availableLanguages;
+    [ObservableProperty] private LanguageOption _selectedLanguage;
+    [ObservableProperty] private ObservableCollection<ThemeOption> _availableThemes;
+    [ObservableProperty] private ThemeOption _selectedTheme;
+
+    public SettingsViewModel(
+        ILocalizationManager localizationManager,
+        IThemeService themeService,
+        ILocalizedResourcesProvider resourcesProvider)
     {
-        private readonly ILocalizationManager _localizationManager;
-        private readonly IThemeService _themeService;
-        private readonly ILocalizedResourcesProvider _resourcesProvider;
+        _localizationManager = localizationManager;
+        _themeService = themeService;
+        _resourcesProvider = resourcesProvider;
 
-        [ObservableProperty] private ObservableCollection<LanguageOption> _availableLanguages;
-        [ObservableProperty] private LanguageOption _selectedLanguage;
+        Title = resourcesProvider["Settings_PageTitle"];
 
-        [ObservableProperty] private ObservableCollection<ThemeOption> _availableThemes;
-        [ObservableProperty] private ThemeOption _selectedTheme;
-
-        public SettingsViewModel(
-            ILocalizationManager localizationManager,
-            IThemeService themeService,
-            ILocalizedResourcesProvider resourcesProvider)
+        AvailableLanguages = new ObservableCollection<LanguageOption>
         {
-            _localizationManager = localizationManager;
-            _themeService = themeService;
-            _resourcesProvider = resourcesProvider;
+            new LanguageOption { Name = "English", Culture = new CultureInfo("en-US") },
+            new LanguageOption { Name = "Русский", Culture = new CultureInfo("ru-RU") }
+        };
 
-            Title = resourcesProvider["Settings_PageTitle"];
+        var currentCulture = _localizationManager.GetUserCulture();
+        SelectedLanguage = AvailableLanguages.FirstOrDefault(l =>
+            l.Culture.Name == currentCulture.Name) ?? AvailableLanguages[0];
 
-            AvailableLanguages = new ObservableCollection<LanguageOption>
-            {
-                new LanguageOption { Name = "English", Culture = new CultureInfo("en-US") },
-                new LanguageOption { Name = "Русский", Culture = new CultureInfo("ru-RU") }
-            };
+        InitializeThemeOptions();
+        var currentTheme = _themeService.CurrentTheme;
+        SelectedTheme = AvailableThemes.FirstOrDefault(t =>
+            t.Theme == currentTheme) ?? AvailableThemes[0];
+    }
 
-            var currentCulture = _localizationManager.GetUserCulture();
-            SelectedLanguage = AvailableLanguages.FirstOrDefault(l =>
-                l.Culture.Name == currentCulture.Name) ?? AvailableLanguages[0];
-
-            InitializeThemeOptions();
-            var currentTheme = _themeService.CurrentTheme;
-            SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-                t.Theme == currentTheme) ?? AvailableThemes[0];
-        }
-
-        private void InitializeThemeOptions()
+    private void InitializeThemeOptions()
+    {
+        AvailableThemes = new ObservableCollection<ThemeOption>
         {
-            AvailableThemes = new ObservableCollection<ThemeOption>
-            {
-                new ThemeOption { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light },
-                new ThemeOption { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark },
-                new ThemeOption { Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified }
-            };
-        }
+            new ThemeOption { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light },
+            new ThemeOption { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark },
+            new ThemeOption { Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified }
+        };
+    }
 
-        partial void OnSelectedLanguageChanged(LanguageOption value)
+    partial void OnSelectedLanguageChanged(LanguageOption value)
+    {
+        if (value != null)
         {
-            if (value != null)
-            {
-                _localizationManager.UpdateUserCulture(value.Culture);
+            _localizationManager.UpdateUserCulture(value.Culture);
 
-                UpdateThemeOptionsLabels();
-            }
+            UpdateThemeOptionsLabels();
         }
+    }
 
-        partial void OnSelectedThemeChanged(ThemeOption value)
+    partial void OnSelectedThemeChanged(ThemeOption value)
+    {
+        if (value != null)
         {
-            if (value != null)
-            {
-                _themeService.SetTheme(value.Theme);
-            }
+            _themeService.SetTheme(value.Theme);
         }
+    }
 
-        private void UpdateThemeOptionsLabels()
+    private void UpdateThemeOptionsLabels()
+    {
+        if (AvailableThemes != null)
         {
-            if (AvailableThemes != null)
-            {
-                AvailableThemes[0].Name = _resourcesProvider["Settings_ThemeLight"];
-                AvailableThemes[1].Name = _resourcesProvider["Settings_ThemeDark"];
-                AvailableThemes[2].Name = _resourcesProvider["Settings_ThemeSystem"];
-            }
+            AvailableThemes[0].Name = _resourcesProvider["Settings_ThemeLight"];
+            AvailableThemes[1].Name = _resourcesProvider["Settings_ThemeDark"];
+            AvailableThemes[2].Name = _resourcesProvider["Settings_ThemeSystem"];
         }
+    }
 
-        [RelayCommand]
-        private void ResetSettings()
-        {
-            SelectedLanguage = AvailableLanguages[0];
+    [RelayCommand]
+    private void ResetSettings()
+    {
+        SelectedLanguage = AvailableLanguages[0];
 
-            SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-                t.Theme == AppTheme.Unspecified) ?? AvailableThemes[2];
-        }
+        SelectedTheme = AvailableThemes.FirstOrDefault(t =>
+            t.Theme == AppTheme.Unspecified) ?? AvailableThemes[2];
     }
 }

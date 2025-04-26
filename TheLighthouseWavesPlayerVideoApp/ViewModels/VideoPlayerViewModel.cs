@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
-using Microsoft.Maui.Storage;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
@@ -17,22 +16,22 @@ public partial class VideoPlayerViewModel : BaseViewModel
     private readonly IScreenshotService _screenshotService;
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
-    [ObservableProperty] VideoMetadata videoInfo = new VideoMetadata();
-    [ObservableProperty] string filePath;
-    [ObservableProperty] MediaSource videoSource;
-    [ObservableProperty] MediaElementState currentState = MediaElementState.None;
-    [ObservableProperty] bool isFavorite;
-    [ObservableProperty] bool shouldResumePlayback = false;
-    [ObservableProperty] TimeSpan resumePosition = TimeSpan.Zero;
-    [ObservableProperty] string currentSubtitleText = string.Empty;
-    [ObservableProperty] bool hasSubtitles = false;
-    [ObservableProperty] bool areSubtitlesEnabled = true;
+    [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
+    [ObservableProperty] string _filePath;
+    [ObservableProperty] MediaSource _videoSource;
+    [ObservableProperty] MediaElementState _currentState = MediaElementState.None;
+    [ObservableProperty] bool _isFavorite;
+    [ObservableProperty] bool _shouldResumePlayback = false;
+    [ObservableProperty] TimeSpan _resumePosition = TimeSpan.Zero;
+    [ObservableProperty] string _currentSubtitleText = string.Empty;
+    [ObservableProperty] bool _hasSubtitles = false;
+    [ObservableProperty] bool _areSubtitlesEnabled = true;
+    [ObservableProperty] private double _volumeAmplification = 2.0;
+    [ObservableProperty] private double _sliderVolume = 0.5;
+    [ObservableProperty] bool _isVideoInfoVisible = false;
+    [ObservableProperty] private MediaElement _mediaElement;
     private double _previousVolume = 0.5;
     private ICommand _toggleMuteCommand;
-    [ObservableProperty] private double volumeAmplification = 2.0;
-    [ObservableProperty] private double sliderVolume = 0.5; 
-
-
 
     public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService,
         IScreenshotService screenshotService)
@@ -42,7 +41,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
         _screenshotService = screenshotService;
         Title = "Player";
     }
-    
+
     partial void OnSliderVolumeChanged(double value)
     {
         if (MediaElement != null)
@@ -98,8 +97,6 @@ public partial class VideoPlayerViewModel : BaseViewModel
         }
     }
 
-    [ObservableProperty] bool isVideoInfoVisible = false;
-
     [RelayCommand]
     void ToggleVideoInfo()
     {
@@ -141,8 +138,6 @@ public partial class VideoPlayerViewModel : BaseViewModel
             IsBusy = false;
         }
     }
-
-    [ObservableProperty] private MediaElement mediaElement;
 
     async partial void OnFilePathChanged(string value)
     {
@@ -262,12 +257,12 @@ public partial class VideoPlayerViewModel : BaseViewModel
         ShouldResumePlayback = false;
         ResumePosition = TimeSpan.Zero;
     }
-    
+
     [RelayCommand]
     void ToggleMute()
     {
         if (MediaElement == null) return;
-    
+
         if (MediaElement.Volume > 0)
         {
             _previousVolume = MediaElement.Volume;
@@ -278,7 +273,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
             MediaElement.Volume = _previousVolume > 0 ? _previousVolume : 0.5;
         }
     }
-    
+
     [RelayCommand]
     async Task ToggleFavoriteAsync()
     {

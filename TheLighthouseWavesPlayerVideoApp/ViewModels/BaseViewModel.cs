@@ -5,9 +5,9 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 public partial class BaseViewModel : ObservableObject
 {
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsNotBusy))]
-    bool isBusy;
+    bool _isBusy;
 
-    [ObservableProperty] string title;
+    [ObservableProperty] private string _title;
 
     public bool IsNotBusy => !IsBusy;
 }

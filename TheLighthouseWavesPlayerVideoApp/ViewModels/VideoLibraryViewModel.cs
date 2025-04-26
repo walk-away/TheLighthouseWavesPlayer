@@ -5,169 +5,166 @@ using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
 
-namespace TheLighthouseWavesPlayerVideoApp.ViewModels
+namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
+
+public partial class VideoLibraryViewModel : BaseViewModel
 {
-    public partial class VideoLibraryViewModel : BaseViewModel
+    private readonly IVideoDiscoveryService _videoDiscoveryService;
+    private readonly IFavoritesService _favoritesService;
+
+    [ObservableProperty] ObservableCollection<VideoInfo> _allVideos;
+    [ObservableProperty] ObservableCollection<VideoInfo> _videos;
+    [ObservableProperty] VideoInfo _selectedVideo;
+    [ObservableProperty] string _searchText = string.Empty;
+    [ObservableProperty] ObservableCollection<SortOption> _sortOptions;
+    [ObservableProperty] SortOption _selectedSortOption;
+
+    public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService)
     {
-        private readonly IVideoDiscoveryService _videoDiscoveryService;
-        private readonly IFavoritesService _favoritesService;
+        _videoDiscoveryService = videoDiscoveryService;
+        _favoritesService = favoritesService;
+        Title = "Video Library";
 
-        [ObservableProperty] ObservableCollection<VideoInfo> allVideos;
-        [ObservableProperty] ObservableCollection<VideoInfo> videos;
-        [ObservableProperty] VideoInfo selectedVideo;
+        AllVideos = new ObservableCollection<VideoInfo>();
+        Videos = new ObservableCollection<VideoInfo>();
 
-        [ObservableProperty] string searchText = string.Empty;
-
-        [ObservableProperty] ObservableCollection<SortOption> sortOptions;
-        [ObservableProperty] SortOption selectedSortOption;
-
-        public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService)
+        SortOptions = new ObservableCollection<SortOption>
         {
-            _videoDiscoveryService = videoDiscoveryService;
-            _favoritesService = favoritesService;
-            Title = "Video Library";
+            new SortOption("Title (A-Z)", "Title", true),
+            new SortOption("Title (Z-A)", "Title", false),
+            new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
+            new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
+        };
 
-            AllVideos = new ObservableCollection<VideoInfo>();
-            Videos = new ObservableCollection<VideoInfo>();
+        SelectedSortOption = SortOptions[0];
+    }
 
-            SortOptions = new ObservableCollection<SortOption>
+    partial void OnSearchTextChanged(string value)
+    {
+        ApplyFilters();
+    }
+
+    partial void OnSelectedSortOptionChanged(SortOption value)
+    {
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        IEnumerable<VideoInfo> filteredVideos = AllVideos;
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            string searchLower = SearchText.ToLowerInvariant();
+            filteredVideos = filteredVideos.Where(v =>
+                v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+        }
+
+        if (SelectedSortOption != null)
+        {
+            switch (SelectedSortOption.Property)
             {
-                new SortOption("Title (A-Z)", "Title", true),
-                new SortOption("Title (Z-A)", "Title", false),
-                new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
-                new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
-            };
-
-            SelectedSortOption = SortOptions[0];
-        }
-
-        partial void OnSearchTextChanged(string value)
-        {
-            ApplyFilters();
-        }
-
-        partial void OnSelectedSortOptionChanged(SortOption value)
-        {
-            ApplyFilters();
-        }
-
-        private void ApplyFilters()
-        {
-            IEnumerable<VideoInfo> filteredVideos = AllVideos;
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                string searchLower = SearchText.ToLowerInvariant();
-                filteredVideos = filteredVideos.Where(v =>
-                    v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+                case "Title":
+                    filteredVideos = SelectedSortOption.IsAscending
+                        ? filteredVideos.OrderBy(v => v.Title)
+                        : filteredVideos.OrderByDescending(v => v.Title);
+                    break;
+                case "DurationMilliseconds":
+                    filteredVideos = SelectedSortOption.IsAscending
+                        ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
+                        : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
+                    break;
             }
+        }
 
-            if (SelectedSortOption != null)
-            {
-                switch (SelectedSortOption.Property)
-                {
-                    case "Title":
-                        filteredVideos = SelectedSortOption.IsAscending
-                            ? filteredVideos.OrderBy(v => v.Title)
-                            : filteredVideos.OrderByDescending(v => v.Title);
-                        break;
-                    case "DurationMilliseconds":
-                        filteredVideos = SelectedSortOption.IsAscending
-                            ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
-                            : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
-                        break;
-                }
-            }
+        Videos.Clear();
+        foreach (var video in filteredVideos)
+        {
+            Videos.Add(video);
+        }
+    }
 
+    [RelayCommand]
+    async Task LoadVideos()
+    {
+        if (IsBusy) return;
+
+        IsBusy = true;
+        try
+        {
+            AllVideos.Clear();
             Videos.Clear();
-            foreach (var video in filteredVideos)
+
+            var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
+            if (discoveredVideos != null)
             {
-                Videos.Add(video);
-            }
-        }
+                var favoritePaths = await _favoritesService.GetFavoritesAsync();
+                var favoritePathsSet = new HashSet<string>(favoritePaths.Select(f => f.FilePath));
 
-        [RelayCommand]
-        async Task LoadVideos()
-        {
-            if (IsBusy) return;
-
-            IsBusy = true;
-            try
-            {
-                AllVideos.Clear();
-                Videos.Clear();
-
-                var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
-                if (discoveredVideos != null)
+                foreach (var video in discoveredVideos)
                 {
-                    var favoritePaths = await _favoritesService.GetFavoritesAsync();
-                    var favoritePathsSet = new HashSet<string>(favoritePaths.Select(f => f.FilePath));
-
-                    foreach (var video in discoveredVideos)
-                    {
-                        video.IsFavorite = favoritePathsSet.Contains(video.FilePath);
-                        AllVideos.Add(video);
-                    }
-                }
-
-                ApplyFilters();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error loading videos: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to load video library.", "OK");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        [RelayCommand]
-        void ClearSearch()
-        {
-            SearchText = string.Empty;
-        }
-
-        [RelayCommand]
-        async Task GoToDetails(VideoInfo video)
-        {
-            if (video == null || string.IsNullOrEmpty(video.FilePath))
-                return;
-
-            await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
-        }
-
-        [RelayCommand]
-        async Task ToggleFavorite(VideoInfo video)
-        {
-            if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
-
-            try
-            {
-                if (video.IsFavorite)
-                {
-                    await _favoritesService.RemoveFavoriteAsync(video);
-                    video.IsFavorite = false;
-                    await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
-                }
-                else
-                {
-                    await _favoritesService.AddFavoriteAsync(video);
-                    video.IsFavorite = true;
-                    await Shell.Current.DisplayAlert("Favorites", $"{video.Title} added to favorites.", "OK");
+                    video.IsFavorite = favoritePathsSet.Contains(video.FilePath);
+                    AllVideos.Add(video);
                 }
             }
-            catch (Exception ex)
+
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading videos: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Failed to load video library.", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    void ClearSearch()
+    {
+        SearchText = string.Empty;
+    }
+
+    [RelayCommand]
+    async Task GoToDetails(VideoInfo video)
+    {
+        if (video == null || string.IsNullOrEmpty(video.FilePath))
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
+    }
+
+    [RelayCommand]
+    async Task ToggleFavorite(VideoInfo video)
+    {
+        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+
+        try
+        {
+            if (video.IsFavorite)
             {
-                System.Diagnostics.Debug.WriteLine($"Error toggling favorite: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
+                await _favoritesService.RemoveFavoriteAsync(video);
+                video.IsFavorite = false;
+                await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
+            }
+            else
+            {
+                await _favoritesService.AddFavoriteAsync(video);
+                video.IsFavorite = true;
+                await Shell.Current.DisplayAlert("Favorites", $"{video.Title} added to favorites.", "OK");
             }
         }
-
-        public async Task OnAppearing()
+        catch (Exception ex)
         {
-            await LoadVideos();
+            System.Diagnostics.Debug.WriteLine($"Error toggling favorite: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
         }
+    }
+
+    public async Task OnAppearing()
+    {
+        await LoadVideos();
     }
 }
