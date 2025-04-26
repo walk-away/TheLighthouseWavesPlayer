@@ -5,7 +5,8 @@
 
 A modern video player application for Android built with .NET MAUI, featuring intelligent video management, multilingual support, and enhanced playback capabilities.
 
-![App Screenshot](screenshots/app-preview.png) <!-- Add actual screenshots later -->
+![App Screenshot](Screenshots/Screenshot(1).png)
+![App Screenshot](Screenshots/Screenshot(7).png)
 
 ## Features ✨
 
