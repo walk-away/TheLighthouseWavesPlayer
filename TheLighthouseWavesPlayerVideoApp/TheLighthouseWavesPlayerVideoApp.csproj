@@ -33,7 +33,9 @@
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#f5f6f7" BaseSize="512,512" />
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*"/>
+        <MauiImage Include="Resources\Images\*svg" />
+        <MauiImage Include="Resources\Images\*png" />
+        <MauiImage Include="Resources\Images\*jpg" />
         <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
 
         <!-- Custom Fonts -->
@@ -55,9 +57,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Services\MediaService.cs">
-            <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-        </Compile>
         <Compile Update="Resources\Languages\AppResources.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -85,4 +84,11 @@
         </EmbeddedResource>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Remove="Resources\Images\settings.svg" />
+        <None Remove="Resources\Images\star.svg" />
+        <None Remove="Resources\Images\film.svg" />
+        <None Remove="Resources\Images\edit.svg" />
+        <None Remove="Resources\Images\trash.svg" />
+    </ItemGroup>
 </Project>

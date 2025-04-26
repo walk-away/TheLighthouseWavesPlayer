@@ -12,7 +12,7 @@
     </Shell.Title>
 
     <TabBar>
-        <Tab>
+        <Tab Icon="film.svg">
             <Tab.Title>
                 <Binding Path="[Shell_Library]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
             </Tab.Title>
@@ -23,7 +23,7 @@
             </ShellContent>
         </Tab>
 
-        <Tab>
+        <Tab Icon="star.svg">
             <Tab.Title>
                 <Binding Path="[Shell_Favorites]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
             </Tab.Title>
@@ -34,7 +34,7 @@
             </ShellContent>
         </Tab>
         
-        <Tab>
+        <Tab Icon="settings.svg">
             <Tab.Title>
                 <Binding Path="[Shell_Settings]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
             </Tab.Title>
