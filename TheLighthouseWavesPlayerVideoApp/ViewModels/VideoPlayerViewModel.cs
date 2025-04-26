@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Core.Primitives;
+﻿using System.Windows.Input;
+using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,6 +27,12 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] string currentSubtitleText = string.Empty;
     [ObservableProperty] bool hasSubtitles = false;
     [ObservableProperty] bool areSubtitlesEnabled = true;
+    private double _previousVolume = 0.5;
+    private ICommand _toggleMuteCommand;
+    [ObservableProperty] private double volumeAmplification = 2.0;
+    [ObservableProperty] private double sliderVolume = 0.5; 
+
+
 
     public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService,
         IScreenshotService screenshotService)
@@ -34,6 +41,18 @@ public partial class VideoPlayerViewModel : BaseViewModel
         _subtitleService = subtitleService;
         _screenshotService = screenshotService;
         Title = "Player";
+    }
+    
+    partial void OnSliderVolumeChanged(double value)
+    {
+        if (MediaElement != null)
+            MediaElement.Volume = value * VolumeAmplification;
+    }
+
+    partial void OnVolumeAmplificationChanged(double value)
+    {
+        if (MediaElement != null)
+            MediaElement.Volume = SliderVolume * value;
     }
 
     public void UpdateVideoMetadata(double width, double height, TimeSpan duration)
@@ -243,8 +262,23 @@ public partial class VideoPlayerViewModel : BaseViewModel
         ShouldResumePlayback = false;
         ResumePosition = TimeSpan.Zero;
     }
-
-
+    
+    [RelayCommand]
+    void ToggleMute()
+    {
+        if (MediaElement == null) return;
+    
+        if (MediaElement.Volume > 0)
+        {
+            _previousVolume = MediaElement.Volume;
+            MediaElement.Volume = 0;
+        }
+        else
+        {
+            MediaElement.Volume = _previousVolume > 0 ? _previousVolume : 0.5;
+        }
+    }
+    
     [RelayCommand]
     async Task ToggleFavoriteAsync()
     {

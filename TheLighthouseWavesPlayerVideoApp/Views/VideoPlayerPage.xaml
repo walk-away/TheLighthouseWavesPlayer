@@ -19,7 +19,7 @@
             <toolkit:MediaElement Grid.Row="1"
                               x:Name="mediaElement"
                               Source="{Binding VideoSource}"
-                              ShouldAutoPlay="False"
+                              ShouldAutoPlay="True"
                               ShouldShowPlaybackControls="True"
                               Aspect="AspectFit"
                               StateChanged="MediaElement_StateChanged"
@@ -78,17 +78,45 @@
 
         <Grid Grid.Row="2"
               x:Name="BottomControlsGrid"
-              ColumnDefinitions="*, Auto, Auto, Auto, Auto"
+              ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto"
               Margin="10"
               Padding="10,0"
               VerticalOptions="Center">
+            
+            <Frame Grid.Column="0"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,5,0">
+                <ImageButton x:Name="VolumeIcon"
+                             BackgroundColor="Transparent"
+                             Source="{Binding Source={x:Reference VolumeSlider}, Path=Value, Converter={StaticResource VolumeToIconConverter}}"
+                             Command="{Binding ToggleMuteCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Toggle Mute" />
+            </Frame>
 
-            <Slider Grid.Column="0"
+            <Slider Grid.Column="1"
                     x:Name="VolumeSlider"
                     Minimum="0"
                     Maximum="1"
                     Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
                     VerticalOptions="Center" />
+            
+            <Frame Grid.Column="2"
+                   BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   IsVisible="{Binding HasSubtitles}"
+                   Margin="5,0">
+            </Frame>
 
             <Frame Grid.Column="1"
                    BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
