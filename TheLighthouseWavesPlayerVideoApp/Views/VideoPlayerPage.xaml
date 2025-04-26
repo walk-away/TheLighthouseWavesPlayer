@@ -10,7 +10,28 @@
              Shell.NavBarIsVisible="True">
 
     <VisualStateManager.VisualStateGroups>
-        <!-- Existing visual states -->
+        <VisualStateGroupList>
+            <VisualStateGroup x:Name="OrientationStates">
+                <VisualState x:Name="Portrait">
+                    <VisualState.StateTriggers>
+                        <OrientationStateTrigger Orientation="Portrait" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="Shell.NavBarIsVisible" Value="True" />
+                        <!-- Portrait specific settings -->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Landscape">
+                    <VisualState.StateTriggers>
+                        <OrientationStateTrigger Orientation="Landscape" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="Shell.NavBarIsVisible" Value="True" />
+                        <!-- Landscape specific settings -->
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateGroupList>
     </VisualStateManager.VisualStateGroups>
 
     <Grid RowDefinitions="Auto, *, Auto">

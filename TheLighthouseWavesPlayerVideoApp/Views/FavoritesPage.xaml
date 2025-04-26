@@ -99,8 +99,11 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-        <Button Grid.Row="3" Command="{Binding LoadFavoritesCommand}"
-                IsEnabled="{Binding IsNotBusy}" Margin="10">
+        <Button Grid.Row="3" 
+                Command="{Binding LoadFavoritesCommand}"
+                IsEnabled="{Binding IsNotBusy}" 
+                Margin="10"
+                HorizontalOptions="Center">
             <Button.Text>
                 <Binding Path="[Favorites_Refresh]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
             </Button.Text>
