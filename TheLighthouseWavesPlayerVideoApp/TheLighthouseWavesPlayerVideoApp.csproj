@@ -90,5 +90,9 @@
         <None Remove="Resources\Images\film.svg" />
         <None Remove="Resources\Images\edit.svg" />
         <None Remove="Resources\Images\trash.svg" />
+        <None Remove="Resources\Images\image.svg" />
+        <None Remove="Resources\Images\bookmark.png" />
+        <None Remove="Resources\Images\video.svg" />
+        <None Remove="Resources\Images\sliders.svg" />
     </ItemGroup>
 </Project>

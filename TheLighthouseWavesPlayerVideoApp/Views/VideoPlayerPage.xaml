@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:converters="clr-namespace:TheLighthouseWavesPlayerVideoApp.Converters"
              x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
              Title="{Binding Title}"
@@ -89,51 +90,89 @@
                     Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
                     VerticalOptions="Center" />
 
-            <Button Grid.Column="1"
-                    Text="CC"
-                    Command="{Binding ToggleSubtitlesCommand}"
-                    IsVisible="{Binding HasSubtitles}"
-                    Margin="5,0"
-                    WidthRequest="50"
-                    BackgroundColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
-                    TextColor="White" />
+            <Frame Grid.Column="1"
+                   BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   IsVisible="{Binding HasSubtitles}"
+                   Margin="5,0">
+                <ImageButton Source="sliders.svg"
+                             BackgroundColor="Transparent"
+                             Command="{Binding ToggleSubtitlesCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Toggle Subtitles" />
+            </Frame>
 
-            <Button Grid.Column="2"
-                    Text="📷"
-                    Command="{Binding CaptureScreenshotCommand}"
-                    Margin="5,0"
-                    WidthRequest="50"
-                    ToolTipProperties.Text="Take Screenshot" />
+            <Frame Grid.Column="2"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="5,0">
+                <ImageButton Source="image.svg"
+                             BackgroundColor="Transparent"
+                             Command="{Binding CaptureScreenshotCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Take Screenshot" />
+            </Frame>
 
-            <Button Grid.Column="3"
-                    Text="ℹ️"
-                    Command="{Binding ToggleVideoInfoCommand}"
-                    Margin="5,0"
-                    WidthRequest="50"
-                    ToolTipProperties.Text="Video Information" />
-
-            <Button Grid.Column="4"
-                    Text="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteTextConverter}}"
-                    Command="{Binding ToggleFavoriteCommand}"
-                    Margin="5,0,0,0" />
+            <Frame Grid.Column="3"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="5,0">
+                <ImageButton Source="video.svg"
+                             BackgroundColor="Transparent"
+                             Command="{Binding ToggleVideoInfoCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Video Information" />
+            </Frame>
+            
+            <Grid Grid.Column="4" Margin="5,0,0,0">
+                <Frame BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                       BackgroundColor="Transparent"
+                       Padding="3"
+                       CornerRadius="8"
+                       HasShadow="False"
+                       IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
+                    <ImageButton Source="bookmark.png"
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding ToggleFavoriteCommand}"
+                                 HeightRequest="28"
+                                 WidthRequest="28"
+                                 Padding="0"
+                                 Aspect="AspectFit" />
+                </Frame>
+                
+                <Frame BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                       BackgroundColor="Transparent"
+                       Padding="3"
+                       CornerRadius="8"
+                       HasShadow="False"
+                       IsVisible="{Binding IsFavorite}">
+                    <ImageButton Source="trash.png"
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding ToggleFavoriteCommand}"
+                                 HeightRequest="28"
+                                 WidthRequest="28"
+                                 Padding="0"
+                                 Aspect="AspectFit" />
+                </Frame>
+            </Grid>
         </Grid>
-
     </Grid>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <toolkit:BoolToObjectConverter x:Key="BoolToFavoriteTextConverter"
-                                          TrueObject="Unfavorite"
-                                          FalseObject="Favorite" />
-                                          
-            <toolkit:BoolToObjectConverter x:Key="BoolToSubtitleButtonColorConverter"
-                                          TrueObject="#008080"
-                                          FalseObject="#808080" />
-                                          
-            <toolkit:BoolToObjectConverter x:Key="BoolToInfoButtonColorConverter"
-                                          TrueObject="#008080"
-                                          FalseObject="#808080" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
 </ContentPage>
