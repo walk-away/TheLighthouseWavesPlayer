@@ -1,6 +1,8 @@
 # The Lighthouse Waves Video Player
 
 [![MAUI](https://img.shields.io/badge/.NET%20MAUI-512BD4?style=for-the-badge&logo=.net)](https://learn.microsoft.com/en-us/dotnet/maui/)
+[![Language: C#](https://img.shields.io/badge/Language-C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
+[![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android)](https://www.android.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 A modern video player application for Android built with .NET MAUI, featuring intelligent video management, multilingual support, and enhanced playback capabilities.
@@ -48,4 +50,3 @@ Bohdan Harabadzhyu
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
