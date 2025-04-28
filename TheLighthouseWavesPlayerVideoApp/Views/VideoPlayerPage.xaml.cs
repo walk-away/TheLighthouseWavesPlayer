@@ -75,7 +75,7 @@ public partial class VideoPlayerPage : ContentPage
         }
     }
 
-      private async void MediaElement_MediaOpened(object sender, EventArgs e)
+    private async void MediaElement_MediaOpened(object sender, EventArgs e)
     {
         try
         {
@@ -97,21 +97,36 @@ public partial class VideoPlayerPage : ContentPage
             {
                 SetupMetadataRetryTimer();
             }
-            
+
             if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
             {
-                System.Diagnostics.Debug.WriteLine($"Attempting to resume playback at: {_viewModel.ResumePosition}");
-                _isSeekingFromResume = true;
-                mediaElement.SeekTo(_viewModel.ResumePosition);
+                bool resume = await DisplayAlert("Resume Playback?",
+                    $"Resume from {_viewModel.ResumePosition:hh\\:mm\\:ss}?",
+                    "Resume", "Start Over");
+
+                if (resume)
+                {
+                    System.Diagnostics.Debug.WriteLine($"User chose to resume at: {_viewModel.ResumePosition}");
+                    _isSeekingFromResume = true;
+                    mediaElement.SeekTo(_viewModel.ResumePosition);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("User chose to start from beginning");
+                    _viewModel.ClearSavedPosition();
+                    mediaElement.Play();
+                    if (!_metadataSuccessfullyUpdated) SetupMetadataRetryTimer();
+                }
+
                 _viewModel.ShouldResumePlayback = false;
-                _viewModel.ResumePosition = TimeSpan.Zero;
             }
             else
             {
-                 System.Diagnostics.Debug.WriteLine("Starting playback from beginning or letting AutoPlay handle it.");
-                 if (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing)
-                 {
-                 }
+                System.Diagnostics.Debug.WriteLine("Starting playback from beginning or letting AutoPlay handle it.");
+                if (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing)
+                {
+                    mediaElement.Play();
+                }
             }
         }
         catch (Exception ex)
@@ -192,15 +207,16 @@ public partial class VideoPlayerPage : ContentPage
         StopAndDisposeRetryTimer();
 
         TimeSpan currentPosition = TimeSpan.Zero;
-        if (mediaElement != null && (mediaElement.CurrentState == MediaElementState.Playing || mediaElement.CurrentState == MediaElementState.Paused))
+        if (mediaElement != null && (mediaElement.CurrentState == MediaElementState.Playing ||
+                                     mediaElement.CurrentState == MediaElementState.Paused))
         {
             currentPosition = mediaElement.Position;
             mediaElement.Stop();
             System.Diagnostics.Debug.WriteLine($"Stopped MediaElement. Current position: {currentPosition}");
         }
-        
+
         _viewModel?.OnNavigatedFrom(currentPosition);
-        
+
         // SizeChanged -= OnPageSizeChanged;
         // if (mediaElement != null)
         // {
@@ -220,7 +236,7 @@ public partial class VideoPlayerPage : ContentPage
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing started.");
         _isPageActive = true;
         _metadataSuccessfullyUpdated = false;
-        
+
         SizeChanged -= OnPageSizeChanged;
         SizeChanged += OnPageSizeChanged;
 
@@ -232,13 +248,15 @@ public partial class VideoPlayerPage : ContentPage
                 $"OnAppearing: FilePath={_viewModel.FilePath}, ShouldResume={_viewModel.ShouldResumePlayback}, ResumePosition={_viewModel.ResumePosition}, LastKnownPosition={_viewModel.LastKnownPosition}");
 
 
-            if (mediaElement.Source == null || (mediaElement.Source is FileMediaSource fms && fms.Path != _viewModel.FilePath))
+            if (mediaElement.Source == null ||
+                (mediaElement.Source is FileMediaSource fms && fms.Path != _viewModel.FilePath))
             {
-                 System.Diagnostics.Debug.WriteLine($"Setting MediaElement Source in OnAppearing to: {_viewModel.FilePath}");
-                 _viewModel.VideoSource = MediaSource.FromFile(_viewModel.FilePath);
-                 await Task.Delay(100);
+                System.Diagnostics.Debug.WriteLine(
+                    $"Setting MediaElement Source in OnAppearing to: {_viewModel.FilePath}");
+                _viewModel.VideoSource = MediaSource.FromFile(_viewModel.FilePath);
+                await Task.Delay(100);
             }
-            
+
             mediaElement.StateChanged -= MediaElement_StateChanged;
             mediaElement.MediaOpened -= MediaElement_MediaOpened;
             mediaElement.MediaEnded -= MediaElement_MediaEnded;
@@ -253,7 +271,7 @@ public partial class VideoPlayerPage : ContentPage
         }
         else
         {
-             System.Diagnostics.Debug.WriteLine("OnAppearing: ViewModel, FilePath, or MediaElement is null/empty.");
+            System.Diagnostics.Debug.WriteLine("OnAppearing: ViewModel, FilePath, or MediaElement is null/empty.");
         }
 
         UpdateOrientationState();
