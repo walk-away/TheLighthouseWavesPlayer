@@ -465,6 +465,42 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Длительность (Короткие-Длинные).
+        /// </summary>
+        internal static string Sort_DurationAsc {
+            get {
+                return ResourceManager.GetString("Sort_DurationAsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Длительность (Длинные-Короткие).
+        /// </summary>
+        internal static string Sort_DurationDesc {
+            get {
+                return ResourceManager.GetString("Sort_DurationDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название (А-Я).
+        /// </summary>
+        internal static string Sort_TitleAsc {
+            get {
+                return ResourceManager.GetString("Sort_TitleAsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название (Я-А).
+        /// </summary>
+        internal static string Sort_TitleDesc {
+            get {
+                return ResourceManager.GetString("Sort_TitleDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Информация о видео.
         /// </summary>
         internal static string VideoInfo_Header {

@@ -158,4 +158,16 @@
     <data name="Player_Permission_Error" xml:space="preserve">
   <value>Storage permission is required to save screenshots to the gallery. Please grant permission in app settings.</value>
 </data>
+    <data name="Sort_TitleAsc" xml:space="preserve">
+  <value>Title (A-Z)</value>
+</data>
+    <data name="Sort_TitleDesc" xml:space="preserve">
+  <value>Title (Z-A)</value>
+</data>
+    <data name="Sort_DurationAsc" xml:space="preserve">
+  <value>Duration (Short-Long)</value>
+</data>
+    <data name="Sort_DurationDesc" xml:space="preserve">
+  <value>Duration (Long-Short)</value>
+</data>
 </root>
