@@ -36,18 +36,27 @@
     <Grid RowDefinitions="Auto, *, Auto">
         <!-- Media player grid -->
         <Grid Grid.Row="1">
-            <!-- Media Element -->
-            <toolkit:MediaElement Grid.Row="1"
-                              x:Name="mediaElement"
-                              Source="{Binding VideoSource}"
-                              ShouldAutoPlay="True"
-                              ShouldShowPlaybackControls="True"
-                              Aspect="AspectFit"
-                              StateChanged="MediaElement_StateChanged"
-                              MediaOpened="MediaElement_MediaOpened"
-                              MediaEnded="MediaElement_MediaEnded"
-                              PositionChanged="MediaElement_PositionChanged"
-                              Volume="1" />
+            <Frame CornerRadius="15"
+                   BorderColor="Transparent"
+                   Padding="0"
+                   BackgroundColor="Black"
+                   HasShadow="False"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="FillAndExpand"
+                   IsClippedToBounds="True">
+
+                <!-- Media Element -->
+                <toolkit:MediaElement x:Name="mediaElement"
+                                      Source="{Binding VideoSource}"
+                                      ShouldAutoPlay="True"
+                                      ShouldShowPlaybackControls="True"
+                                      Aspect="AspectFit"
+                                      StateChanged="MediaElement_StateChanged"
+                                      MediaOpened="MediaElement_MediaOpened"
+                                      MediaEnded="MediaElement_MediaEnded"
+                                      PositionChanged="MediaElement_PositionChanged"
+                                      Volume="1" />
+            </Frame>
 
             <!-- Subtitle overlay -->
             <Border IsVisible="{Binding HasSubtitles}"
