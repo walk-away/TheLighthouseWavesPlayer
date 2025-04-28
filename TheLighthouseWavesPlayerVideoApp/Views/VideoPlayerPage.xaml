@@ -206,7 +206,7 @@
                                  Aspect="AspectFit" />
                 </Frame>
                 
-                <Frame BorderColor="{AppThemeBinding Light={StaticResource Error}, Dark=IndianRed}"
+                <Frame BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                        BackgroundColor="Transparent"
                        Padding="3"
                        CornerRadius="8"
