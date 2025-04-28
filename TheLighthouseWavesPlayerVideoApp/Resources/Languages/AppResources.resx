@@ -38,15 +38,12 @@
     <data name="Settings_ResetButton" xml:space="preserve">
     <value>Reset to Default</value>
   </data>
-    
-    
     <data name="Search_Clear" xml:space="preserve">
   <value>Clear</value>
 </data>
     <data name="Sort_By" xml:space="preserve">
   <value>Sort by:</value>
 </data>
-
     <data name="Library_Title" xml:space="preserve">
   <value>Video Library</value>
 </data>
@@ -62,7 +59,6 @@
     <data name="Library_Refresh" xml:space="preserve">
   <value>Refresh Library</value>
 </data>
-    
     <data name="Favorites_Title" xml:space="preserve">
   <value>Favorites</value>
 </data>
@@ -78,7 +74,6 @@
     <data name="Favorites_Refresh" xml:space="preserve">
   <value>Refresh Favorites</value>
 </data>
-    
     <data name="Player_Title" xml:space="preserve">
   <value>Player</value>
 </data>
@@ -88,7 +83,6 @@
     <data name="Player_RemoveFavorite" xml:space="preserve">
   <value>Unfavorite</value>
 </data>
-    
     <data name="Shell_Library" xml:space="preserve">
   <value>Library</value>
 </data>
@@ -98,11 +92,9 @@
     <data name="Shell_Settings" xml:space="preserve">
   <value>Settings</value>
 </data>
-
     <data name="Shell_Title" xml:space="preserve">
   <value>Video Player</value>
 </data>
-
     <data name="Settings_ThemeLabel" xml:space="preserve">
   <value>Theme</value>
 </data>
@@ -121,8 +113,49 @@
     <data name="Settings_ThemeSystem" xml:space="preserve">
   <value>System (Auto)</value>
 </data>
-
     <data name="Library_RemoveFavorite" xml:space="preserve">
   <value>Remove</value>
+</data>
+    <data name="VideoInfo_Header" xml:space="preserve">
+  <value>Video Information</value>
+</data>
+    <data name="Player_ToggleMute" xml:space="preserve">
+  <value>Toggle Mute</value>
+</data>
+    <data name="Player_ToggleSubtitles" xml:space="preserve">
+  <value>Toggle Subtitles</value>
+</data>
+    <data name="Player_Screenshot" xml:space="preserve">
+  <value>Take Screenshot</value>
+</data>
+    <data name="Player_VideoInfo" xml:space="preserve">
+  <value>Video Information</value>
+</data>
+    <data name="Player_ResumeDialog_Title" xml:space="preserve">
+  <value>Resume Playback?</value>
+</data>
+    <data name="Player_ResumeDialog_Message" xml:space="preserve">
+  <value>Resume from {0}?</value>
+</data>
+    <data name="Player_ResumeDialog_Resume" xml:space="preserve">
+  <value>Resume</value>
+</data>
+    <data name="Player_ResumeDialog_StartOver" xml:space="preserve">
+  <value>Start Over</value>
+</data>
+    <data name="Player_Error_Title" xml:space="preserve">
+  <value>Error</value>
+</data>
+    <data name="Player_Error_Playback" xml:space="preserve">
+  <value>Video playback error</value>
+</data>
+    <data name="Player_Screenshot_Success" xml:space="preserve">
+  <value>Screenshot saved to gallery</value>
+</data>
+    <data name="Player_Screenshot_Error" xml:space="preserve">
+  <value>Failed to take screenshot.</value>
+</data>
+    <data name="Player_Permission_Error" xml:space="preserve">
+  <value>Storage permission is required to save screenshots to the gallery. Please grant permission in app settings.</value>
 </data>
 </root>

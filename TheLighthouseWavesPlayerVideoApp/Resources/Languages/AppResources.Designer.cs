@@ -168,6 +168,33 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Video playback error.
+        /// </summary>
+        internal static string Player_Error_Playback {
+            get {
+                return ResourceManager.GetString("Player_Error_Playback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string Player_Error_Title {
+            get {
+                return ResourceManager.GetString("Player_Error_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage permission is required to save screenshots to the gallery. Please grant permission in app settings..
+        /// </summary>
+        internal static string Player_Permission_Error {
+            get {
+                return ResourceManager.GetString("Player_Permission_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unfavorite.
         /// </summary>
         internal static string Player_RemoveFavorite {
@@ -177,11 +204,101 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resume from {0}?.
+        /// </summary>
+        internal static string Player_ResumeDialog_Message {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume.
+        /// </summary>
+        internal static string Player_ResumeDialog_Resume {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Over.
+        /// </summary>
+        internal static string Player_ResumeDialog_StartOver {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_StartOver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume Playback?.
+        /// </summary>
+        internal static string Player_ResumeDialog_Title {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take Screenshot.
+        /// </summary>
+        internal static string Player_Screenshot {
+            get {
+                return ResourceManager.GetString("Player_Screenshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to take screenshot..
+        /// </summary>
+        internal static string Player_Screenshot_Error {
+            get {
+                return ResourceManager.GetString("Player_Screenshot_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screenshot saved to gallery.
+        /// </summary>
+        internal static string Player_Screenshot_Success {
+            get {
+                return ResourceManager.GetString("Player_Screenshot_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Player.
         /// </summary>
         internal static string Player_Title {
             get {
                 return ResourceManager.GetString("Player_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Mute.
+        /// </summary>
+        internal static string Player_ToggleMute {
+            get {
+                return ResourceManager.GetString("Player_ToggleMute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Subtitles.
+        /// </summary>
+        internal static string Player_ToggleSubtitles {
+            get {
+                return ResourceManager.GetString("Player_ToggleSubtitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video Information.
+        /// </summary>
+        internal static string Player_VideoInfo {
+            get {
+                return ResourceManager.GetString("Player_VideoInfo", resourceCulture);
             }
         }
         
@@ -344,6 +461,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Sort_By {
             get {
                 return ResourceManager.GetString("Sort_By", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video Information.
+        /// </summary>
+        internal static string VideoInfo_Header {
+            get {
+                return ResourceManager.GetString("VideoInfo_Header", resourceCulture);
             }
         }
     }

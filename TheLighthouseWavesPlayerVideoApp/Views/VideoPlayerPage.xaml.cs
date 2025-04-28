@@ -100,9 +100,23 @@ public partial class VideoPlayerPage : ContentPage
 
             if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
             {
-                bool resume = await DisplayAlert("Resume Playback?",
-                    $"Resume from {_viewModel.ResumePosition:hh\\:mm\\:ss}?",
-                    "Resume", "Start Over");
+                var title =
+                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                        "Player_ResumeDialog_Title"];
+                var messageFormat =
+                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                        "Player_ResumeDialog_Message"];
+                var resumeButton =
+                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                        "Player_ResumeDialog_Resume"];
+                var startOverButton =
+                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                        "Player_ResumeDialog_StartOver"];
+
+                var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
+                var message = string.Format(messageFormat, formattedTime);
+
+                bool resume = await DisplayAlert(title, message, resumeButton, startOverButton);
 
                 if (resume)
                 {
@@ -132,7 +146,13 @@ public partial class VideoPlayerPage : ContentPage
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
-            await Shell.Current.DisplayAlert("Error", "Video playback error", "OK");
+
+            var errorTitle =
+                TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance["Player_Error_Title"];
+            var errorMessage =
+                TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance["Player_Error_Playback"];
+
+            await Shell.Current.DisplayAlert(errorTitle, errorMessage, "OK");
         }
     }
 
