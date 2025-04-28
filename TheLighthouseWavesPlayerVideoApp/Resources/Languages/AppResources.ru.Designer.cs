@@ -168,6 +168,33 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ошибка воспроизведения видео.
+        /// </summary>
+        internal static string Player_Error_Playback {
+            get {
+                return ResourceManager.GetString("Player_Error_Playback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка.
+        /// </summary>
+        internal static string Player_Error_Title {
+            get {
+                return ResourceManager.GetString("Player_Error_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Для сохранения снимков экрана в галерею требуется разрешение на доступ к хранилищу. Предоставьте разрешение в настройках приложения..
+        /// </summary>
+        internal static string Player_Permission_Error {
+            get {
+                return ResourceManager.GetString("Player_Permission_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Из избранного.
         /// </summary>
         internal static string Player_RemoveFavorite {
@@ -177,11 +204,101 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Продолжить с {0}?.
+        /// </summary>
+        internal static string Player_ResumeDialog_Message {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Продолжить.
+        /// </summary>
+        internal static string Player_ResumeDialog_Resume {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Начать сначала.
+        /// </summary>
+        internal static string Player_ResumeDialog_StartOver {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_StartOver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Продолжить воспроизведение?.
+        /// </summary>
+        internal static string Player_ResumeDialog_Title {
+            get {
+                return ResourceManager.GetString("Player_ResumeDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сделать снимок экрана.
+        /// </summary>
+        internal static string Player_Screenshot {
+            get {
+                return ResourceManager.GetString("Player_Screenshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось сделать снимок экрана..
+        /// </summary>
+        internal static string Player_Screenshot_Error {
+            get {
+                return ResourceManager.GetString("Player_Screenshot_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Снимок экрана сохранен в галерею.
+        /// </summary>
+        internal static string Player_Screenshot_Success {
+            get {
+                return ResourceManager.GetString("Player_Screenshot_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Плеер.
         /// </summary>
         internal static string Player_Title {
             get {
                 return ResourceManager.GetString("Player_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Вкл/Выкл звук.
+        /// </summary>
+        internal static string Player_ToggleMute {
+            get {
+                return ResourceManager.GetString("Player_ToggleMute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Вкл/Выкл субтитры.
+        /// </summary>
+        internal static string Player_ToggleSubtitles {
+            get {
+                return ResourceManager.GetString("Player_ToggleSubtitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Информация о видео.
+        /// </summary>
+        internal static string Player_VideoInfo {
+            get {
+                return ResourceManager.GetString("Player_VideoInfo", resourceCulture);
             }
         }
         
@@ -344,6 +461,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Sort_By {
             get {
                 return ResourceManager.GetString("Sort_By", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Информация о видео.
+        /// </summary>
+        internal static string VideoInfo_Header {
+            get {
+                return ResourceManager.GetString("VideoInfo_Header", resourceCulture);
             }
         }
     }

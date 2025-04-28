@@ -30,6 +30,8 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] private double _sliderVolume = 0.5;
     [ObservableProperty] bool _isVideoInfoVisible = false;
     [ObservableProperty] private MediaElement _mediaElement;
+    [ObservableProperty] private bool _isReturningFromNavigation;
+    [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
     private double _previousVolume = 0.5;
     private ICommand _toggleMuteCommand;
 
@@ -106,9 +108,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [RelayCommand]
     async Task CaptureScreenshot()
     {
+        var resources = TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance;
+    
         if (MediaElement == null)
         {
-            await Shell.Current.DisplayAlert("Error", "Media player not ready.", "OK");
+            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], resources["Player_Error_Playback"], "OK");
             return;
         }
 
@@ -118,20 +122,20 @@ public partial class VideoPlayerViewModel : BaseViewModel
 
             string filePathOrUri = await _screenshotService.CaptureScreenshotAsync(MediaElement);
 
-            await Shell.Current.DisplayAlert("Success",
-                $"Screenshot saved to gallery", "OK");
+            await Shell.Current.DisplayAlert(resources["Player_Screenshot_Success"], 
+                resources["Player_Screenshot_Success"], "OK");
         }
         catch (UnauthorizedAccessException authEx)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot permission error: {authEx.Message}");
-            await Shell.Current.DisplayAlert("Permission Error",
-                "Storage permission is required to save screenshots to the gallery. Please grant permission in app settings.",
-                "OK");
+            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], 
+                resources["Player_Permission_Error"], "OK");
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot error: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to take screenshot.", "OK");
+            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], 
+                resources["Player_Screenshot_Error"], "OK");
         }
         finally
         {
@@ -213,7 +217,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
         }
     }
 
-    private void CheckForSavedPosition()
+    public void CheckForSavedPosition()
     {
         if (string.IsNullOrEmpty(FilePath)) return;
 
@@ -301,17 +305,31 @@ public partial class VideoPlayerViewModel : BaseViewModel
             await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
         }
     }
-
+    
     public void OnNavigatedFrom(TimeSpan currentPosition)
     {
-        if (CurrentState == MediaElementState.Playing || CurrentState == MediaElementState.Paused)
+        try
         {
-            SavePosition(currentPosition);
+            if ((CurrentState == MediaElementState.Playing || CurrentState == MediaElementState.Paused)
+                && currentPosition > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
+            {
+                LastKnownPosition = currentPosition;
+                string key = PositionPreferenceKeyPrefix + FilePath;
+                Preferences.Set(key, currentPosition.Ticks);
+                ShouldResumePlayback = true;
+                System.Diagnostics.Debug.WriteLine($"Position saved before navigation: {currentPosition}, Key: {key}");
+            }
+            else
+            {
+                LastKnownPosition = TimeSpan.Zero;
+                ShouldResumePlayback = false;
+            }
+            
+            CurrentState = MediaElementState.None;
         }
-
-        VideoSource = null;
-        CurrentState = MediaElementState.None;
-        ShouldResumePlayback = false;
-        System.Diagnostics.Debug.WriteLine("VideoPlayerViewModel.OnNavigatedFrom called.");
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex}");
+        }
     }
 }

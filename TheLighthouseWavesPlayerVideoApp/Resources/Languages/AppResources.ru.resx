@@ -37,15 +37,12 @@
     <data name="Settings_ResetButton" xml:space="preserve">
     <value>Сбросить настройки</value>
   </data>
-
-    
     <data name="Search_Clear" xml:space="preserve">
   <value>Очистить</value>
 </data>
     <data name="Sort_By" xml:space="preserve">
   <value>Сортировать по:</value>
 </data>
-    
     <data name="Library_Title" xml:space="preserve">
   <value>Видеотека</value>
 </data>
@@ -61,7 +58,6 @@
     <data name="Library_Refresh" xml:space="preserve">
   <value>Обновить библиотеку</value>
 </data>
-    
     <data name="Favorites_Title" xml:space="preserve">
   <value>Избранное</value>
 </data>
@@ -77,7 +73,6 @@
     <data name="Favorites_Refresh" xml:space="preserve">
   <value>Обновить избранное</value>
 </data>
-    
     <data name="Player_Title" xml:space="preserve">
   <value>Плеер</value>
 </data>
@@ -87,7 +82,6 @@
     <data name="Player_RemoveFavorite" xml:space="preserve">
   <value>Из избранного</value>
 </data>
-    
     <data name="Shell_Library" xml:space="preserve">
   <value>Библиотека</value>
 </data>
@@ -97,11 +91,9 @@
     <data name="Shell_Settings" xml:space="preserve">
   <value>Настройки</value>
 </data>
-
     <data name="Shell_Title" xml:space="preserve">
   <value>Видео плеер</value>
 </data>
-
     <data name="Settings_ThemeLabel" xml:space="preserve">
   <value>Тема</value>
 </data>
@@ -120,8 +112,49 @@
     <data name="Settings_ThemeSystem" xml:space="preserve">
   <value>Системная (Авто)</value>
 </data>
-
     <data name="Library_RemoveFavorite" xml:space="preserve">
   <value>Удалить</value>
+</data>
+    <data name="VideoInfo_Header" xml:space="preserve">
+  <value>Информация о видео</value>
+</data>
+    <data name="Player_ToggleMute" xml:space="preserve">
+  <value>Вкл/Выкл звук</value>
+</data>
+    <data name="Player_ToggleSubtitles" xml:space="preserve">
+  <value>Вкл/Выкл субтитры</value>
+</data>
+    <data name="Player_Screenshot" xml:space="preserve">
+  <value>Сделать снимок экрана</value>
+</data>
+    <data name="Player_VideoInfo" xml:space="preserve">
+  <value>Информация о видео</value>
+</data>
+    <data name="Player_ResumeDialog_Title" xml:space="preserve">
+  <value>Продолжить воспроизведение?</value>
+</data>
+    <data name="Player_ResumeDialog_Message" xml:space="preserve">
+  <value>Продолжить с {0}?</value>
+</data>
+    <data name="Player_ResumeDialog_Resume" xml:space="preserve">
+  <value>Продолжить</value>
+</data>
+    <data name="Player_ResumeDialog_StartOver" xml:space="preserve">
+  <value>Начать сначала</value>
+</data>
+    <data name="Player_Error_Title" xml:space="preserve">
+  <value>Ошибка</value>
+</data>
+    <data name="Player_Error_Playback" xml:space="preserve">
+  <value>Ошибка воспроизведения видео</value>
+</data>
+    <data name="Player_Screenshot_Success" xml:space="preserve">
+  <value>Снимок экрана сохранен в галерею</value>
+</data>
+    <data name="Player_Screenshot_Error" xml:space="preserve">
+  <value>Не удалось сделать снимок экрана.</value>
+</data>
+    <data name="Player_Permission_Error" xml:space="preserve">
+  <value>Для сохранения снимков экрана в галерею требуется разрешение на доступ к хранилищу. Предоставьте разрешение в настройках приложения.</value>
 </data>
 </root>
