@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
@@ -10,6 +11,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 public partial class FavoritesViewModel : BaseViewModel
 {
     private readonly IFavoritesService _favoritesService;
+    private readonly ILocalizedResourcesProvider _resourcesProvider;
 
     [ObservableProperty] ObservableCollection<VideoInfo> _allFavoriteVideos;
     [ObservableProperty] ObservableCollection<VideoInfo> _favoriteVideos;
@@ -17,20 +19,21 @@ public partial class FavoritesViewModel : BaseViewModel
     [ObservableProperty] ObservableCollection<SortOption> _sortOptions;
     [ObservableProperty] SortOption _selectedSortOption;
 
-    public FavoritesViewModel(IFavoritesService favoritesService)
+    public FavoritesViewModel(IFavoritesService favoritesService, ILocalizedResourcesProvider resourcesProvider)
     {
         _favoritesService = favoritesService;
-        Title = "Favorites";
+        _resourcesProvider = resourcesProvider;
+        Title = _resourcesProvider["Favorites_Title"];
 
         AllFavoriteVideos = new ObservableCollection<VideoInfo>();
         FavoriteVideos = new ObservableCollection<VideoInfo>();
 
         SortOptions = new ObservableCollection<SortOption>
         {
-            new SortOption("Title (A-Z)", "Title", true),
-            new SortOption("Title (Z-A)", "Title", false),
-            new SortOption("Duration (Short-Long)", "DurationMilliseconds", true),
-            new SortOption("Duration (Long-Short)", "DurationMilliseconds", false)
+            new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
+            new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
+            new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
+            new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
         };
 
         SelectedSortOption = SortOptions[0];

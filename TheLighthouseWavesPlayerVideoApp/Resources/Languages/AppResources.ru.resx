@@ -157,4 +157,16 @@
     <data name="Player_Permission_Error" xml:space="preserve">
   <value>Для сохранения снимков экрана в галерею требуется разрешение на доступ к хранилищу. Предоставьте разрешение в настройках приложения.</value>
 </data>
+    <data name="Sort_TitleAsc" xml:space="preserve">
+  <value>Название (А-Я)</value>
+</data>
+    <data name="Sort_TitleDesc" xml:space="preserve">
+  <value>Название (Я-А)</value>
+</data>
+    <data name="Sort_DurationAsc" xml:space="preserve">
+  <value>Длительность (Короткие-Длинные)</value>
+</data>
+    <data name="Sort_DurationDesc" xml:space="preserve">
+  <value>Длительность (Длинные-Короткие)</value>
+</data>
 </root>

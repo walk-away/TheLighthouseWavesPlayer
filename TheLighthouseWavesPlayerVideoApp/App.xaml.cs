@@ -1,13 +1,20 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Converters;
+﻿using System.Globalization;
+using TheLighthouseWavesPlayer.Localization.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Converters;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 
 namespace TheLighthouseWavesPlayerVideoApp;
 
 public partial class App : Application
 {
-    public App()
+    private readonly ILocalizationManager _localizationManager;
+    
+    public App(ILocalizationManager localizationManager, IThemeService themeService)
     {
         InitializeComponent();
+
+        _localizationManager = localizationManager;
+        _localizationManager.RestorePreviousCulture(CultureInfo.GetCultureInfo("en-US"));
 
         var boolToColorConverter = Resources["BoolToColorConverter"] as BoolToColorConverter;
         if (boolToColorConverter != null)
@@ -16,7 +23,6 @@ public partial class App : Application
             boolToColorConverter.FalseColor = Colors.Transparent;
         }
 
-        var themeService = IPlatformApplication.Current.Services.GetService<IThemeService>();
         themeService?.ApplyTheme();
 
         MainPage = new AppShell();
