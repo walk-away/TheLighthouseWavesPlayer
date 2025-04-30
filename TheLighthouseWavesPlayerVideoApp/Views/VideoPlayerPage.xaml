@@ -26,7 +26,7 @@
                         <OrientationStateTrigger Orientation="Landscape" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Property="Shell.NavBarIsVisible" Value="True" />
+                        <Setter Property="Shell.NavBarIsVisible" Value="False" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -206,7 +206,7 @@
                        CornerRadius="8"
                        HasShadow="False"
                        IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                    <ImageButton Source="bookmark.png"
+                    <ImageButton Source="bookmark.svg"
                                  BackgroundColor="Transparent"
                                  Command="{Binding ToggleFavoriteCommand}"
                                  HeightRequest="28"
@@ -221,7 +221,7 @@
                        CornerRadius="8"
                        HasShadow="False"
                        IsVisible="{Binding IsFavorite}">
-                    <ImageButton Source="trash.png"
+                    <ImageButton Source="trash.svg"
                                  BackgroundColor="Transparent"
                                  Command="{Binding ToggleFavoriteCommand}"
                                  HeightRequest="28"
