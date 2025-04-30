@@ -8,6 +8,7 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        
         <!-- Display name -->
         <ApplicationTitle>TheLighthouseWavesPlayerVideoApp</ApplicationTitle>
 
@@ -20,23 +21,16 @@
 
         <!-- Android specific settings -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+    
+    
 
-        <!-- Target Android API levels -->
-        <AndroidTargetSdkVersion>34</AndroidTargetSdkVersion>
-        <AndroidCompileSdkVersion>34</AndroidCompileSdkVersion>
-        
-        <!-- Android-specific permissions will be defined in the AndroidManifest.xml -->
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
+        <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <!-- Release optimizations -->
-        <PublishTrimmed>true</PublishTrimmed>
-        <RunAOTCompilation>true</RunAOTCompilation>
-        <EnableLLVM>true</EnableLLVM>
-        <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
-        <AndroidDexTool>d8</AndroidDexTool>
-        <TrimMode>link</TrimMode>
-        <PublishReadyToRun>true</PublishReadyToRun>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+        <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
     </PropertyGroup>
 
     <ItemGroup>
