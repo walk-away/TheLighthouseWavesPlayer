@@ -106,6 +106,7 @@
         <None Remove="Resources\Images\sliders.svg" />
         <None Remove="Resources\Images\volumex.svg" />
         <None Remove="Resources\Images\volume2.svg" />
+        <None Remove="Resources\Images\arrow.svg" />
     </ItemGroup>
 
     <ItemGroup>

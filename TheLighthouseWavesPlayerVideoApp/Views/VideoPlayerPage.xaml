@@ -110,13 +110,34 @@
         <!-- Controls bar at bottom -->
         <Grid Grid.Row="2"
               x:Name="BottomControlsGrid"
-              ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto"
+              ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
               Margin="10"
               Padding="10,0"
               VerticalOptions="Center">
-            
-            <!-- Volume Icon -->
+    
+            <!-- Back Button - only visible in landscape mode -->
             <Frame Grid.Column="0"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,5,0"
+                   x:Name="BackButtonFrame"
+                   IsVisible="{Binding IsLandscape}">
+                <ImageButton x:Name="BackButton"
+                             BackgroundColor="Transparent"
+                             Source="arrow.svg"
+                             Command="{Binding GoBackCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Back" />
+            </Frame>
+    
+            <!-- Volume Icon -->
+            <Frame Grid.Column="1"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -135,7 +156,7 @@
             </Frame>
 
             <!-- Volume Slider -->
-            <Slider Grid.Column="1"
+            <Slider Grid.Column="2"
                     x:Name="VolumeSlider"
                     Minimum="0"
                     Maximum="1"
@@ -144,7 +165,7 @@
                     VerticalOptions="Center" />
             
             <!-- Subtitles Toggle Button -->
-            <Frame Grid.Column="2"
+            <Frame Grid.Column="3"
                    BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -163,7 +184,7 @@
             </Frame>
 
             <!-- Screenshot Button -->
-            <Frame Grid.Column="3"
+            <Frame Grid.Column="4"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -181,7 +202,7 @@
             </Frame>
 
             <!-- Video Info Button -->
-            <Frame Grid.Column="4"
+            <Frame Grid.Column="5"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -199,7 +220,7 @@
             </Frame>
             
             <!-- Favorite Toggle Button -->
-            <Grid Grid.Column="5" Margin="5,0,0,0">
+            <Grid Grid.Column="6" Margin="5,0,0,0">
                 <Frame BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                        BackgroundColor="Transparent"
                        Padding="3"

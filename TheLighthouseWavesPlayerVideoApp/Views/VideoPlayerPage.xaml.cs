@@ -33,6 +33,11 @@ public partial class VideoPlayerPage : ContentPage
         string orientationState = Width > Height ? "Landscape" : "Portrait";
         VisualStateManager.GoToState(this, orientationState);
         Shell.SetNavBarIsVisible(this, orientationState == "Portrait");
+        
+        if (BackButtonFrame != null)
+        {
+            BackButtonFrame.IsVisible = orientationState == "Landscape";
+        }
     }
 
     void MediaElement_StateChanged(object sender, MediaStateChangedEventArgs e)

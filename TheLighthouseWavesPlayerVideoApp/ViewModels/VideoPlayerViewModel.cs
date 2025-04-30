@@ -32,6 +32,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] private MediaElement _mediaElement;
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
+    [ObservableProperty] private bool _isLandscape;
     private double _previousVolume = 0.5;
     private ICommand _toggleMuteCommand;
 
@@ -286,7 +287,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
         try
         {
             var video = new VideoInfo
-                { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath) };
+                { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath), DurationMilliseconds = (long)VideoInfo.Duration.TotalMilliseconds };
 
             if (IsFavorite)
             {
@@ -331,5 +332,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex}");
         }
+    }
+    
+    [RelayCommand]
+    void GoBack()
+    {
+        Shell.Current.GoToAsync("..");
     }
 }
