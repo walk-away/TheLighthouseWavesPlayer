@@ -80,7 +80,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
                 FilePath = FilePath,
                 FileSize = fileInfo.Length,
                 LastModified = fileInfo.LastWriteTime,
-                Resolution = $"{width}x{height}",
+                Resolution = $"{(int)Math.Round(width)}x{(int)Math.Round(height)}",
                 Duration = duration
             };
 
