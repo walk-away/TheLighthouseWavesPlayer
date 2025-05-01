@@ -1,11 +1,11 @@
 ﻿using System.Resources;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using TheLighthouseWavesPlayer.Localization;
-using TheLighthouseWavesPlayer.Localization.Helpers;
-using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Localization;
+using TheLighthouseWavesPlayerVideoApp.Localization.Helpers;
+using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Services;
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using TheLighthouseWavesPlayerVideoApp.Views;

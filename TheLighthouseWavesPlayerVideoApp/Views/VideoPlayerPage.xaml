@@ -4,7 +4,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:converters="clr-namespace:TheLighthouseWavesPlayerVideoApp.Converters"
-             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
              Title="{Binding Title}"
@@ -84,7 +84,7 @@
                     BackgroundColor="{AppThemeBinding Light={StaticResource OverlayBackgroundLight}, Dark={StaticResource OverlayBackgroundDark}}"
                     StrokeThickness="0">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[VideoInfo_Header]}" 
+                    <Label Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[VideoInfo_Header]}" 
                            Style="{StaticResource OverlayHeaderLabelStyle}"/>
         
                     <BoxView HeightRequest="1"
@@ -152,7 +152,7 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
             </Frame>
 
             <!-- Volume Slider -->
@@ -180,7 +180,7 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
             </Frame>
 
             <!-- Screenshot Button -->
@@ -198,7 +198,7 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
             </Frame>
 
             <!-- Video Info Button -->
@@ -216,7 +216,7 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
             </Frame>
             
             <!-- Favorite Toggle Button -->

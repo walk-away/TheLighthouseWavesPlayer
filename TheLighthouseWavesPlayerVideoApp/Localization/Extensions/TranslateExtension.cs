@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayer.Localization.Extensions;
+﻿namespace TheLighthouseWavesPlayerVideoApp.Localization.Extensions;
 
 [ContentProperty(nameof(Key))]
 public class TranslateExtension : IMarkupExtension<Binding>

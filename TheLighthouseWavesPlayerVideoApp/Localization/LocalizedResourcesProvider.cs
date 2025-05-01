@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Resources;
 using CommunityToolkit.Mvvm.ComponentModel;
-using TheLighthouseWavesPlayer.Localization.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 
-namespace TheLighthouseWavesPlayer.Localization;
+namespace TheLighthouseWavesPlayerVideoApp.Localization;
 
 public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesProvider
 {

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace TheLighthouseWavesPlayer.Localization.Interfaces;
+namespace TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 
 public interface ILocalizedResourcesProvider
 {

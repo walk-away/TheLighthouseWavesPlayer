@@ -102,9 +102,5 @@
         <None Remove="Resources\Images\volume2.svg" />
         <None Remove="Resources\Images\arrow.svg" />
     </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\TheLighthouseWavesPlayer.Localization\TheLighthouseWavesPlayer.Localization.csproj" />
-    </ItemGroup>
     
 </Project>

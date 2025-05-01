@@ -1,8 +1,7 @@
 ﻿using System.Globalization;
-using Microsoft.Maui.Storage;
-using TheLighthouseWavesPlayer.Localization.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 
-namespace TheLighthouseWavesPlayer.Localization.Helpers;
+namespace TheLighthouseWavesPlayerVideoApp.Localization.Helpers;
 
 public class LocalizationManager : ILocalizationManager
 {
