@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
-             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:SettingsViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.SettingsPage">
     
     <ContentPage.Title>
-        <Binding Path="[Settings_PageTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+        <Binding Path="[Settings_PageTitle]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
     </ContentPage.Title>
     
     <ScrollView>
@@ -19,7 +19,7 @@
                    Margin="0,0,0,20"
                    HeightRequest="48" 
                    WidthRequest="48"
-                   SemanticProperties.Description="{Binding Path=[Settings_Header], Source={x:Static localization:LocalizedResourcesProvider.Instance}}">
+                   SemanticProperties.Description="{Binding Path=[Settings_Header], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}">
             </Image> 
             
             <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D2D}"
@@ -31,21 +31,21 @@
                     <Label FontSize="Medium"
                            FontAttributes="Bold">
                         <Label.Text>
-                            <Binding Path="[Settings_LanguageLabel]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_LanguageLabel]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Label.Text>
                     </Label>
                     
                     <Picker ItemsSource="{Binding AvailableLanguages}"
                             SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}">
                         <Picker.Title>
-                            <Binding Path="[Settings_LanguagePickerTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_LanguagePickerTitle]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Picker.Title>
                     </Picker>
                     
                     <Label FontSize="Small"
                            TextColor="{AppThemeBinding Light=Gray, Dark=#BBBBBB}">
                         <Label.Text>
-                            <Binding Path="[Settings_LanguageHint]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_LanguageHint]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Label.Text>
                     </Label>
                 </VerticalStackLayout>
@@ -60,21 +60,21 @@
                     <Label FontSize="Medium"
                            FontAttributes="Bold">
                         <Label.Text>
-                            <Binding Path="[Settings_ThemeLabel]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_ThemeLabel]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Label.Text>
                     </Label>
                     
                     <Picker ItemsSource="{Binding AvailableThemes}"
                             SelectedItem="{Binding SelectedTheme, Mode=TwoWay}">
                         <Picker.Title>
-                            <Binding Path="[Settings_ThemePickerTitle]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_ThemePickerTitle]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Picker.Title>
                     </Picker>
                     
                     <Label FontSize="Small"
                            TextColor="{AppThemeBinding Light=Gray, Dark=#BBBBBB}">
                         <Label.Text>
-                            <Binding Path="[Settings_ThemeHint]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                            <Binding Path="[Settings_ThemeHint]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                         </Label.Text>
                     </Label>
                 </VerticalStackLayout>
@@ -84,7 +84,7 @@
                     HorizontalOptions="Center"
                     Margin="0,20,0,0">
                 <Button.Text>
-                    <Binding Path="[Settings_ResetButton]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Settings_ResetButton]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Button.Text>
             </Button>
             

@@ -10,6 +10,10 @@ A modern video player application for Android built with .NET MAUI, featuring in
 ![App Screenshot](Screenshots/Screenshot(1).png)
 ![App Screenshot](Screenshots/Screenshot(7).png)
 
+### Example of using the application
+
+![Alt Text](Screenshots/untitled.gif)
+
 ## Features ✨
 
 **🎥 Media Management**

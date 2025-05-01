@@ -2,6 +2,7 @@
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
 using CommunityToolkit.Maui.Views;
+using TheLighthouseWavesPlayerVideoApp.Localization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
@@ -33,6 +34,11 @@ public partial class VideoPlayerPage : ContentPage
         string orientationState = Width > Height ? "Landscape" : "Portrait";
         VisualStateManager.GoToState(this, orientationState);
         Shell.SetNavBarIsVisible(this, orientationState == "Portrait");
+        
+        if (BackButtonFrame != null)
+        {
+            BackButtonFrame.IsVisible = orientationState == "Landscape";
+        }
     }
 
     void MediaElement_StateChanged(object sender, MediaStateChangedEventArgs e)
@@ -101,16 +107,16 @@ public partial class VideoPlayerPage : ContentPage
             if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
             {
                 var title =
-                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                    LocalizedResourcesProvider.Instance[
                         "Player_ResumeDialog_Title"];
                 var messageFormat =
-                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                    LocalizedResourcesProvider.Instance[
                         "Player_ResumeDialog_Message"];
                 var resumeButton =
-                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                    LocalizedResourcesProvider.Instance[
                         "Player_ResumeDialog_Resume"];
                 var startOverButton =
-                    TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance[
+                    LocalizedResourcesProvider.Instance[
                         "Player_ResumeDialog_StartOver"];
 
                 var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
@@ -148,9 +154,9 @@ public partial class VideoPlayerPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
 
             var errorTitle =
-                TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance["Player_Error_Title"];
+                LocalizedResourcesProvider.Instance["Player_Error_Title"];
             var errorMessage =
-                TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance["Player_Error_Playback"];
+                LocalizedResourcesProvider.Instance["Player_Error_Playback"];
 
             await Shell.Current.DisplayAlert(errorTitle, errorMessage, "OK");
         }

@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
              xmlns:viewModels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
-             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              xmlns:converters="clr-namespace:TheLighthouseWavesPlayerVideoApp.Converters"
              x:DataType="viewModels:VideoLibraryViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoLibraryPage">
@@ -33,7 +33,7 @@
     </ContentPage.Resources>
 
     <ContentPage.Title>
-        <Binding Path="[Library_Title]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+        <Binding Path="[Library_Title]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
     </ContentPage.Title>
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
@@ -44,7 +44,7 @@
                        HorizontalOptions="Fill">
                 <SearchBar.Placeholder>
                     <Binding Path="[Library_Search]"
-                             Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                             Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </SearchBar.Placeholder>
             </SearchBar>
             <Button Grid.Column="1"
@@ -53,7 +53,7 @@
                     Margin="0,0,5,0"
                     VerticalOptions="Center">
                 <Button.Text>
-                    <Binding Path="[Search_Clear]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Search_Clear]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Button.Text>
             </Button>
         </Grid>
@@ -62,7 +62,7 @@
             <Label Grid.Column="0"
                    VerticalOptions="Center">
                 <Label.Text>
-                    <Binding Path="[Sort_By]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Sort_By]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Label.Text>
             </Label>
             <Picker Grid.Column="1"
@@ -80,7 +80,7 @@
                 <Label HorizontalOptions="Center" VerticalOptions="Center">
                     <Label.Text>
                         <Binding Path="[Library_NoVideos]"
-                                 Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                                 Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                     </Label.Text>
                 </Label>
             </CollectionView.EmptyView>
@@ -176,7 +176,7 @@
                 Margin="10"
                 HorizontalOptions="Center">
             <Button.Text>
-                <Binding Path="[Library_Refresh]" Source="{x:Static localization:LocalizedResourcesProvider.Instance}" />
+                <Binding Path="[Library_Refresh]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
             </Button.Text>
         </Button>
     </Grid>

@@ -4,7 +4,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:converters="clr-namespace:TheLighthouseWavesPlayerVideoApp.Converters"
-             xmlns:localization="clr-namespace:TheLighthouseWavesPlayer.Localization;assembly=TheLighthouseWavesPlayer.Localization"
+             xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
              Title="{Binding Title}"
@@ -26,7 +26,7 @@
                         <OrientationStateTrigger Orientation="Landscape" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Property="Shell.NavBarIsVisible" Value="True" />
+                        <Setter Property="Shell.NavBarIsVisible" Value="False" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -84,7 +84,7 @@
                     BackgroundColor="{AppThemeBinding Light={StaticResource OverlayBackgroundLight}, Dark={StaticResource OverlayBackgroundDark}}"
                     StrokeThickness="0">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[VideoInfo_Header]}" 
+                    <Label Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[VideoInfo_Header]}" 
                            Style="{StaticResource OverlayHeaderLabelStyle}"/>
         
                     <BoxView HeightRequest="1"
@@ -110,13 +110,34 @@
         <!-- Controls bar at bottom -->
         <Grid Grid.Row="2"
               x:Name="BottomControlsGrid"
-              ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto"
+              ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
               Margin="10"
               Padding="10,0"
               VerticalOptions="Center">
-            
-            <!-- Volume Icon -->
+    
+            <!-- Back Button - only visible in landscape mode -->
             <Frame Grid.Column="0"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,5,0"
+                   x:Name="BackButtonFrame"
+                   IsVisible="{Binding IsLandscape}">
+                <ImageButton x:Name="BackButton"
+                             BackgroundColor="Transparent"
+                             Source="arrow.svg"
+                             Command="{Binding GoBackCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit"
+                             ToolTipProperties.Text="Back" />
+            </Frame>
+    
+            <!-- Volume Icon -->
+            <Frame Grid.Column="1"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -131,11 +152,11 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
             </Frame>
 
             <!-- Volume Slider -->
-            <Slider Grid.Column="1"
+            <Slider Grid.Column="2"
                     x:Name="VolumeSlider"
                     Minimum="0"
                     Maximum="1"
@@ -144,7 +165,7 @@
                     VerticalOptions="Center" />
             
             <!-- Subtitles Toggle Button -->
-            <Frame Grid.Column="2"
+            <Frame Grid.Column="3"
                    BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -159,11 +180,11 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
             </Frame>
 
             <!-- Screenshot Button -->
-            <Frame Grid.Column="3"
+            <Frame Grid.Column="4"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -177,11 +198,11 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
             </Frame>
 
             <!-- Video Info Button -->
-            <Frame Grid.Column="4"
+            <Frame Grid.Column="5"
                    BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                    BackgroundColor="Transparent"
                    Padding="3"
@@ -195,18 +216,18 @@
                              WidthRequest="28"
                              Padding="0"
                              Aspect="AspectFit"
-                             ToolTipProperties.Text="{Binding Source={x:Static localization:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
+                             ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
             </Frame>
             
             <!-- Favorite Toggle Button -->
-            <Grid Grid.Column="5" Margin="5,0,0,0">
+            <Grid Grid.Column="6" Margin="5,0,0,0">
                 <Frame BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
                        BackgroundColor="Transparent"
                        Padding="3"
                        CornerRadius="8"
                        HasShadow="False"
                        IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                    <ImageButton Source="bookmark.png"
+                    <ImageButton Source="bookmark.svg"
                                  BackgroundColor="Transparent"
                                  Command="{Binding ToggleFavoriteCommand}"
                                  HeightRequest="28"
@@ -221,7 +242,7 @@
                        CornerRadius="8"
                        HasShadow="False"
                        IsVisible="{Binding IsFavorite}">
-                    <ImageButton Source="trash.png"
+                    <ImageButton Source="trash.svg"
                                  BackgroundColor="Transparent"
                                  Command="{Binding ToggleFavoriteCommand}"
                                  HeightRequest="28"

@@ -4,6 +4,7 @@ using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Localization;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
@@ -32,6 +33,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] private MediaElement _mediaElement;
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
+    [ObservableProperty] private bool _isLandscape;
     private double _previousVolume = 0.5;
     private ICommand _toggleMuteCommand;
 
@@ -80,7 +82,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
                 FilePath = FilePath,
                 FileSize = fileInfo.Length,
                 LastModified = fileInfo.LastWriteTime,
-                Resolution = $"{width}x{height}",
+                Resolution = $"{(int)Math.Round(width)}x{(int)Math.Round(height)}",
                 Duration = duration
             };
 
@@ -108,7 +110,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [RelayCommand]
     async Task CaptureScreenshot()
     {
-        var resources = TheLighthouseWavesPlayer.Localization.LocalizedResourcesProvider.Instance;
+        var resources = LocalizedResourcesProvider.Instance;
     
         if (MediaElement == null)
         {
@@ -286,7 +288,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
         try
         {
             var video = new VideoInfo
-                { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath) };
+                { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath), DurationMilliseconds = (long)VideoInfo.Duration.TotalMilliseconds };
 
             if (IsFavorite)
             {
@@ -331,5 +333,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex}");
         }
+    }
+    
+    [RelayCommand]
+    void GoBack()
+    {
+        Shell.Current.GoToAsync("..");
     }
 }

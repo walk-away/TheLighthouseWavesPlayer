@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
-using TheLighthouseWavesPlayer.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Converters;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 
 namespace TheLighthouseWavesPlayerVideoApp;
 
