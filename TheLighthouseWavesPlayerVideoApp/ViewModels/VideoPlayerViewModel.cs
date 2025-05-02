@@ -15,6 +15,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
     private readonly IFavoritesService _favoritesService;
     private readonly ISubtitleService _subtitleService;
     private readonly IScreenshotService _screenshotService;
+    private readonly IScreenWakeService _screenWakeService;
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
     [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
@@ -38,11 +39,12 @@ public partial class VideoPlayerViewModel : BaseViewModel
     private ICommand _toggleMuteCommand;
 
     public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService,
-        IScreenshotService screenshotService)
+        IScreenshotService screenshotService, IScreenWakeService screenWakeService)
     {
         _favoritesService = favoritesService;
         _subtitleService = subtitleService;
         _screenshotService = screenshotService;
+        _screenWakeService = screenWakeService;
         Title = "Player";
     }
 
@@ -335,9 +337,45 @@ public partial class VideoPlayerViewModel : BaseViewModel
         }
     }
     
+    partial void OnCurrentStateChanged(MediaElementState value)
+    {
+        if (value == MediaElementState.Playing)
+        {
+            _screenWakeService.KeepScreenOn();
+            System.Diagnostics.Debug.WriteLine("Media playing: Keeping screen on");
+        }
+        else if (value == MediaElementState.Stopped || 
+                 value == MediaElementState.Paused ||
+                 value == MediaElementState.Failed ||
+                 value == MediaElementState.None)
+        {
+            _screenWakeService.AllowScreenSleep();
+            System.Diagnostics.Debug.WriteLine("Media not playing: Allowing screen to sleep");
+        }
+        
+        if ((value == MediaElementState.Paused || value == MediaElementState.Stopped) &&
+            MediaElement?.Position > TimeSpan.Zero)
+        {
+            SavePosition(MediaElement.Position);
+        }
+    }
+    
+    public void Cleanup()
+    {
+        _screenWakeService.AllowScreenSleep();
+        System.Diagnostics.Debug.WriteLine("ViewModel cleanup: Allowing screen to sleep");
+        
+        if (MediaElement?.Position > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
+        {
+            SavePosition(MediaElement.Position);
+        }
+    }
+    
     [RelayCommand]
     void GoBack()
     {
         Shell.Current.GoToAsync("..");
     }
+    
+    
 }

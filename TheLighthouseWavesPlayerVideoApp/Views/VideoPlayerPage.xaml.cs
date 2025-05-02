@@ -303,4 +303,11 @@ public partial class VideoPlayerPage : ContentPage
         UpdateOrientationState();
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing finished.");
     }
+    
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+    
+        (_viewModel as VideoPlayerViewModel)?.Cleanup();
+    }
 }

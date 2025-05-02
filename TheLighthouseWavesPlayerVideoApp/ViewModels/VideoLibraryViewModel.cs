@@ -8,7 +8,7 @@ using TheLighthouseWavesPlayerVideoApp.Views;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public partial class VideoLibraryViewModel : BaseViewModel
+public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 {
     private readonly IVideoDiscoveryService _videoDiscoveryService;
     private readonly IFavoritesService _favoritesService;
@@ -20,6 +20,8 @@ public partial class VideoLibraryViewModel : BaseViewModel
     [ObservableProperty] string _searchText = string.Empty;
     [ObservableProperty] ObservableCollection<SortOption> _sortOptions;
     [ObservableProperty] SortOption _selectedSortOption;
+    private string _lastSelectedSortProperty;
+    private bool _lastSelectedSortIsAscending;
 
     public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService, IFavoritesService favoritesService, ILocalizedResourcesProvider resourcesProvider)
     {
@@ -31,6 +33,19 @@ public partial class VideoLibraryViewModel : BaseViewModel
         AllVideos = new ObservableCollection<VideoInfo>();
         Videos = new ObservableCollection<VideoInfo>();
         
+        _lastSelectedSortProperty = "Title";
+        _lastSelectedSortIsAscending = true;
+        
+        InitializeSortOptions();
+        
+        if (resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged += OnResourceProviderPropertyChanged;
+        }
+    }
+
+    private void InitializeSortOptions()
+    {
         SortOptions = new ObservableCollection<SortOption>
         {
             new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
@@ -42,6 +57,39 @@ public partial class VideoLibraryViewModel : BaseViewModel
         SelectedSortOption = SortOptions[0];
     }
 
+    private void UpdateSortOptions()
+    {
+        if (SelectedSortOption != null)
+        {
+            _lastSelectedSortProperty = SelectedSortOption.Property;
+            _lastSelectedSortIsAscending = SelectedSortOption.IsAscending;
+        }
+        
+        var newSortOptions = new ObservableCollection<SortOption>
+        {
+            new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
+            new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
+            new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
+            new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
+        };
+        
+        SortOptions = newSortOptions;
+        
+        SelectedSortOption = SortOptions.FirstOrDefault(
+            o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending) 
+            ?? SortOptions[0];
+    }
+
+    private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "Item")
+        {
+            Title = _resourcesProvider["Library_Title"];
+            
+            UpdateSortOptions();
+        }
+    }
+
     partial void OnSearchTextChanged(string value)
     {
         ApplyFilters();
@@ -49,6 +97,11 @@ public partial class VideoLibraryViewModel : BaseViewModel
 
     partial void OnSelectedSortOptionChanged(SortOption value)
     {
+        if (value != null)
+        {
+            _lastSelectedSortProperty = value.Property;
+            _lastSelectedSortIsAscending = value.IsAscending;
+        }
         ApplyFilters();
     }
 
@@ -169,5 +222,13 @@ public partial class VideoLibraryViewModel : BaseViewModel
     public async Task OnAppearing()
     {
         await LoadVideos();
+    }
+    
+    public void Dispose()
+    {
+        if (_resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
+        }
     }
 }

@@ -21,4 +21,9 @@ public partial class FavoritesPage : ContentPage
             await _viewModel.OnAppearing();
         }
     }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+    }
 }
