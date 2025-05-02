@@ -1,23 +1,28 @@
-﻿using System.Windows.Input;
-using CommunityToolkit.Maui.Core.Primitives;
+﻿using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
-using TheLighthouseWavesPlayerVideoApp.Localization;
+using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 [QueryProperty(nameof(FilePath), "FilePath")]
-public partial class VideoPlayerViewModel : BaseViewModel
+public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 {
     private readonly IFavoritesService _favoritesService;
     private readonly ISubtitleService _subtitleService;
     private readonly IScreenshotService _screenshotService;
     private readonly IScreenWakeService _screenWakeService;
+    private readonly ILocalizedResourcesProvider _resourcesProvider;
+    
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
+    private double _previousVolume = 0.5;
+    private bool _isDisposed = false;
+    private readonly SemaphoreSlim _metadataUpdateLock = new SemaphoreSlim(1, 1);
+    
     [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
     [ObservableProperty] string _filePath;
     [ObservableProperty] MediaSource _videoSource;
@@ -35,32 +40,54 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
     [ObservableProperty] private bool _isLandscape;
-    private double _previousVolume = 0.5;
-    private ICommand _toggleMuteCommand;
-
-    public VideoPlayerViewModel(IFavoritesService favoritesService, ISubtitleService subtitleService,
-        IScreenshotService screenshotService, IScreenWakeService screenWakeService)
+    
+    public VideoPlayerViewModel(
+        IFavoritesService favoritesService, 
+        ISubtitleService subtitleService,
+        IScreenshotService screenshotService, 
+        IScreenWakeService screenWakeService,
+        ILocalizedResourcesProvider resourcesProvider)
     {
         _favoritesService = favoritesService;
         _subtitleService = subtitleService;
         _screenshotService = screenshotService;
         _screenWakeService = screenWakeService;
-        Title = "Player";
+        _resourcesProvider = resourcesProvider;
+        Title = _resourcesProvider["Player_Title"];
+        
+        if (resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged += OnResourceProviderPropertyChanged;
+        }
+    }
+
+    private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "Item")
+        {
+            Title = _resourcesProvider["Player_Title"];
+        }
     }
 
     partial void OnSliderVolumeChanged(double value)
     {
-        if (MediaElement != null)
-            MediaElement.Volume = value * VolumeAmplification;
+        UpdateMediaElementVolume();
     }
 
     partial void OnVolumeAmplificationChanged(double value)
     {
-        if (MediaElement != null)
-            MediaElement.Volume = SliderVolume * value;
+        UpdateMediaElementVolume();
     }
 
-    public void UpdateVideoMetadata(double width, double height, TimeSpan duration)
+    internal void UpdateMediaElementVolume()
+    {
+        if (MediaElement != null)
+        {
+            MediaElement.Volume = SliderVolume * VolumeAmplification;
+        }
+    }
+
+    public async Task UpdateVideoMetadataAsync(double width, double height, TimeSpan duration)
     {
         if (string.IsNullOrEmpty(FilePath))
         {
@@ -71,10 +98,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
         if (width <= 0 || height <= 0 || duration <= TimeSpan.Zero)
         {
             System.Diagnostics.Debug.WriteLine(
-                $"UpdateVideoMetadata skipped: Invalid dimensions or duration (W:{width}, H:{height}, D:{duration}). Waiting for valid data.");
+                $"UpdateVideoMetadata skipped: Invalid dimensions or duration (W:{width}, H:{height}, D:{duration}).");
             return;
         }
 
+        await _metadataUpdateLock.WaitAsync();
         try
         {
             var fileInfo = new FileInfo(FilePath);
@@ -101,6 +129,10 @@ public partial class VideoPlayerViewModel : BaseViewModel
             System.Diagnostics.Debug.WriteLine($"Error loading video metadata: {ex.Message}");
             VideoInfo = new VideoMetadata { FileName = "Error loading metadata" };
         }
+        finally
+        {
+            _metadataUpdateLock.Release();
+        }
     }
 
     [RelayCommand]
@@ -112,11 +144,12 @@ public partial class VideoPlayerViewModel : BaseViewModel
     [RelayCommand]
     async Task CaptureScreenshot()
     {
-        var resources = LocalizedResourcesProvider.Instance;
-    
         if (MediaElement == null)
         {
-            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], resources["Player_Error_Playback"], "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Player_Error_Title"], 
+                _resourcesProvider["Player_Error_Playback"], 
+                _resourcesProvider["Button_OK"]);
             return;
         }
 
@@ -126,20 +159,26 @@ public partial class VideoPlayerViewModel : BaseViewModel
 
             string filePathOrUri = await _screenshotService.CaptureScreenshotAsync(MediaElement);
 
-            await Shell.Current.DisplayAlert(resources["Player_Screenshot_Success"], 
-                resources["Player_Screenshot_Success"], "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Player_Screenshot_Success"], 
+                _resourcesProvider["Player_Screenshot_Success"], 
+                _resourcesProvider["Button_OK"]);
         }
         catch (UnauthorizedAccessException authEx)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot permission error: {authEx.Message}");
-            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], 
-                resources["Player_Permission_Error"], "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Player_Error_Title"], 
+                _resourcesProvider["Player_Permission_Error"], 
+                _resourcesProvider["Button_OK"]);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot error: {ex.Message}");
-            await Shell.Current.DisplayAlert(resources["Player_Error_Title"], 
-                resources["Player_Screenshot_Error"], "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Player_Error_Title"], 
+                _resourcesProvider["Player_Screenshot_Error"], 
+                _resourcesProvider["Button_OK"]);
         }
         finally
         {
@@ -160,7 +199,7 @@ public partial class VideoPlayerViewModel : BaseViewModel
         else
         {
             VideoSource = null;
-            Title = "Player";
+            Title = _resourcesProvider["Player_Title"];
             IsFavorite = false;
             CurrentState = MediaElementState.None;
             ShouldResumePlayback = false;
@@ -174,29 +213,67 @@ public partial class VideoPlayerViewModel : BaseViewModel
     {
         if (string.IsNullOrEmpty(FilePath)) return;
 
-        string directory = Path.GetDirectoryName(FilePath) ?? string.Empty;
-        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(FilePath);
-        string srtFilePath = Path.Combine(directory, $"{fileNameWithoutExt}.srt");
-
-        _subtitles = await _subtitleService.LoadSubtitlesAsync(srtFilePath);
-        HasSubtitles = _subtitles.Count > 0;
-
-        if (HasSubtitles)
+        try
         {
-            System.Diagnostics.Debug.WriteLine($"Loaded {_subtitles.Count} subtitles from {srtFilePath}");
+            string directory = Path.GetDirectoryName(FilePath) ?? string.Empty;
+            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(FilePath);
+            string srtFilePath = Path.Combine(directory, $"{fileNameWithoutExt}.srt");
+
+            _subtitles = await _subtitleService.LoadSubtitlesAsync(srtFilePath);
+            HasSubtitles = _subtitles.Count > 0;
+
+            if (HasSubtitles)
+            {
+                System.Diagnostics.Debug.WriteLine($"Loaded {_subtitles.Count} subtitles from {srtFilePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading subtitles: {ex.Message}");
+            HasSubtitles = false;
+            _subtitles.Clear();
         }
     }
-
+    
     public void UpdateSubtitles(TimeSpan position)
     {
-        if (!HasSubtitles || !AreSubtitlesEnabled)
+        if (!HasSubtitles || !AreSubtitlesEnabled || _subtitles.Count == 0)
         {
-            CurrentSubtitleText = string.Empty;
+            if (CurrentSubtitleText != string.Empty)
+                CurrentSubtitleText = string.Empty;
             return;
         }
+        
+        int left = 0;
+        int right = _subtitles.Count - 1;
+        SubtitleItem activeSubtitle = null;
 
-        var subtitle = _subtitles.FirstOrDefault(s => s.IsActiveAt(position));
-        CurrentSubtitleText = subtitle?.Text ?? string.Empty;
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            var subtitle = _subtitles[mid];
+
+            if (subtitle.IsActiveAt(position))
+            {
+                activeSubtitle = subtitle;
+                break;
+            }
+
+            if (position < subtitle.StartTime)
+            {
+                right = mid - 1;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+
+        string newText = activeSubtitle?.Text ?? string.Empty;
+        if (CurrentSubtitleText != newText)
+        {
+            CurrentSubtitleText = newText;
+        }
     }
 
     [RelayCommand]
@@ -245,7 +322,6 @@ public partial class VideoPlayerViewModel : BaseViewModel
     {
         if (string.IsNullOrEmpty(FilePath) || currentPosition <= TimeSpan.Zero) return;
 
-
         string key = PositionPreferenceKeyPrefix + FilePath;
         Preferences.Set(key, currentPosition.Ticks);
         System.Diagnostics.Debug.WriteLine($"Saved position for {FilePath}: {currentPosition}");
@@ -273,13 +349,15 @@ public partial class VideoPlayerViewModel : BaseViewModel
 
         if (MediaElement.Volume > 0)
         {
-            _previousVolume = MediaElement.Volume;
-            MediaElement.Volume = 0;
+            _previousVolume = SliderVolume;
+            SliderVolume = 0;
         }
         else
         {
-            MediaElement.Volume = _previousVolume > 0 ? _previousVolume : 0.5;
+            SliderVolume = _previousVolume > 0 ? _previousVolume : 0.5;
         }
+        
+        UpdateMediaElementVolume();
     }
 
     [RelayCommand]
@@ -290,7 +368,11 @@ public partial class VideoPlayerViewModel : BaseViewModel
         try
         {
             var video = new VideoInfo
-                { FilePath = this.FilePath, Title = Path.GetFileNameWithoutExtension(this.FilePath), DurationMilliseconds = (long)VideoInfo.Duration.TotalMilliseconds };
+            {
+                FilePath = this.FilePath,
+                Title = Path.GetFileNameWithoutExtension(this.FilePath),
+                DurationMilliseconds = (long)VideoInfo.Duration.TotalMilliseconds
+            };
 
             if (IsFavorite)
             {
@@ -306,7 +388,10 @@ public partial class VideoPlayerViewModel : BaseViewModel
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error toggling favorite in player: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Error_Title"], 
+                _resourcesProvider["Error_Favorites_Update"], 
+                _resourcesProvider["Button_OK"]);
         }
     }
     
@@ -362,6 +447,8 @@ public partial class VideoPlayerViewModel : BaseViewModel
     
     public void Cleanup()
     {
+        if (_isDisposed) return;
+        
         _screenWakeService.AllowScreenSleep();
         System.Diagnostics.Debug.WriteLine("ViewModel cleanup: Allowing screen to sleep");
         
@@ -369,6 +456,8 @@ public partial class VideoPlayerViewModel : BaseViewModel
         {
             SavePosition(MediaElement.Position);
         }
+        
+        MediaElement = null;
     }
     
     [RelayCommand]
@@ -377,5 +466,18 @@ public partial class VideoPlayerViewModel : BaseViewModel
         Shell.Current.GoToAsync("..");
     }
     
-    
+    public void Dispose()
+    {
+        if (_isDisposed) return;
+        
+        if (_resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
+        }
+        
+        Cleanup();
+        _metadataUpdateLock?.Dispose();
+        
+        _isDisposed = true;
+    }
 }

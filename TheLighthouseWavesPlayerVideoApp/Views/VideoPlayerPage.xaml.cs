@@ -2,11 +2,10 @@
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
 using CommunityToolkit.Maui.Views;
-using TheLighthouseWavesPlayerVideoApp.Localization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class VideoPlayerPage : ContentPage
+public partial class VideoPlayerPage : ContentPage, IDisposable
 {
     private readonly VideoPlayerViewModel _viewModel;
     private bool _isSeekingFromResume = false;
@@ -14,30 +13,119 @@ public partial class VideoPlayerPage : ContentPage
     private bool _metadataSuccessfullyUpdated = false;
     private bool _isPageActive = false;
     private System.Timers.Timer? _metadataRetryTimer;
+    private bool _isDisposed = false;
+    private readonly object _eventLock = new object();
+    private bool _eventsSubscribed = false;
 
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
         _viewModel = viewModel;
+    }
 
-        SizeChanged += OnPageSizeChanged;
+    private void SubscribeToEvents()
+    {
+        lock (_eventLock)
+        {
+            if (!_eventsSubscribed)
+            {
+                SizeChanged += OnPageSizeChanged;
+
+                if (mediaElement != null)
+                {
+                    mediaElement.StateChanged += MediaElement_StateChanged;
+                    mediaElement.MediaOpened += MediaElement_MediaOpened;
+                    mediaElement.MediaEnded += MediaElement_MediaEnded;
+                    mediaElement.PositionChanged += MediaElement_PositionChanged;
+                    mediaElement.MediaFailed += MediaElement_MediaFailed;
+                }
+
+                _eventsSubscribed = true;
+                System.Diagnostics.Debug.WriteLine("Events subscribed");
+            }
+        }
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        lock (_eventLock)
+        {
+            if (_eventsSubscribed)
+            {
+                SizeChanged -= OnPageSizeChanged;
+
+                if (mediaElement != null)
+                {
+                    mediaElement.StateChanged -= MediaElement_StateChanged;
+                    mediaElement.MediaOpened -= MediaElement_MediaOpened;
+                    mediaElement.MediaEnded -= MediaElement_MediaEnded;
+                    mediaElement.PositionChanged -= MediaElement_PositionChanged;
+                    mediaElement.MediaFailed -= MediaElement_MediaFailed;
+                }
+
+                _eventsSubscribed = false;
+                System.Diagnostics.Debug.WriteLine("Events unsubscribed");
+            }
+        }
+    }
+
+    private void MediaElement_MediaFailed(object sender, MediaFailedEventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine($"Media failed: {e.ErrorMessage}");
+
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+                await Shell.Current.DisplayAlert(
+                    resources["Player_Error_Title"],
+                    $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
+                    resources["Button_OK"]);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error displaying failure dialog: {ex.Message}");
+            }
+        });
     }
 
     private void OnPageSizeChanged(object sender, EventArgs e)
     {
-        UpdateOrientationState();
+        try
+        {
+            UpdateOrientationState();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error updating orientation state: {ex.Message}");
+        }
     }
 
     private void UpdateOrientationState()
     {
         string orientationState = Width > Height ? "Landscape" : "Portrait";
-        VisualStateManager.GoToState(this, orientationState);
-        Shell.SetNavBarIsVisible(this, orientationState == "Portrait");
-        
-        if (BackButtonFrame != null)
+        bool isLandscape = orientationState == "Landscape";
+
+        try
         {
-            BackButtonFrame.IsVisible = orientationState == "Landscape";
+            VisualStateManager.GoToState(this, orientationState);
+            Shell.SetNavBarIsVisible(this, !isLandscape);
+
+            if (BackButtonFrame != null)
+            {
+                BackButtonFrame.IsVisible = isLandscape;
+            }
+            
+            if (_viewModel != null)
+            {
+                _viewModel.IsLandscape = isLandscape;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to update visual state: {ex.Message}");
         }
     }
 
@@ -48,36 +136,49 @@ public partial class VideoPlayerPage : ContentPage
         _viewModel.CurrentState = e.NewState;
         System.Diagnostics.Debug.WriteLine($"MediaElement State: {e.NewState}");
 
-        if (!_metadataSuccessfullyUpdated &&
-            (e.NewState == MediaElementState.Playing || e.NewState == MediaElementState.Buffering))
+        try
         {
-            System.Diagnostics.Debug.WriteLine($"Attempting metadata update on state change to {e.NewState}.");
-            TryUpdateMetadata();
-        }
-
-
-        if (!_isSeekingFromResume &&
-            (e.NewState == MediaElementState.Paused || e.NewState == MediaElementState.Stopped))
-        {
-            if (mediaElement.Position > TimeSpan.Zero)
+            if (!_metadataSuccessfullyUpdated &&
+                (e.NewState == MediaElementState.Playing || e.NewState == MediaElementState.Buffering))
             {
-                _viewModel.SavePosition(mediaElement.Position);
+                System.Diagnostics.Debug.WriteLine($"Attempting metadata update on state change to {e.NewState}.");
+                TryUpdateMetadata();
+            }
+
+            if (!_isSeekingFromResume &&
+                (e.NewState == MediaElementState.Paused || e.NewState == MediaElementState.Stopped))
+            {
+                if (mediaElement.Position > TimeSpan.Zero)
+                {
+                    _viewModel.SavePosition(mediaElement.Position);
+                }
+            }
+
+            if (_isSeekingFromResume && e.NewState == MediaElementState.Playing)
+            {
+                _isSeekingFromResume = false;
             }
         }
-
-        if (_isSeekingFromResume && e.NewState == MediaElementState.Playing)
+        catch (Exception ex)
         {
-            _isSeekingFromResume = false;
+            System.Diagnostics.Debug.WriteLine($"Error in MediaElement_StateChanged: {ex.Message}");
         }
     }
 
     private void MediaElement_PositionChanged(object sender, MediaPositionChangedEventArgs e)
     {
-        var now = DateTime.UtcNow;
-        if ((now - _lastSubtitleUpdate).TotalMilliseconds > 200)
+        try
         {
-            _viewModel?.UpdateSubtitles(e.Position);
-            _lastSubtitleUpdate = now;
+            var now = DateTime.UtcNow;
+            if ((now - _lastSubtitleUpdate).TotalMilliseconds > 200)
+            {
+                _viewModel?.UpdateSubtitles(e.Position);
+                _lastSubtitleUpdate = now;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error updating subtitles: {ex.Message}");
         }
     }
 
@@ -96,7 +197,7 @@ public partial class VideoPlayerPage : ContentPage
             }
 
             _viewModel.MediaElement = mediaElement;
-            mediaElement.Volume = _viewModel.SliderVolume * _viewModel.VolumeAmplification;
+            _viewModel.UpdateMediaElementVolume();
 
             TryUpdateMetadata();
             if (!_metadataSuccessfullyUpdated)
@@ -106,18 +207,11 @@ public partial class VideoPlayerPage : ContentPage
 
             if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
             {
-                var title =
-                    LocalizedResourcesProvider.Instance[
-                        "Player_ResumeDialog_Title"];
-                var messageFormat =
-                    LocalizedResourcesProvider.Instance[
-                        "Player_ResumeDialog_Message"];
-                var resumeButton =
-                    LocalizedResourcesProvider.Instance[
-                        "Player_ResumeDialog_Resume"];
-                var startOverButton =
-                    LocalizedResourcesProvider.Instance[
-                        "Player_ResumeDialog_StartOver"];
+                var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+                var title = resources["Player_ResumeDialog_Title"];
+                var messageFormat = resources["Player_ResumeDialog_Message"];
+                var resumeButton = resources["Player_ResumeDialog_Resume"];
+                var startOverButton = resources["Player_ResumeDialog_StartOver"];
 
                 var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
                 var message = string.Format(messageFormat, formattedTime);
@@ -135,7 +229,6 @@ public partial class VideoPlayerPage : ContentPage
                     System.Diagnostics.Debug.WriteLine("User chose to start from beginning");
                     _viewModel.ClearSavedPosition();
                     mediaElement.Play();
-                    if (!_metadataSuccessfullyUpdated) SetupMetadataRetryTimer();
                 }
 
                 _viewModel.ShouldResumePlayback = false;
@@ -153,12 +246,11 @@ public partial class VideoPlayerPage : ContentPage
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
 
-            var errorTitle =
-                LocalizedResourcesProvider.Instance["Player_Error_Title"];
-            var errorMessage =
-                LocalizedResourcesProvider.Instance["Player_Error_Playback"];
-
-            await Shell.Current.DisplayAlert(errorTitle, errorMessage, "OK");
+            var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+            await Shell.Current.DisplayAlert(
+                resources["Player_Error_Title"],
+                resources["Player_Error_Playback"],
+                resources["Button_OK"]);
         }
     }
 
@@ -166,25 +258,38 @@ public partial class VideoPlayerPage : ContentPage
     {
         if (_metadataSuccessfullyUpdated || _viewModel == null || mediaElement == null) return;
 
-        var currentWidth = mediaElement.Width;
-        var currentHeight = mediaElement.Height;
-        var currentDuration = mediaElement.Duration;
-
-        System.Diagnostics.Debug.WriteLine(
-            $"TryUpdateMetadata - Path: {_viewModel.FilePath}, W: {currentWidth}, H: {currentHeight}, D: {currentDuration}");
-
-        if (!string.IsNullOrEmpty(_viewModel.FilePath) && currentWidth > 0 && currentHeight > 0 &&
-            currentDuration > TimeSpan.Zero)
+        try
         {
-            _viewModel.UpdateVideoMetadata(currentWidth, currentHeight, currentDuration);
-            _metadataSuccessfullyUpdated = true;
+            var currentWidth = mediaElement.Width;
+            var currentHeight = mediaElement.Height;
+            var currentDuration = mediaElement.Duration;
 
-            StopAndDisposeRetryTimer();
-            System.Diagnostics.Debug.WriteLine("Metadata updated successfully. Retry timer stopped.");
+            System.Diagnostics.Debug.WriteLine(
+                $"TryUpdateMetadata - Path: {_viewModel.FilePath}, W: {currentWidth}, H: {currentHeight}, D: {currentDuration}");
+
+            if (!string.IsNullOrEmpty(_viewModel.FilePath) && currentWidth > 0 && currentHeight > 0 &&
+                currentDuration > TimeSpan.Zero)
+            {
+                Task.Run(async () =>
+                {
+                    await _viewModel.UpdateVideoMetadataAsync(currentWidth, currentHeight, currentDuration);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        _metadataSuccessfullyUpdated = true;
+                        StopAndDisposeRetryTimer();
+                        System.Diagnostics.Debug.WriteLine("Metadata updated successfully. Retry timer stopped.");
+                    });
+                });
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    "Metadata update skipped: Invalid data detected in TryUpdateMetadata.");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine("Metadata update skipped: Invalid data detected in TryUpdateMetadata.");
+            System.Diagnostics.Debug.WriteLine($"Error in TryUpdateMetadata: {ex.Message}");
         }
     }
 
@@ -204,19 +309,26 @@ public partial class VideoPlayerPage : ContentPage
         System.Diagnostics.Debug.WriteLine("Metadata retry timer elapsed.");
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            TryUpdateMetadata();
-            if (!_metadataSuccessfullyUpdated)
+            if (!_isDisposed)
             {
-                System.Diagnostics.Debug.WriteLine("Metadata still not updated after retry.");
+                TryUpdateMetadata();
+                if (!_metadataSuccessfullyUpdated)
+                {
+                    System.Diagnostics.Debug.WriteLine("Metadata still not updated after retry.");
+                }
             }
         });
     }
 
     private void StopAndDisposeRetryTimer()
     {
-        _metadataRetryTimer?.Stop();
-        _metadataRetryTimer?.Dispose();
-        _metadataRetryTimer = null;
+        if (_metadataRetryTimer != null)
+        {
+            _metadataRetryTimer.Elapsed -= OnMetadataRetryTimerElapsed;
+            _metadataRetryTimer.Stop();
+            _metadataRetryTimer.Dispose();
+            _metadataRetryTimer = null;
+        }
     }
 
     private void MediaElement_MediaEnded(object sender, EventArgs e)
@@ -242,15 +354,8 @@ public partial class VideoPlayerPage : ContentPage
         }
 
         _viewModel?.OnNavigatedFrom(currentPosition);
-
-        // SizeChanged -= OnPageSizeChanged;
-        // if (mediaElement != null)
-        // {
-        //     mediaElement.StateChanged -= MediaElement_StateChanged;
-        //     mediaElement.MediaOpened -= MediaElement_MediaOpened;
-        //     mediaElement.MediaEnded -= MediaElement_MediaEnded;
-        //     mediaElement.PositionChanged -= MediaElement_PositionChanged;
-        // }
+        
+        UnsubscribeFromEvents();
 
         base.OnNavigatedFrom(args);
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
@@ -262,9 +367,8 @@ public partial class VideoPlayerPage : ContentPage
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing started.");
         _isPageActive = true;
         _metadataSuccessfullyUpdated = false;
-
-        SizeChanged -= OnPageSizeChanged;
-        SizeChanged += OnPageSizeChanged;
+        
+        SubscribeToEvents();
 
         if (_viewModel != null && !string.IsNullOrEmpty(_viewModel.FilePath) && mediaElement != null)
         {
@@ -272,7 +376,6 @@ public partial class VideoPlayerPage : ContentPage
 
             System.Diagnostics.Debug.WriteLine(
                 $"OnAppearing: FilePath={_viewModel.FilePath}, ShouldResume={_viewModel.ShouldResumePlayback}, ResumePosition={_viewModel.ResumePosition}, LastKnownPosition={_viewModel.LastKnownPosition}");
-
 
             if (mediaElement.Source == null ||
                 (mediaElement.Source is FileMediaSource fms && fms.Path != _viewModel.FilePath))
@@ -282,16 +385,6 @@ public partial class VideoPlayerPage : ContentPage
                 _viewModel.VideoSource = MediaSource.FromFile(_viewModel.FilePath);
                 await Task.Delay(100);
             }
-
-            mediaElement.StateChanged -= MediaElement_StateChanged;
-            mediaElement.MediaOpened -= MediaElement_MediaOpened;
-            mediaElement.MediaEnded -= MediaElement_MediaEnded;
-            mediaElement.PositionChanged -= MediaElement_PositionChanged;
-
-            mediaElement.StateChanged += MediaElement_StateChanged;
-            mediaElement.MediaOpened += MediaElement_MediaOpened;
-            mediaElement.MediaEnded += MediaElement_MediaEnded;
-            mediaElement.PositionChanged += MediaElement_PositionChanged;
 
             await _viewModel.CheckFavoriteStatusAsync();
         }
@@ -303,11 +396,22 @@ public partial class VideoPlayerPage : ContentPage
         UpdateOrientationState();
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing finished.");
     }
-    
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-    
-        (_viewModel as VideoPlayerViewModel)?.Cleanup();
+
+        _viewModel?.Cleanup();
+    }
+
+    public void Dispose()
+    {
+        if (_isDisposed) return;
+
+        UnsubscribeFromEvents();
+        StopAndDisposeRetryTimer();
+        _viewModel?.Dispose();
+
+        _isDisposed = true;
     }
 }

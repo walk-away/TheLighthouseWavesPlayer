@@ -60,6 +60,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string Button_OK {
+            get {
+                return ResourceManager.GetString("Button_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Избранных видео пока нет..
         /// </summary>
         internal static string Favorites_NoVideos {
