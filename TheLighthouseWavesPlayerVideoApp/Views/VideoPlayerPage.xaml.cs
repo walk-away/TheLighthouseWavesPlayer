@@ -16,6 +16,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     private bool _isDisposed = false;
     private readonly object _eventLock = new object();
     private bool _eventsSubscribed = false;
+    private bool _resumeDialogShown = false;
 
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
@@ -30,8 +31,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         {
             if (!_eventsSubscribed)
             {
+                UnsubscribeFromEvents();
+                
                 SizeChanged += OnPageSizeChanged;
-
+                
                 if (mediaElement != null)
                 {
                     mediaElement.StateChanged += MediaElement_StateChanged;
@@ -40,7 +43,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                     mediaElement.PositionChanged += MediaElement_PositionChanged;
                     mediaElement.MediaFailed += MediaElement_MediaFailed;
                 }
-
+                
                 _eventsSubscribed = true;
                 System.Diagnostics.Debug.WriteLine("Events subscribed");
             }
@@ -51,22 +54,19 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     {
         lock (_eventLock)
         {
-            if (_eventsSubscribed)
+            SizeChanged -= OnPageSizeChanged;
+
+            if (mediaElement != null)
             {
-                SizeChanged -= OnPageSizeChanged;
-
-                if (mediaElement != null)
-                {
-                    mediaElement.StateChanged -= MediaElement_StateChanged;
-                    mediaElement.MediaOpened -= MediaElement_MediaOpened;
-                    mediaElement.MediaEnded -= MediaElement_MediaEnded;
-                    mediaElement.PositionChanged -= MediaElement_PositionChanged;
-                    mediaElement.MediaFailed -= MediaElement_MediaFailed;
-                }
-
-                _eventsSubscribed = false;
-                System.Diagnostics.Debug.WriteLine("Events unsubscribed");
+                mediaElement.StateChanged -= MediaElement_StateChanged;
+                mediaElement.MediaOpened -= MediaElement_MediaOpened;
+                mediaElement.MediaEnded -= MediaElement_MediaEnded;
+                mediaElement.PositionChanged -= MediaElement_PositionChanged;
+                mediaElement.MediaFailed -= MediaElement_MediaFailed;
             }
+            
+            _eventsSubscribed = false;
+            System.Diagnostics.Debug.WriteLine("Events unsubscribed");
         }
     }
 
@@ -182,13 +182,13 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
+  
     private async void MediaElement_MediaOpened(object sender, EventArgs e)
     {
         try
         {
             System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
-            _metadataSuccessfullyUpdated = false;
-
+            
             if (_viewModel == null || mediaElement == null || !_isPageActive)
             {
                 System.Diagnostics.Debug.WriteLine(
@@ -204,9 +204,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 SetupMetadataRetryTimer();
             }
-
-            if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero)
+            
+            if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero && !_resumeDialogShown)
             {
+                _resumeDialogShown = true;
+                
                 var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
                 var title = resources["Player_ResumeDialog_Title"];
                 var messageFormat = resources["Player_ResumeDialog_Message"];
@@ -216,13 +218,16 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
                 var message = string.Format(messageFormat, formattedTime);
 
+                System.Diagnostics.Debug.WriteLine("Showing resume dialog");
                 bool resume = await DisplayAlert(title, message, resumeButton, startOverButton);
+                System.Diagnostics.Debug.WriteLine($"Resume dialog result: {resume}");
 
                 if (resume)
                 {
                     System.Diagnostics.Debug.WriteLine($"User chose to resume at: {_viewModel.ResumePosition}");
                     _isSeekingFromResume = true;
                     mediaElement.SeekTo(_viewModel.ResumePosition);
+                    mediaElement.Play();
                 }
                 else
                 {
@@ -233,7 +238,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
                 _viewModel.ShouldResumePlayback = false;
             }
-            else
+            else if (!_resumeDialogShown)
             {
                 System.Diagnostics.Debug.WriteLine("Starting playback from beginning or letting AutoPlay handle it.");
                 if (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing)
@@ -245,11 +250,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
-
+            
             var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
             await Shell.Current.DisplayAlert(
-                resources["Player_Error_Title"],
-                resources["Player_Error_Playback"],
+                resources["Player_Error_Title"], 
+                resources["Player_Error_Playback"], 
                 resources["Button_OK"]);
         }
     }
@@ -342,6 +347,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom started.");
         _isPageActive = false;
+        _resumeDialogShown = false;
         StopAndDisposeRetryTimer();
 
         TimeSpan currentPosition = TimeSpan.Zero;
@@ -367,7 +373,9 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing started.");
         _isPageActive = true;
         _metadataSuccessfullyUpdated = false;
+        _resumeDialogShown = false;
         
+        UnsubscribeFromEvents();
         SubscribeToEvents();
 
         if (_viewModel != null && !string.IsNullOrEmpty(_viewModel.FilePath) && mediaElement != null)
