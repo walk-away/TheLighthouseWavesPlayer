@@ -8,7 +8,7 @@ using TheLighthouseWavesPlayerVideoApp.Views;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public partial class FavoritesViewModel : BaseViewModel
+public partial class FavoritesViewModel : BaseViewModel, IDisposable
 {
     private readonly IFavoritesService _favoritesService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
@@ -18,6 +18,8 @@ public partial class FavoritesViewModel : BaseViewModel
     [ObservableProperty] string _searchText;
     [ObservableProperty] ObservableCollection<SortOption> _sortOptions;
     [ObservableProperty] SortOption _selectedSortOption;
+    private string _lastSelectedSortProperty;
+    private bool _lastSelectedSortIsAscending;
 
     public FavoritesViewModel(IFavoritesService favoritesService, ILocalizedResourcesProvider resourcesProvider)
     {
@@ -28,6 +30,27 @@ public partial class FavoritesViewModel : BaseViewModel
         AllFavoriteVideos = new ObservableCollection<VideoInfo>();
         FavoriteVideos = new ObservableCollection<VideoInfo>();
 
+        _lastSelectedSortProperty = "Title";
+        _lastSelectedSortIsAscending = true;
+
+        InitializeSortOptions();
+        
+        if (resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == "Item")
+                {
+                    Title = _resourcesProvider["Favorites_Title"];
+                    
+                    UpdateSortOptions();
+                }
+            };
+        }
+    }
+    
+    private void InitializeSortOptions()
+    {
         SortOptions = new ObservableCollection<SortOption>
         {
             new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
@@ -38,6 +61,29 @@ public partial class FavoritesViewModel : BaseViewModel
 
         SelectedSortOption = SortOptions[0];
     }
+    
+    private void UpdateSortOptions()
+    {
+        if (SelectedSortOption != null)
+        {
+            _lastSelectedSortProperty = SelectedSortOption.Property;
+            _lastSelectedSortIsAscending = SelectedSortOption.IsAscending;
+        }
+        
+        var newSortOptions = new ObservableCollection<SortOption>
+        {
+            new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
+            new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
+            new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
+            new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
+        };
+        
+        SortOptions = newSortOptions;
+        
+        SelectedSortOption = SortOptions.FirstOrDefault(
+                                 o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending) 
+                             ?? SortOptions[0];
+    }
 
     partial void OnSearchTextChanged(string value)
     {
@@ -46,6 +92,11 @@ public partial class FavoritesViewModel : BaseViewModel
 
     partial void OnSelectedSortOptionChanged(SortOption value)
     {
+        if (value != null)
+        {
+            _lastSelectedSortProperty = value.Property;
+            _lastSelectedSortIsAscending = value.IsAscending;
+        }
         ApplyFilters();
     }
 
@@ -160,6 +211,23 @@ public partial class FavoritesViewModel : BaseViewModel
         {
             System.Diagnostics.Debug.WriteLine($"Error removing favorite: {ex.Message}");
             await Shell.Current.DisplayAlert("Error", "Could not remove favorite.", "OK");
+        }
+    }
+    
+    public void Dispose()
+    {
+        if (_resourcesProvider is ObservableObject observableProvider)
+        {
+            observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
+        }
+    }
+
+    private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "Item")
+        {
+            Title = _resourcesProvider["Favorites_Title"];
+            UpdateSortOptions();
         }
     }
 }

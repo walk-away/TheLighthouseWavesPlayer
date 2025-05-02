@@ -23,6 +23,11 @@ public partial class VideoLibraryPage : ContentPage
         }
     }
     
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+    }
+    
     private async void AnimateItems()
     {
         if (Content is Grid grid && grid.Children.Count > 0)
