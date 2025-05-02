@@ -13,11 +13,12 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly ILocalizationManager _localizationManager;
     private readonly IThemeService _themeService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
-
     [ObservableProperty] private ObservableCollection<LanguageOption> _availableLanguages;
     [ObservableProperty] private LanguageOption _selectedLanguage;
     [ObservableProperty] private ObservableCollection<ThemeOption> _availableThemes;
     [ObservableProperty] private ThemeOption _selectedTheme;
+    [ObservableProperty] private string _pageTitle;
+    [ObservableProperty] private string _languageLabel;
 
     public SettingsViewModel(
         ILocalizationManager localizationManager,
@@ -27,8 +28,8 @@ public partial class SettingsViewModel : BaseViewModel
         _localizationManager = localizationManager;
         _themeService = themeService;
         _resourcesProvider = resourcesProvider;
-
-        Title = resourcesProvider["Settings_PageTitle"];
+        _pageTitle = resourcesProvider["Settings_PageTitle"];
+        _languageLabel = resourcesProvider["Settings_LanguageLabel"];
 
         AvailableLanguages = new ObservableCollection<LanguageOption>
         {
@@ -56,6 +57,20 @@ public partial class SettingsViewModel : BaseViewModel
         };
     }
 
+    private void UpdateThemeOptionsLabels()
+    {
+        var themes = new ObservableCollection<ThemeOption>
+        {
+            new() { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light },
+            new() { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark },
+            new() { Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified }
+        };
+
+        var selectedTheme = SelectedTheme?.Theme ?? AppTheme.Unspecified;
+        AvailableThemes = themes;
+        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == selectedTheme);
+    }
+
     partial void OnSelectedLanguageChanged(LanguageOption value)
     {
         if (value != null)
@@ -71,16 +86,6 @@ public partial class SettingsViewModel : BaseViewModel
         if (value != null)
         {
             _themeService.SetTheme(value.Theme);
-        }
-    }
-
-    private void UpdateThemeOptionsLabels()
-    {
-        if (AvailableThemes != null)
-        {
-            AvailableThemes[0].Name = _resourcesProvider["Settings_ThemeLight"];
-            AvailableThemes[1].Name = _resourcesProvider["Settings_ThemeDark"];
-            AvailableThemes[2].Name = _resourcesProvider["Settings_ThemeSystem"];
         }
     }
 
