@@ -22,7 +22,6 @@ A modern video player application for Android built with .NET MAUI, featuring in
 ![App Screenshot](Screenshots/Screenshot(14).png)
 ![App Screenshot](Screenshots/Screenshot(15).png)
 ![App Screenshot](Screenshots/Screenshot(16).png)
-![App Screenshot](Screenshots/Screenshot(17).png)
 
 ### Example of using the application
 
