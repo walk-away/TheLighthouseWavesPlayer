@@ -1,0 +1,29 @@
+name: .NET MAUI CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest # MAUI Android builds require Windows or macOS
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x' # Specify your .NET version
+
+    - name: Install MAUI Workloads
+      run: dotnet workload install maui
+
+    - name: Restore Dependencies
+      run: dotnet restore TheLighthouseWavesPlayerVideoApp/TheLighthouseWavesPlayerVideoApp.csproj
+
+    - name: Build
+      run: dotnet build TheLighthouseWavesPlayerVideoApp/TheLighthouseWavesPlayerVideoApp.csproj -c Release -f net8.0-android --no-restore
