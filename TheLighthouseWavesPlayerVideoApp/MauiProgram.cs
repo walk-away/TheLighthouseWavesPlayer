@@ -41,6 +41,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILocalizationManager, LocalizationManager>();
         
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
+        builder.Services.AddSingleton<IPlaylistService, PlaylistService>();
         builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
         builder.Services.AddSingleton<ISubtitleService, SubtitleService>();
         builder.Services.AddSingleton<IScreenshotService, ScreenshotService>();
@@ -48,10 +49,12 @@ public static class MauiProgram
         builder.Services.AddTransient<VideoPlayerViewModel>();
         builder.Services.AddSingleton<VideoLibraryViewModel>();
         builder.Services.AddSingleton<FavoritesViewModel>();
+        builder.Services.AddSingleton<PlaylistsViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         
         builder.Services.AddTransient<VideoPlayerPage>();
         builder.Services.AddSingleton<VideoLibraryPage>();
+        builder.Services.AddSingleton<PlaylistsPage>();
         builder.Services.AddSingleton<FavoritesPage>();
         builder.Services.AddSingleton<SettingsPage>();
 

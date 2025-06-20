@@ -17,4 +17,6 @@ public partial class VideoInfo : ObservableObject
     private bool isFavorite;
 
     [Ignore] public TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMilliseconds);
+    
+    [Ignore] public string FormattedDuration => Duration.ToString(@"hh\:mm\:ss");
 }
