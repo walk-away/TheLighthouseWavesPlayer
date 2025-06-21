@@ -60,12 +60,6 @@
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
                                 
-                                <Label Text="{Binding Description}" 
-                                       IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"
-                                       FontSize="Small" 
-                                       TextColor="{AppThemeBinding Light=DarkGray, Dark=LightGray}"
-                                       Margin="0,0,0,5" />
-                                
                                 <StackLayout Orientation="Horizontal" Spacing="15">
                                     <Label Text="{Binding VideoCountDisplay}" FontSize="Small" />
                                     <Label Text="{Binding TotalDurationDisplay}" FontSize="Small" />
@@ -101,7 +95,6 @@
         <!-- Add New Playlist Panel -->
         <Grid Grid.Row="0" Grid.RowSpan="3" 
               BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
-              Opacity="0.9"
               IsVisible="{Binding IsAddingNewPlaylist}">
             
             <Frame VerticalOptions="Center" 
@@ -117,11 +110,7 @@
 
                     <Entry Placeholder="{Binding Path=[Playlists_Name], Source={x:Static localization:LocalizedResourcesProvider.Instance}}"
                            Text="{Binding NewPlaylistName}" />
-
-                    <Editor Placeholder="{Binding Path=[Playlists_Description], Source={x:Static localization:LocalizedResourcesProvider.Instance}}"
-                            Text="{Binding NewPlaylistDescription}"
-                            HeightRequest="100" />
-
+                    
                     <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="Center">
                         <Button Text="{Binding Path=[Playlists_Cancel], Source={x:Static localization:LocalizedResourcesProvider.Instance}}"
                                 Command="{Binding CancelAddNewPlaylistCommand}"

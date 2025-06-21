@@ -39,7 +39,6 @@ namespace TheLighthouseWavesPlayerVideoApp.Services
             var playlist = new Playlist
             {
                 Name = name,
-                Description = description,
                 CreatedDate = DateTime.Now,
                 LastModified = DateTime.Now
             };

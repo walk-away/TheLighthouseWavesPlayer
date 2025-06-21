@@ -9,9 +9,7 @@ public partial class Playlist : ObservableObject
     [PrimaryKey, AutoIncrement] public int Id { get; set; }
 
     [ObservableProperty] private string _name = string.Empty;
-
-    [ObservableProperty] private string _description = string.Empty;
-
+    
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     public DateTime LastModified { get; set; } = DateTime.Now;
