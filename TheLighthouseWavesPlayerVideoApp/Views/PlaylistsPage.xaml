@@ -55,7 +55,7 @@
                                                   CommandParameter="{Binding .}" />
                         </Frame.GestureRecognizers>
                         
-                        <Grid ColumnDefinitions="*, Auto">
+                        <Grid ColumnDefinitions="*, Auto, Auto">
                             <!-- Playlist Info -->
                             <StackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
@@ -66,8 +66,25 @@
                                 </StackLayout>
                             </StackLayout>
                             
-                            <!-- Delete Button -->
+                            <!-- Play Button - only visible when playlist has videos -->
                             <Button Grid.Column="1"
+                                    IsVisible="{Binding VideoCount, Converter={StaticResource GreaterThanZeroConverter}}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=PlayPlaylistCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Text="▶"
+                                    FontSize="Medium"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    Padding="0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                    TextColor="{AppThemeBinding Light=White, Dark=White}"
+                                    VerticalOptions="Start"
+                                    HorizontalOptions="End"
+                                    CornerRadius="20"
+                                    Margin="0,0,10,0" />
+                            
+                            <!-- Delete Button -->
+                            <Button Grid.Column="2"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=DeletePlaylistCommand}"
                                     CommandParameter="{Binding .}"
                                     Text="×"

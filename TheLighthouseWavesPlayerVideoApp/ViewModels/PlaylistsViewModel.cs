@@ -41,6 +41,42 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         }
 
         [RelayCommand]
+        private async Task PlayPlaylist(Playlist playlist)
+        {
+            if (playlist == null || playlist.VideoCount <= 0) return;
+
+            try
+            {
+                IsBusy = true;
+                
+                var videos = await _playlistService.GetPlaylistVideosAsync(playlist.Id);
+                
+                if (videos.Count == 0)
+                {
+                    await Shell.Current.DisplayAlert(
+                        _resourcesProvider["Playlists_EmptyPlaylist"],
+                        _resourcesProvider["Playlists_NoVideosToPlay"],
+                        _resourcesProvider["Button_OK"]);
+                    return;
+                }
+
+                //await Shell.Current.GoToAsync($"{nameof(PlaylistPlayerPage)}?PlaylistId={playlist.Id}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error playing playlist: {ex.Message}");
+                await Shell.Current.DisplayAlert(
+                    _resourcesProvider["Playlists_Error"],
+                    _resourcesProvider["Playlists_ErrorPlaying"],
+                    _resourcesProvider["Button_OK"]);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
         private void ShowAddNewPlaylist()
         {
             NewPlaylistName = string.Empty;

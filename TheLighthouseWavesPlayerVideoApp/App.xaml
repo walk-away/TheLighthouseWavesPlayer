@@ -18,6 +18,7 @@
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:BoolToSubtitleButtonColorConverter x:Key="BoolToSubtitleButtonColorConverter" />
             <converters:VolumeToIconConverter x:Key="VolumeToIconConverter" />
+            <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
             
             
             <ResourceDictionary.MergedDictionaries>
