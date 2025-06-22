@@ -15,21 +15,28 @@
         <!-- Header with title and add button -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="15,10">
             <Label Grid.Column="0" 
-                   Text="{Binding Title}" 
+                   Text="Add New Playlist" 
                    FontSize="Large"
                    FontAttributes="Bold"
                    VerticalOptions="Center" />
             
-            <Button Grid.Column="1"
-                    Command="{Binding ShowAddNewPlaylistCommand}"
-                    Text="+"
-                    FontSize="Large"
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    Padding="0"
-                    VerticalOptions="Center"
-                    HorizontalOptions="End"
-                    CornerRadius="20" />
+            <!-- Add Playlist Button with SVG -->
+            <Frame Grid.Column="1"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   VerticalOptions="Center"
+                   HorizontalOptions="End">
+                <ImageButton Source="plussquare.svg"
+                             BackgroundColor="Transparent"
+                             Command="{Binding ShowAddNewPlaylistCommand}"
+                             HeightRequest="28"
+                             WidthRequest="28"
+                             Padding="0"
+                             Aspect="AspectFit" />
+            </Frame>
         </Grid>
 
         <!-- Playlists List -->
@@ -66,36 +73,45 @@
                                 </StackLayout>
                             </StackLayout>
                             
-                            <!-- Play Button - only visible when playlist has videos -->
-                            <Button Grid.Column="1"
-                                    IsVisible="{Binding VideoCount, Converter={StaticResource GreaterThanZeroConverter}}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=PlayPlaylistCommand}"
-                                    CommandParameter="{Binding .}"
-                                    Text="▶"
-                                    FontSize="Medium"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    Padding="0"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                    TextColor="{AppThemeBinding Light=White, Dark=White}"
-                                    VerticalOptions="Start"
-                                    HorizontalOptions="End"
-                                    CornerRadius="20"
-                                    Margin="0,0,10,0" />
+                            <!-- Play Button with SVG - only visible when playlist has videos -->
+                            <Frame Grid.Column="1"
+                                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   BackgroundColor="Transparent"
+                                   Padding="3"
+                                   CornerRadius="8"
+                                   HasShadow="False"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End"
+                                   Margin="0,0,10,0"
+                                   IsVisible="{Binding VideoCount, Converter={StaticResource GreaterThanZeroConverter}}">
+                                <ImageButton Source="play.svg"
+                                             BackgroundColor="Transparent"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=PlayPlaylistCommand}"
+                                             CommandParameter="{Binding .}"
+                                             HeightRequest="28"
+                                             WidthRequest="28"
+                                             Padding="0"
+                                             Aspect="AspectFit" />
+                            </Frame>
                             
-                            <!-- Delete Button -->
-                            <Button Grid.Column="2"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=DeletePlaylistCommand}"
-                                    CommandParameter="{Binding .}"
-                                    Text="×"
-                                    FontSize="Large"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    Padding="0"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Error}, Dark=IndianRed}"
-                                    VerticalOptions="Start"
-                                    HorizontalOptions="End"
-                                    CornerRadius="20" />
+                            <!-- Delete Button with SVG -->
+                            <Frame Grid.Column="2"
+                                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   BackgroundColor="Transparent"
+                                   Padding="3"
+                                   CornerRadius="8"
+                                   HasShadow="False"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End">
+                                <ImageButton Source="delete.svg"
+                                             BackgroundColor="Transparent"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:PlaylistsViewModel}}, Path=DeletePlaylistCommand}"
+                                             CommandParameter="{Binding .}"
+                                             HeightRequest="28"
+                                             WidthRequest="28"
+                                             Padding="0"
+                                             Aspect="AspectFit" />
+                            </Frame>
                         </Grid>
                     </Frame>
                 </DataTemplate>

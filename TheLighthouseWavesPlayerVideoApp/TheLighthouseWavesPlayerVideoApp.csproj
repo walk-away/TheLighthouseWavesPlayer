@@ -101,7 +101,10 @@
         <None Remove="Resources\Images\volumex.svg" />
         <None Remove="Resources\Images\volume2.svg" />
         <None Remove="Resources\Images\arrow.svg" />
-        <None Remove="Resources\Images\playlist_add.svg" />
+        <None Remove="Resources\Images\playlistadd.svg" />
+        <None Remove="Resources\Images\play.svg" />
+        <None Remove="Resources\Images\delete.svg" />
+        <None Remove="Resources\Images\plussquare.svg" />
     </ItemGroup>
     
 </Project>
