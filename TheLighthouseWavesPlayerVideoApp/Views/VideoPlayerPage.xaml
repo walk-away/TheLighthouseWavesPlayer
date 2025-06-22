@@ -33,7 +33,21 @@
         </VisualStateGroupList>
     </VisualStateManager.VisualStateGroups>
 
-    <Grid RowDefinitions="Auto, *, Auto">
+    <Grid RowDefinitions="Auto, *, Auto, Auto">
+        <!-- Playlist Info Bar -->
+        <Border Grid.Row="0" 
+                IsVisible="{Binding IsPlaylistMode}"
+                Padding="10,5" 
+                Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 0,0,0,0"
+                BackgroundColor="{AppThemeBinding Light=#f0f0f0, Dark=#2a2a2a}">
+            <Label Text="{Binding PlaylistProgressText}" 
+                   FontSize="14" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+        </Border>
+
         <!-- Media player grid -->
         <Grid Grid.Row="1">
             <Frame CornerRadius="15"
@@ -107,8 +121,97 @@
                              VerticalOptions="Center"/>
         </Grid>
 
-        <!-- Controls bar at bottom -->
+        <!-- Playlist Navigation Controls -->
         <Grid Grid.Row="2"
+              ColumnDefinitions="Auto, Auto, *, Auto, Auto"
+              Margin="10,0,10,0"
+              Padding="10,5"
+              VerticalOptions="Center"
+              IsVisible="{Binding IsPlaylistControlsVisible}">
+            
+            <!-- Previous Button -->
+            <Frame Grid.Column="0"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,5,0">
+                <Button BackgroundColor="Transparent"
+                        Text="⏮"
+                        FontSize="20"
+                        Command="{Binding PreviousVideoCommand}"
+                        IsEnabled="{Binding CanGoToPrevious}"
+                        Opacity="{Binding CanGoToPrevious, Converter={StaticResource BoolToOpacityConverter}}"
+                        HeightRequest="28"
+                        WidthRequest="28"
+                        Padding="0"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+            </Frame>
+            
+            <!-- Next Button -->
+            <Frame Grid.Column="1"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,5,0">
+                <Button BackgroundColor="Transparent"
+                        Text="⏭"
+                        FontSize="20"
+                        Command="{Binding NextVideoCommand}"
+                        IsEnabled="{Binding CanGoToNext}"
+                        Opacity="{Binding CanGoToNext, Converter={StaticResource BoolToOpacityConverter}}"
+                        HeightRequest="28"
+                        WidthRequest="28"
+                        Padding="0"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+            </Frame>
+            
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" />
+            
+            <!-- Repeat Mode Toggle -->
+            <Frame Grid.Column="3"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="5,0">
+                <Button BackgroundColor="Transparent"
+                        Text="{Binding RepeatModeIcon}"
+                        FontSize="20"
+                        Command="{Binding ToggleRepeatModeCommand}"
+                        HeightRequest="28"
+                        WidthRequest="28"
+                        Padding="0"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+            </Frame>
+            
+            <!-- Shuffle Toggle -->
+            <Frame Grid.Column="4"
+                   BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                   BackgroundColor="Transparent"
+                   Padding="3"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   Margin="0,0,0,0">
+                <Button BackgroundColor="Transparent"
+                        Text="🔀"
+                        FontSize="20"
+                        Command="{Binding ToggleShuffleCommand}"
+                        Opacity="{Binding IsShuffleEnabled, Converter={StaticResource BoolToHighlightOpacityConverter}}"
+                        HeightRequest="28"
+                        WidthRequest="28"
+                        Padding="0"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+            </Frame>
+        </Grid>
+        
+        <!-- Standard Controls bar at bottom -->
+        <Grid Grid.Row="3"
               x:Name="BottomControlsGrid"
               ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
               Margin="10"

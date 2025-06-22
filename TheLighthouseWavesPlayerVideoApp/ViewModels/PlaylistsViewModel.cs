@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
+using TheLighthouseWavesPlayerVideoApp.Views;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels
 {
@@ -60,7 +61,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
                     return;
                 }
 
-                //await Shell.Current.GoToAsync($"{nameof(PlaylistPlayerPage)}?PlaylistId={playlist.Id}");
+                await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?PlaylistId={playlist.Id}");
             }
             catch (Exception ex)
             {

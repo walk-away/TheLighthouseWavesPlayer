@@ -19,7 +19,9 @@
             <converters:BoolToSubtitleButtonColorConverter x:Key="BoolToSubtitleButtonColorConverter" />
             <converters:VolumeToIconConverter x:Key="VolumeToIconConverter" />
             <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
-            
+            <converters:BoolToHighlightOpacityConverter x:Key="BoolToHighlightOpacityConverter" />
+            <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
+            <converters:BoolToSubtitleTextColorConverter x:Key="BoolToSubtitleTextColorConverter" />
             
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
