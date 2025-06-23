@@ -35,20 +35,6 @@
     </VisualStateManager.VisualStateGroups>
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">
-        <!-- Playlist Info Bar -->
-        <Border Grid.Row="0"
-                IsVisible="{Binding IsPlaylistMode}"
-                Padding="10,5"
-                Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                StrokeThickness="1"
-                StrokeShape="RoundRectangle 0,0,0,0"
-                BackgroundColor="{AppThemeBinding Light=#f0f0f0, Dark=#2a2a2a}">
-            <Label Text="{Binding PlaylistProgressText}"
-                   FontSize="14"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center" />
-        </Border>
-
         <!-- Media player grid -->
         <Grid Grid.Row="1">
             <Frame CornerRadius="15"

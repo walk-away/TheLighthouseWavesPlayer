@@ -22,6 +22,9 @@ A modern video player application for Android built with .NET MAUI, featuring in
 ![App Screenshot](Screenshots/Screenshot(14).png)
 ![App Screenshot](Screenshots/Screenshot(15).png)
 ![App Screenshot](Screenshots/Screenshot(16).png)
+### V 1.1
+![App Screenshot](Screenshots/Screenshot(17).png)
+![App Screenshot](Screenshots/Screenshot(18).png)
 
 ### Example of using the application
 
@@ -34,12 +37,15 @@ A modern video player application for Android built with .NET MAUI, featuring in
 - Favorites system with persistent storage
 - Advanced sorting (title, duration) and search
 - Thumbnail previews for videos
+- Playlist system with creation, management and playback capabilities
 
 **🎬 Playback Engine**
 - Subtitle support (.SRT files)
 - Resume playback functionality
 - Screenshot capture capability
 - Media metadata display (resolution, duration, file info)
+- Playlist navigation with next/previous controls
+- Repeat modes (none, all, single video)
 
 **🌍 Localization**
 - English & Russian support
