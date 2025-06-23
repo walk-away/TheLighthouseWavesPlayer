@@ -105,6 +105,10 @@
         <None Remove="Resources\Images\play.svg" />
         <None Remove="Resources\Images\delete.svg" />
         <None Remove="Resources\Images\plussquare.svg" />
+        <None Remove="Resources\Images\repeat.svg" />
+        <None Remove="Resources\Images\shuffle.svg" />
+        <None Remove="Resources\Images\skipback.svg" />
+        <None Remove="Resources\Images\skipforward.svg" />
     </ItemGroup>
     
 </Project>

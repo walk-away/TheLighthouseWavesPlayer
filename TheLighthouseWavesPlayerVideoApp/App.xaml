@@ -22,6 +22,7 @@
             <converters:BoolToHighlightOpacityConverter x:Key="BoolToHighlightOpacityConverter" />
             <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
             <converters:BoolToSubtitleTextColorConverter x:Key="BoolToSubtitleTextColorConverter" />
+            <converters:EnumEqualityConverter x:Key="EnumEqualityConverter" />
             
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
