@@ -32,9 +32,9 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             if (!_eventsSubscribed)
             {
                 UnsubscribeFromEvents();
-                
+
                 SizeChanged += OnPageSizeChanged;
-                
+
                 if (mediaElement != null)
                 {
                     mediaElement.StateChanged += MediaElement_StateChanged;
@@ -43,7 +43,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                     mediaElement.PositionChanged += MediaElement_PositionChanged;
                     mediaElement.MediaFailed += MediaElement_MediaFailed;
                 }
-                
+
                 _eventsSubscribed = true;
                 System.Diagnostics.Debug.WriteLine("Events subscribed");
             }
@@ -64,7 +64,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 mediaElement.PositionChanged -= MediaElement_PositionChanged;
                 mediaElement.MediaFailed -= MediaElement_MediaFailed;
             }
-            
+
             _eventsSubscribed = false;
             System.Diagnostics.Debug.WriteLine("Events unsubscribed");
         }
@@ -117,7 +117,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 BackButtonFrame.IsVisible = isLandscape;
             }
-            
+
             if (_viewModel != null)
             {
                 _viewModel.IsLandscape = isLandscape;
@@ -182,13 +182,12 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-  
     private async void MediaElement_MediaOpened(object sender, EventArgs e)
     {
         try
         {
             System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
-            
+
             if (_viewModel == null || mediaElement == null || !_isPageActive)
             {
                 System.Diagnostics.Debug.WriteLine(
@@ -204,11 +203,16 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 SetupMetadataRetryTimer();
             }
-            
+
+            if (_viewModel.IsPlaylistMode)
+            {
+                _resumeDialogShown = false;
+            }
+
             if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero && !_resumeDialogShown)
             {
                 _resumeDialogShown = true;
-                
+
                 var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
                 var title = resources["Player_ResumeDialog_Title"];
                 var messageFormat = resources["Player_ResumeDialog_Message"];
@@ -238,10 +242,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
                 _viewModel.ShouldResumePlayback = false;
             }
-            else if (!_resumeDialogShown)
+            else
             {
                 System.Diagnostics.Debug.WriteLine("Starting playback from beginning or letting AutoPlay handle it.");
-                if (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing)
+                if (_viewModel.IsPlaylistMode ||
+                    (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing))
                 {
                     mediaElement.Play();
                 }
@@ -250,11 +255,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
-            
+
             var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
             await Shell.Current.DisplayAlert(
-                resources["Player_Error_Title"], 
-                resources["Player_Error_Playback"], 
+                resources["Player_Error_Title"],
+                resources["Player_Error_Playback"],
                 resources["Button_OK"]);
         }
     }
@@ -339,7 +344,9 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     private void MediaElement_MediaEnded(object sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");
-        _viewModel?.ClearSavedPosition();
+    
+        _viewModel?.OnMediaEnded();
+        
         _metadataSuccessfullyUpdated = false;
     }
 
@@ -360,7 +367,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
 
         _viewModel?.OnNavigatedFrom(currentPosition);
-        
+
         UnsubscribeFromEvents();
 
         base.OnNavigatedFrom(args);
@@ -374,7 +381,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         _isPageActive = true;
         _metadataSuccessfullyUpdated = false;
         _resumeDialogShown = false;
-        
+
         UnsubscribeFromEvents();
         SubscribeToEvents();
 
