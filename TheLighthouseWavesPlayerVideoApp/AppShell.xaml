@@ -34,6 +34,17 @@
             </ShellContent>
         </Tab>
         
+        <Tab Icon="playlist_add.svg">
+            <Tab.Title>
+                <Binding Path="[Shell_Playlists]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+            </Tab.Title>
+            <ShellContent ContentTemplate="{DataTemplate views:PlaylistsPage}">
+                <ShellContent.Title>
+                    <Binding Path="[Shell_Playlists]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+                </ShellContent.Title>
+            </ShellContent>
+        </Tab>
+        
         <Tab Icon="settings.svg">
             <Tab.Title>
                 <Binding Path="[Shell_Settings]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />

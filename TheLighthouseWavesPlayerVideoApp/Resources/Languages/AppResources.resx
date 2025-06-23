@@ -173,4 +173,79 @@
     <data name="Sort_DurationDesc" xml:space="preserve">
   <value>Duration (Long-Short)</value>
 </data>
+    <data name="Shell_Playlists" xml:space="preserve">
+  <value>Playlists</value>
+</data>
+    <data name="Playlists_Title" xml:space="preserve">
+  <value>Playlists</value>
+</data>
+    <data name="Playlists_EmptyList" xml:space="preserve">
+  <value>No playlists yet</value>
+</data>
+    <data name="Playlists_CreateFirst" xml:space="preserve">
+  <value>Tap + to create your first playlist</value>
+</data>
+    <data name="Playlists_Create" xml:space="preserve">
+  <value>Create New Playlist</value>
+</data>
+    <data name="Playlists_Name" xml:space="preserve">
+  <value>Playlist Name</value>
+</data>
+    <data name="Playlists_Description" xml:space="preserve">
+  <value>Description (optional)</value>
+</data>
+    <data name="Playlists_Cancel" xml:space="preserve">
+  <value>Cancel</value>
+</data>
+    <data name="Playlists_CreateButton" xml:space="preserve">
+  <value>Create</value>
+</data>
+    <data name="Playlists_ConfirmDeleteTitle" xml:space="preserve">
+  <value>Confirm Delete</value>
+</data>
+    <data name="Playlists_ConfirmDeleteMessage" xml:space="preserve">
+  <value>Are you sure you want to delete the playlist '{0}'?</value>
+</data>
+    <data name="Playlists_Yes" xml:space="preserve">
+  <value>Yes</value>
+</data>
+    <data name="Playlists_No" xml:space="preserve">
+  <value>No</value>
+</data>
+    <data name="Playlists_AddToPlaylist" xml:space="preserve">
+  <value>Add to Playlist</value>
+</data>
+    <data name="Playlists_Save" xml:space="preserve">
+  <value>Save</value>
+</data>
+    <data name="Playlists_NoPlaylists" xml:space="preserve">
+  <value>No Playlists</value>
+</data>
+    <data name="Playlists_CreateFirstMessage" xml:space="preserve">
+  <value>You don't have any playlists yet. Create a playlist first.</value>
+</data>
+    <data name="Playlists_Success" xml:space="preserve">
+  <value>Success</value>
+</data>
+    <data name="Playlists_UpdateSuccess" xml:space="preserve">
+  <value>Playlists updated successfully</value>
+</data>
+    <data name="Playlists_Error" xml:space="preserve">
+  <value>Error</value>
+</data>
+    <data name="Playlists_ErrorMessage" xml:space="preserve">
+  <value>Failed to update playlists: {0}</value>
+</data>
+    <data name="Playlists_ErrorCreating" xml:space="preserve">
+  <value>Failed to create playlist.</value>
+</data>
+    <data name="Playlists_ErrorDeleting" xml:space="preserve">
+  <value>Failed to delete playlist.</value>
+</data>
+    <data name="Playlists_ErrorLoading" xml:space="preserve">
+  <value>Failed to load playlists.</value>
+</data>
+    <data name="Playlists_EmptyName" xml:space="preserve">
+  <value>Playlist name cannot be empty.</value>
+</data>
 </root>

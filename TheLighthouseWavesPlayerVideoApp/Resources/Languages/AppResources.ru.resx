@@ -172,4 +172,79 @@
     <data name="Sort_DurationDesc" xml:space="preserve">
   <value>Длительность (Длинные-Короткие)</value>
 </data>
+    <data name="Shell_Playlists" xml:space="preserve">
+  <value>Плейлисты</value>
+</data>
+    <data name="Playlists_Title" xml:space="preserve">
+  <value>Плейлисты</value>
+</data>
+    <data name="Playlists_EmptyList" xml:space="preserve">
+  <value>Плейлистов пока нет</value>
+</data>
+    <data name="Playlists_CreateFirst" xml:space="preserve">
+  <value>Нажмите + чтобы создать ваш первый плейлист</value>
+</data>
+    <data name="Playlists_Create" xml:space="preserve">
+  <value>Создать новый плейлист</value>
+</data>
+    <data name="Playlists_Name" xml:space="preserve">
+  <value>Название плейлиста</value>
+</data>
+    <data name="Playlists_Description" xml:space="preserve">
+  <value>Описание (необязательно)</value>
+</data>
+    <data name="Playlists_Cancel" xml:space="preserve">
+  <value>Отмена</value>
+</data>
+    <data name="Playlists_CreateButton" xml:space="preserve">
+  <value>Создать</value>
+</data>
+    <data name="Playlists_ConfirmDeleteTitle" xml:space="preserve">
+  <value>Подтвердите удаление</value>
+</data>
+    <data name="Playlists_ConfirmDeleteMessage" xml:space="preserve">
+  <value>Вы уверены, что хотите удалить плейлист '{0}'?</value>
+</data>
+    <data name="Playlists_Yes" xml:space="preserve">
+  <value>Да</value>
+</data>
+    <data name="Playlists_No" xml:space="preserve">
+  <value>Нет</value>
+</data>
+    <data name="Playlists_AddToPlaylist" xml:space="preserve">
+  <value>Добавить в плейлист</value>
+</data>
+    <data name="Playlists_Save" xml:space="preserve">
+  <value>Сохранить</value>
+</data>
+    <data name="Playlists_NoPlaylists" xml:space="preserve">
+  <value>Нет плейлистов</value>
+</data>
+    <data name="Playlists_CreateFirstMessage" xml:space="preserve">
+  <value>У вас пока нет плейлистов. Сначала создайте плейлист.</value>
+</data>
+    <data name="Playlists_Success" xml:space="preserve">
+  <value>Успешно</value>
+</data>
+    <data name="Playlists_UpdateSuccess" xml:space="preserve">
+  <value>Плейлисты успешно обновлены</value>
+</data>
+    <data name="Playlists_Error" xml:space="preserve">
+  <value>Ошибка</value>
+</data>
+    <data name="Playlists_ErrorMessage" xml:space="preserve">
+  <value>Не удалось обновить плейлисты: {0}</value>
+</data>
+    <data name="Playlists_ErrorCreating" xml:space="preserve">
+  <value>Не удалось создать плейлист.</value>
+</data>
+    <data name="Playlists_ErrorDeleting" xml:space="preserve">
+  <value>Не удалось удалить плейлист.</value>
+</data>
+    <data name="Playlists_ErrorLoading" xml:space="preserve">
+  <value>Не удалось загрузить плейлисты.</value>
+</data>
+    <data name="Playlists_EmptyName" xml:space="preserve">
+  <value>Название плейлиста не может быть пустым.</value>
+</data>
 </root>

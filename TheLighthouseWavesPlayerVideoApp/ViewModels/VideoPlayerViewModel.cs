@@ -9,6 +9,7 @@ using TheLighthouseWavesPlayerVideoApp.Models;
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 [QueryProperty(nameof(FilePath), "FilePath")]
+[QueryProperty(nameof(PlaylistId), "PlaylistId")]
 public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 {
     private readonly IFavoritesService _favoritesService;
@@ -16,13 +17,16 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private readonly IScreenshotService _screenshotService;
     private readonly IScreenWakeService _screenWakeService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
-    
+    private readonly IPlaylistService _playlistService;
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
     private double _previousVolume = 0.5;
     private bool _isDisposed = false;
     private readonly SemaphoreSlim _metadataUpdateLock = new SemaphoreSlim(1, 1);
-    
+    private List<VideoInfo> _playlistVideos = new List<VideoInfo>();
+    private List<VideoInfo> _playQueue = new List<VideoInfo>();
+    private int _currentPlaylistIndex = -1;
+
     [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
     [ObservableProperty] string _filePath;
     [ObservableProperty] MediaSource _videoSource;
@@ -40,25 +44,74 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
     [ObservableProperty] private bool _isLandscape;
-    
+    [ObservableProperty] private int _playlistId;
+    [ObservableProperty] private Playlist _currentPlaylist;
+    [ObservableProperty] private string _playlistProgressText = string.Empty;
+    [ObservableProperty] private bool _isPlaylistMode = false;
+    [ObservableProperty] private bool _canGoToNext = false;
+    [ObservableProperty] private bool _canGoToPrevious = false;
+    [ObservableProperty] private bool _isPlaylistControlsVisible = false;
+    [ObservableProperty] private bool _isShuffleEnabled = false;
+    [ObservableProperty] private RepeatMode _repeatMode = RepeatMode.None;
+    [ObservableProperty] private string _repeatModeIcon = "🔁";
+
     public VideoPlayerViewModel(
-        IFavoritesService favoritesService, 
+        IFavoritesService favoritesService,
         ISubtitleService subtitleService,
-        IScreenshotService screenshotService, 
+        IScreenshotService screenshotService,
         IScreenWakeService screenWakeService,
-        ILocalizedResourcesProvider resourcesProvider)
+        ILocalizedResourcesProvider resourcesProvider,
+        IPlaylistService playlistService)
     {
         _favoritesService = favoritesService;
         _subtitleService = subtitleService;
         _screenshotService = screenshotService;
         _screenWakeService = screenWakeService;
         _resourcesProvider = resourcesProvider;
+        _playlistService = playlistService;
         Title = _resourcesProvider["Player_Title"];
-        
+
         if (resourcesProvider is ObservableObject observableProvider)
         {
             observableProvider.PropertyChanged += OnResourceProviderPropertyChanged;
         }
+    }
+
+    partial void OnPlaylistIdChanged(int value)
+    {
+        if (value > 0)
+        {
+            IsPlaylistMode = true;
+            Task.Run(async () => await InitializePlaylistAsync());
+        }
+        else
+        {
+            IsPlaylistMode = false;
+            IsPlaylistControlsVisible = false;
+        }
+    }
+
+    partial void OnIsPlaylistModeChanged(bool value)
+    {
+        IsPlaylistControlsVisible = value && _playlistVideos.Count > 1;
+    }
+
+    partial void OnRepeatModeChanged(RepeatMode value)
+    {
+        switch (value)
+        {
+            case RepeatMode.None:
+                RepeatModeIcon = "⤵";
+                break;
+            case RepeatMode.All:
+                RepeatModeIcon = "🔁";
+                break;
+            case RepeatMode.One:
+                RepeatModeIcon = "🔂";
+                break;
+        }
+
+        UpdateNavigationButtons();
     }
 
     private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -66,6 +119,222 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         if (e.PropertyName == "Item")
         {
             Title = _resourcesProvider["Player_Title"];
+        }
+    }
+
+    private async Task InitializePlaylistAsync()
+    {
+        if (PlaylistId <= 0) return;
+
+        try
+        {
+            MainThread.BeginInvokeOnMainThread(() => IsBusy = true);
+
+            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId);
+            if (CurrentPlaylist == null)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert(
+                        _resourcesProvider["PlaylistPlayer_Error"] ?? "Ошибка",
+                        _resourcesProvider["PlaylistPlayer_PlaylistNotFound"] ?? "Плейлист не найден",
+                        _resourcesProvider["Button_OK"] ?? "ОК");
+                    await Shell.Current.GoToAsync("..");
+                });
+                return;
+            }
+
+            MainThread.BeginInvokeOnMainThread(() => Title = CurrentPlaylist.Name);
+
+            _playlistVideos = await _playlistService.GetPlaylistVideosAsync(PlaylistId);
+            if (_playlistVideos.Count == 0)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlert(
+                        _resourcesProvider["PlaylistPlayer_EmptyPlaylist"] ?? "Пустой плейлист",
+                        _resourcesProvider["PlaylistPlayer_NoVideos"] ?? "В этом плейлисте нет видео",
+                        _resourcesProvider["Button_OK"] ?? "ОК");
+                    await Shell.Current.GoToAsync("..");
+                });
+                return;
+            }
+
+            _playQueue = new List<VideoInfo>(_playlistVideos);
+
+            _currentPlaylistIndex = 0;
+            var firstVideo = _playQueue[_currentPlaylistIndex];
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                FilePath = firstVideo.FilePath;
+                UpdateProgressText();
+                UpdateNavigationButtons();
+                IsPlaylistControlsVisible = _playQueue.Count > 1;
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error initializing playlist: {ex.Message}");
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await Shell.Current.DisplayAlert(
+                    _resourcesProvider["PlaylistPlayer_Error"] ?? "Ошибка",
+                    _resourcesProvider["PlaylistPlayer_LoadError"] ?? "Не удалось загрузить плейлист",
+                    _resourcesProvider["Button_OK"] ?? "ОК");
+                await Shell.Current.GoToAsync("..");
+            });
+        }
+        finally
+        {
+            MainThread.BeginInvokeOnMainThread(() => IsBusy = false);
+        }
+    }
+
+    private void UpdateProgressText()
+    {
+        if (!IsPlaylistMode || _currentPlaylistIndex < 0 || _currentPlaylistIndex >= _playQueue.Count)
+            return;
+
+        PlaylistProgressText =
+            $"{_resourcesProvider["PlaylistPlayer_Video"] ?? "Видео"} {_currentPlaylistIndex + 1} {_resourcesProvider["PlaylistPlayer_Of"] ?? "из"} {_playQueue.Count}";
+    }
+
+    private void UpdateNavigationButtons()
+    {
+        if (!IsPlaylistMode)
+        {
+            CanGoToNext = false;
+            CanGoToPrevious = false;
+            return;
+        }
+
+        if (RepeatMode == RepeatMode.All)
+        {
+            CanGoToNext = _playQueue.Count > 1;
+            CanGoToPrevious = _playQueue.Count > 1;
+        }
+        else
+        {
+            CanGoToNext = _currentPlaylistIndex < _playQueue.Count - 1;
+            CanGoToPrevious = _currentPlaylistIndex > 0;
+        }
+    }
+
+    [RelayCommand]
+    private async Task NextVideo()
+    {
+        if (!IsPlaylistMode || !CanGoToNext) return;
+
+        if (_currentPlaylistIndex < _playQueue.Count - 1)
+        {
+            _currentPlaylistIndex++;
+        }
+        else if (RepeatMode == RepeatMode.All)
+        {
+            _currentPlaylistIndex = 0;
+        }
+        else
+        {
+            return;
+        }
+
+        var nextVideo = _playQueue[_currentPlaylistIndex];
+        FilePath = nextVideo.FilePath;
+
+        UpdateProgressText();
+        UpdateNavigationButtons();
+
+        await Task.Delay(100);
+        if (MediaElement != null)
+        {
+            MediaElement.Play();
+        }
+    }
+
+    [RelayCommand]
+    private async Task PreviousVideo()
+    {
+        if (!IsPlaylistMode || !CanGoToPrevious) return;
+
+        if (_currentPlaylistIndex > 0)
+        {
+            _currentPlaylistIndex--;
+        }
+        else if (RepeatMode == RepeatMode.All)
+        {
+            _currentPlaylistIndex = _playQueue.Count - 1;
+        }
+        else
+        {
+            return;
+        }
+
+        var prevVideo = _playQueue[_currentPlaylistIndex];
+        FilePath = prevVideo.FilePath;
+
+        UpdateProgressText();
+        UpdateNavigationButtons();
+    }
+
+    [RelayCommand]
+    private void ToggleRepeatMode()
+    {
+        RepeatMode = RepeatMode switch
+        {
+            RepeatMode.None => RepeatMode.All,
+            RepeatMode.All => RepeatMode.One,
+            RepeatMode.One => RepeatMode.None,
+            _ => RepeatMode.None
+        };
+    }
+
+    [RelayCommand]
+    private void ToggleShuffle()
+    {
+        if (!IsPlaylistMode) return;
+
+        IsShuffleEnabled = !IsShuffleEnabled;
+
+        if (IsShuffleEnabled)
+        {
+            ShufflePlayQueue();
+        }
+        else
+        {
+            _playQueue = new List<VideoInfo>(_playlistVideos);
+
+            if (_currentPlaylistIndex >= 0 && _currentPlaylistIndex < _playQueue.Count)
+            {
+                var currentVideo = _playQueue[_currentPlaylistIndex];
+                _currentPlaylistIndex = _playlistVideos.IndexOf(currentVideo);
+            }
+        }
+
+        UpdateNavigationButtons();
+        UpdateProgressText();
+    }
+
+    private void ShufflePlayQueue()
+    {
+        VideoInfo currentVideo = _currentPlaylistIndex >= 0 && _currentPlaylistIndex < _playQueue.Count
+            ? _playQueue[_currentPlaylistIndex]
+            : null;
+
+        var shuffled = _playlistVideos.ToList();
+        var random = new Random();
+
+        for (int i = shuffled.Count - 1; i > 0; i--)
+        {
+            int j = random.Next(0, i + 1);
+            (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
+        }
+
+        _playQueue = shuffled;
+
+        if (currentVideo != null)
+        {
+            _currentPlaylistIndex = _playQueue.IndexOf(currentVideo);
         }
     }
 
@@ -147,8 +416,8 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         if (MediaElement == null)
         {
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Player_Error_Title"], 
-                _resourcesProvider["Player_Error_Playback"], 
+                _resourcesProvider["Player_Error_Title"],
+                _resourcesProvider["Player_Error_Playback"],
                 _resourcesProvider["Button_OK"]);
             return;
         }
@@ -160,24 +429,24 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             string filePathOrUri = await _screenshotService.CaptureScreenshotAsync(MediaElement);
 
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Player_Screenshot_Success"], 
-                _resourcesProvider["Player_Screenshot_Success"], 
+                _resourcesProvider["Player_Screenshot_Success"],
+                _resourcesProvider["Player_Screenshot_Success"],
                 _resourcesProvider["Button_OK"]);
         }
         catch (UnauthorizedAccessException authEx)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot permission error: {authEx.Message}");
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Player_Error_Title"], 
-                _resourcesProvider["Player_Permission_Error"], 
+                _resourcesProvider["Player_Error_Title"],
+                _resourcesProvider["Player_Permission_Error"],
                 _resourcesProvider["Button_OK"]);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Screenshot error: {ex.Message}");
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Player_Error_Title"], 
-                _resourcesProvider["Player_Screenshot_Error"], 
+                _resourcesProvider["Player_Error_Title"],
+                _resourcesProvider["Player_Screenshot_Error"],
                 _resourcesProvider["Button_OK"]);
         }
         finally
@@ -191,7 +460,11 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         if (!string.IsNullOrEmpty(value))
         {
             VideoSource = MediaSource.FromFile(value);
-            Title = Path.GetFileName(value);
+            if (!IsPlaylistMode)
+            {
+                Title = Path.GetFileName(value);
+            }
+
             await CheckFavoriteStatusAsync();
             CheckForSavedPosition();
             await LoadSubtitlesAsync();
@@ -199,7 +472,11 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         else
         {
             VideoSource = null;
-            Title = _resourcesProvider["Player_Title"];
+            if (!IsPlaylistMode)
+            {
+                Title = _resourcesProvider["Player_Title"];
+            }
+
             IsFavorite = false;
             CurrentState = MediaElementState.None;
             ShouldResumePlayback = false;
@@ -234,7 +511,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             _subtitles.Clear();
         }
     }
-    
+
     public void UpdateSubtitles(TimeSpan position)
     {
         if (!HasSubtitles || !AreSubtitlesEnabled || _subtitles.Count == 0)
@@ -243,7 +520,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                 CurrentSubtitleText = string.Empty;
             return;
         }
-        
+
         int left = 0;
         int right = _subtitles.Count - 1;
         SubtitleItem activeSubtitle = null;
@@ -356,7 +633,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         {
             SliderVolume = _previousVolume > 0 ? _previousVolume : 0.5;
         }
-        
+
         UpdateMediaElementVolume();
     }
 
@@ -389,12 +666,12 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         {
             System.Diagnostics.Debug.WriteLine($"Error toggling favorite in player: {ex.Message}");
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Error_Title"], 
-                _resourcesProvider["Error_Favorites_Update"], 
+                _resourcesProvider["Error_Title"],
+                _resourcesProvider["Error_Favorites_Update"],
                 _resourcesProvider["Button_OK"]);
         }
     }
-    
+
     public void OnNavigatedFrom(TimeSpan currentPosition)
     {
         try
@@ -413,7 +690,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                 LastKnownPosition = TimeSpan.Zero;
                 ShouldResumePlayback = false;
             }
-            
+
             CurrentState = MediaElementState.None;
         }
         catch (Exception ex)
@@ -421,7 +698,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex}");
         }
     }
-    
+
     partial void OnCurrentStateChanged(MediaElementState value)
     {
         if (value == MediaElementState.Playing)
@@ -429,7 +706,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             _screenWakeService.KeepScreenOn();
             System.Diagnostics.Debug.WriteLine("Media playing: Keeping screen on");
         }
-        else if (value == MediaElementState.Stopped || 
+        else if (value == MediaElementState.Stopped ||
                  value == MediaElementState.Paused ||
                  value == MediaElementState.Failed ||
                  value == MediaElementState.None)
@@ -437,47 +714,128 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             _screenWakeService.AllowScreenSleep();
             System.Diagnostics.Debug.WriteLine("Media not playing: Allowing screen to sleep");
         }
-        
+
         if ((value == MediaElementState.Paused || value == MediaElementState.Stopped) &&
             MediaElement?.Position > TimeSpan.Zero)
         {
             SavePosition(MediaElement.Position);
         }
     }
-    
+
+    public void OnMediaEnded()
+    {
+        System.Diagnostics.Debug.WriteLine("Media ended.");
+
+        if (IsPlaylistMode)
+        {
+            switch (RepeatMode)
+            {
+                case RepeatMode.One:
+                    if (MediaElement != null)
+                    {
+                        MediaElement.SeekTo(TimeSpan.Zero);
+                        MediaElement.Play();
+                    }
+
+                    break;
+
+                case RepeatMode.All:
+                    if (_currentPlaylistIndex < _playQueue.Count - 1)
+                    {
+                        _currentPlaylistIndex++;
+                    }
+                    else
+                    {
+                        _currentPlaylistIndex = 0;
+                    }
+
+                    var nextVideo1 = _playQueue[_currentPlaylistIndex];
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        FilePath = nextVideo1.FilePath;
+                        UpdateProgressText();
+                        UpdateNavigationButtons();
+
+                        Task.Delay(100).ContinueWith(_ =>
+                        {
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                if (MediaElement != null)
+                                {
+                                    MediaElement.Play();
+                                }
+                            });
+                        });
+                    });
+                    break;
+
+                case RepeatMode.None:
+                default:
+                    if (_currentPlaylistIndex < _playQueue.Count - 1)
+                    {
+                        _currentPlaylistIndex++;
+                        var nextVideo2 = _playQueue[_currentPlaylistIndex];
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            FilePath = nextVideo2.FilePath;
+                            UpdateProgressText();
+                            UpdateNavigationButtons();
+
+                            Task.Delay(100).ContinueWith(_ =>
+                            {
+                                MainThread.BeginInvokeOnMainThread(() =>
+                                {
+                                    if (MediaElement != null)
+                                    {
+                                        MediaElement.Play();
+                                    }
+                                });
+                            });
+                        });
+                    }
+
+                    break;
+            }
+        }
+        else
+        {
+            ClearSavedPosition();
+        }
+    }
+
     public void Cleanup()
     {
         if (_isDisposed) return;
-        
+
         _screenWakeService.AllowScreenSleep();
         System.Diagnostics.Debug.WriteLine("ViewModel cleanup: Allowing screen to sleep");
-        
+
         if (MediaElement?.Position > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
         {
             SavePosition(MediaElement.Position);
         }
-        
+
         MediaElement = null;
     }
-    
+
     [RelayCommand]
     void GoBack()
     {
         Shell.Current.GoToAsync("..");
     }
-    
+
     public void Dispose()
     {
         if (_isDisposed) return;
-        
+
         if (_resourcesProvider is ObservableObject observableProvider)
         {
             observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
         }
-        
+
         Cleanup();
         _metadataUpdateLock?.Dispose();
-        
+
         _isDisposed = true;
     }
 }

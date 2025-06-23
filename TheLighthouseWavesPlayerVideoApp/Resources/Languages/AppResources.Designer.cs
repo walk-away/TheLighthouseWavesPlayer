@@ -312,6 +312,222 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add to Playlist.
+        /// </summary>
+        internal static string Playlists_AddToPlaylist {
+            get {
+                return ResourceManager.GetString("Playlists_AddToPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Playlists_Cancel {
+            get {
+                return ResourceManager.GetString("Playlists_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete the playlist &apos;{0}&apos;?.
+        /// </summary>
+        internal static string Playlists_ConfirmDeleteMessage {
+            get {
+                return ResourceManager.GetString("Playlists_ConfirmDeleteMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm Delete.
+        /// </summary>
+        internal static string Playlists_ConfirmDeleteTitle {
+            get {
+                return ResourceManager.GetString("Playlists_ConfirmDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Playlist.
+        /// </summary>
+        internal static string Playlists_Create {
+            get {
+                return ResourceManager.GetString("Playlists_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        internal static string Playlists_CreateButton {
+            get {
+                return ResourceManager.GetString("Playlists_CreateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tap + to create your first playlist.
+        /// </summary>
+        internal static string Playlists_CreateFirst {
+            get {
+                return ResourceManager.GetString("Playlists_CreateFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have any playlists yet. Create a playlist first..
+        /// </summary>
+        internal static string Playlists_CreateFirstMessage {
+            get {
+                return ResourceManager.GetString("Playlists_CreateFirstMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description (optional).
+        /// </summary>
+        internal static string Playlists_Description {
+            get {
+                return ResourceManager.GetString("Playlists_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No playlists yet.
+        /// </summary>
+        internal static string Playlists_EmptyList {
+            get {
+                return ResourceManager.GetString("Playlists_EmptyList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Playlist name cannot be empty..
+        /// </summary>
+        internal static string Playlists_EmptyName {
+            get {
+                return ResourceManager.GetString("Playlists_EmptyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string Playlists_Error {
+            get {
+                return ResourceManager.GetString("Playlists_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create playlist..
+        /// </summary>
+        internal static string Playlists_ErrorCreating {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorCreating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete playlist..
+        /// </summary>
+        internal static string Playlists_ErrorDeleting {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorDeleting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load playlists..
+        /// </summary>
+        internal static string Playlists_ErrorLoading {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update playlists: {0}.
+        /// </summary>
+        internal static string Playlists_ErrorMessage {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Playlist Name.
+        /// </summary>
+        internal static string Playlists_Name {
+            get {
+                return ResourceManager.GetString("Playlists_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string Playlists_No {
+            get {
+                return ResourceManager.GetString("Playlists_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Playlists.
+        /// </summary>
+        internal static string Playlists_NoPlaylists {
+            get {
+                return ResourceManager.GetString("Playlists_NoPlaylists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string Playlists_Save {
+            get {
+                return ResourceManager.GetString("Playlists_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success.
+        /// </summary>
+        internal static string Playlists_Success {
+            get {
+                return ResourceManager.GetString("Playlists_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Playlists.
+        /// </summary>
+        internal static string Playlists_Title {
+            get {
+                return ResourceManager.GetString("Playlists_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Playlists updated successfully.
+        /// </summary>
+        internal static string Playlists_UpdateSuccess {
+            get {
+                return ResourceManager.GetString("Playlists_UpdateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string Playlists_Yes {
+            get {
+                return ResourceManager.GetString("Playlists_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         internal static string Search_Clear {
@@ -443,6 +659,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Shell_Library {
             get {
                 return ResourceManager.GetString("Shell_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Playlists.
+        /// </summary>
+        internal static string Shell_Playlists {
+            get {
+                return ResourceManager.GetString("Shell_Playlists", resourceCulture);
             }
         }
         

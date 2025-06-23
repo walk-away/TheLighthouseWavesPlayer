@@ -196,7 +196,7 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
         try
         {
             await _favoritesService.RemoveFavoriteAsync(video);
-
+        
             var itemToRemove = AllFavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
             if (itemToRemove != null)
                 AllFavoriteVideos.Remove(itemToRemove);

@@ -312,6 +312,222 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Добавить в плейлист.
+        /// </summary>
+        internal static string Playlists_AddToPlaylist {
+            get {
+                return ResourceManager.GetString("Playlists_AddToPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отмена.
+        /// </summary>
+        internal static string Playlists_Cancel {
+            get {
+                return ResourceManager.GetString("Playlists_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Вы уверены, что хотите удалить плейлист &apos;{0}&apos;?.
+        /// </summary>
+        internal static string Playlists_ConfirmDeleteMessage {
+            get {
+                return ResourceManager.GetString("Playlists_ConfirmDeleteMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Подтвердите удаление.
+        /// </summary>
+        internal static string Playlists_ConfirmDeleteTitle {
+            get {
+                return ResourceManager.GetString("Playlists_ConfirmDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Создать новый плейлист.
+        /// </summary>
+        internal static string Playlists_Create {
+            get {
+                return ResourceManager.GetString("Playlists_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Создать.
+        /// </summary>
+        internal static string Playlists_CreateButton {
+            get {
+                return ResourceManager.GetString("Playlists_CreateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нажмите + чтобы создать ваш первый плейлист.
+        /// </summary>
+        internal static string Playlists_CreateFirst {
+            get {
+                return ResourceManager.GetString("Playlists_CreateFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to У вас пока нет плейлистов. Сначала создайте плейлист..
+        /// </summary>
+        internal static string Playlists_CreateFirstMessage {
+            get {
+                return ResourceManager.GetString("Playlists_CreateFirstMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Описание (необязательно).
+        /// </summary>
+        internal static string Playlists_Description {
+            get {
+                return ResourceManager.GetString("Playlists_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Плейлистов пока нет.
+        /// </summary>
+        internal static string Playlists_EmptyList {
+            get {
+                return ResourceManager.GetString("Playlists_EmptyList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название плейлиста не может быть пустым..
+        /// </summary>
+        internal static string Playlists_EmptyName {
+            get {
+                return ResourceManager.GetString("Playlists_EmptyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка.
+        /// </summary>
+        internal static string Playlists_Error {
+            get {
+                return ResourceManager.GetString("Playlists_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось создать плейлист..
+        /// </summary>
+        internal static string Playlists_ErrorCreating {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorCreating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось удалить плейлист..
+        /// </summary>
+        internal static string Playlists_ErrorDeleting {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorDeleting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось загрузить плейлисты..
+        /// </summary>
+        internal static string Playlists_ErrorLoading {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось обновить плейлисты: {0}.
+        /// </summary>
+        internal static string Playlists_ErrorMessage {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название плейлиста.
+        /// </summary>
+        internal static string Playlists_Name {
+            get {
+                return ResourceManager.GetString("Playlists_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нет.
+        /// </summary>
+        internal static string Playlists_No {
+            get {
+                return ResourceManager.GetString("Playlists_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нет плейлистов.
+        /// </summary>
+        internal static string Playlists_NoPlaylists {
+            get {
+                return ResourceManager.GetString("Playlists_NoPlaylists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сохранить.
+        /// </summary>
+        internal static string Playlists_Save {
+            get {
+                return ResourceManager.GetString("Playlists_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Успешно.
+        /// </summary>
+        internal static string Playlists_Success {
+            get {
+                return ResourceManager.GetString("Playlists_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Плейлисты.
+        /// </summary>
+        internal static string Playlists_Title {
+            get {
+                return ResourceManager.GetString("Playlists_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Плейлисты успешно обновлены.
+        /// </summary>
+        internal static string Playlists_UpdateSuccess {
+            get {
+                return ResourceManager.GetString("Playlists_UpdateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Да.
+        /// </summary>
+        internal static string Playlists_Yes {
+            get {
+                return ResourceManager.GetString("Playlists_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Очистить.
         /// </summary>
         internal static string Search_Clear {
@@ -443,6 +659,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Shell_Library {
             get {
                 return ResourceManager.GetString("Shell_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Плейлисты.
+        /// </summary>
+        internal static string Shell_Playlists {
+            get {
+                return ResourceManager.GetString("Shell_Playlists", resourceCulture);
             }
         }
         
