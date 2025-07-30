@@ -9,9 +9,9 @@ public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesP
 {
     ResourceManager _resourceManager;
 
-    CultureInfo _currentCulture;
+    CultureInfo? _currentCulture;
 
-    public static LocalizedResourcesProvider Instance
+    public static LocalizedResourcesProvider? Instance
     {
         get;
         private set;
@@ -28,7 +28,7 @@ public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesP
         Instance = this;
     }
 
-    public void UpdateCulture(CultureInfo cultureInfo)
+    public void UpdateCulture(CultureInfo? cultureInfo)
     {
         _currentCulture = cultureInfo;
         OnPropertyChanged("Item");

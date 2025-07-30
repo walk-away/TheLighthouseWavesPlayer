@@ -4,8 +4,8 @@ namespace TheLighthouseWavesPlayerVideoApp.Models;
 
 public class LanguageOption
 {
-    public string Name { get; set; }
-    public CultureInfo Culture { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public CultureInfo? Culture { get; set; }
 
-    public override string ToString() => Name;
+    public override string? ToString() => Name;
 }
