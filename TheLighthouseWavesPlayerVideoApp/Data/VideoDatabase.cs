@@ -6,18 +6,21 @@ namespace TheLighthouseWavesPlayerVideoApp.Data;
 
 public class VideoDatabase : IVideoDatabase
 {
-    SQLiteAsyncConnection _database;
+    private SQLiteAsyncConnection? _database;
 
     public VideoDatabase()
     {
     }
 
-    async Task Init()
+    private async Task Init()
     {
         if (_database is not null)
             return;
 
-        _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
+        _database = new SQLiteAsyncConnection(
+            DatabaseConstants.DatabasePath,
+            DatabaseConstants.Flags
+        );
 
         await _database.CreateTableAsync<VideoInfo>();
         await _database.CreateTableAsync<Playlist>();
@@ -27,41 +30,38 @@ public class VideoDatabase : IVideoDatabase
     public async Task<List<VideoInfo>> GetFavoritesAsync()
     {
         await Init();
-    
-        return await _database.Table<VideoInfo>()
+        return await _database!.Table<VideoInfo>()
             .Where(v => v.IsFavorite)
             .ToListAsync();
     }
 
-    public async Task<VideoInfo> GetFavoriteAsync(string filePath)
+    public async Task<VideoInfo?> GetFavoriteAsync(string filePath)
     {
         await Init();
-        return await _database.Table<VideoInfo>().Where(i => i.FilePath == filePath).FirstOrDefaultAsync();
+        return await _database!.Table<VideoInfo>()
+            .Where(i => i.FilePath == filePath)
+            .FirstOrDefaultAsync();
     }
     
     public async Task<int> DeleteFavoriteAsync(VideoInfo item)
     {
         await Init();
-        return await _database.DeleteAsync(item);
+        return await _database!.DeleteAsync(item);
     }
   
     public async Task<int> UpdateVideoInfoAsync(VideoInfo item)
     {
         await Init();
-    
+        
         var existing = await GetFavoriteAsync(item.FilePath);
         if (existing == null)
-        {
-            return await _database.InsertAsync(item);
-        }
-        else
-        {
-            existing.Title = item.Title;
-            existing.DurationMilliseconds = item.DurationMilliseconds;
-            existing.ThumbnailPath = item.ThumbnailPath;
-            existing.IsFavorite = item.IsFavorite;
-            return await _database.UpdateAsync(existing);
-        }
+            return await _database!.InsertAsync(item);
+
+        existing.Title = item.Title;
+        existing.DurationMilliseconds = item.DurationMilliseconds;
+        existing.ThumbnailPath = item.ThumbnailPath;
+        existing.IsFavorite = item.IsFavorite;
+        return await _database.UpdateAsync(existing);
     }
 
     public async Task<int> SaveFavoriteAsync(VideoInfo item)
@@ -70,17 +70,13 @@ public class VideoDatabase : IVideoDatabase
 
         var existing = await GetFavoriteAsync(item.FilePath);
         if (existing == null)
-        {
-            return await _database.InsertAsync(item);
-        }
-        else
-        {
-            existing.Title = item.Title;
-            existing.DurationMilliseconds = item.DurationMilliseconds;
-            existing.ThumbnailPath = item.ThumbnailPath;
-            existing.IsFavorite = item.IsFavorite;
-            return await _database.UpdateAsync(existing);
-        }
+            return await _database!.InsertAsync(item);
+
+        existing.Title = item.Title;
+        existing.DurationMilliseconds = item.DurationMilliseconds;
+        existing.ThumbnailPath = item.ThumbnailPath;
+        existing.IsFavorite = item.IsFavorite;
+        return await _database.UpdateAsync(existing);
     }
     
     public async Task<int> DeleteFavoriteByPathAsync(string filePath)
@@ -91,24 +87,24 @@ public class VideoDatabase : IVideoDatabase
         if (item != null)
         {
             item.IsFavorite = false;
-            return await _database.UpdateAsync(item);
+            return await _database!.UpdateAsync(item);
         }
 
         return 0;
     }
     
-     public async Task<List<Playlist>> GetPlaylistsAsync()
+    public async Task<List<Playlist>> GetPlaylistsAsync()
     {
         await Init();
-        return await _database.Table<Playlist>()
+        return await _database!.Table<Playlist>()
             .OrderByDescending(p => p.LastModified)
             .ToListAsync();
     }
 
-    public async Task<Playlist> GetPlaylistAsync(int playlistId)
+    public async Task<Playlist?> GetPlaylistAsync(int playlistId)
     {
         await Init();
-        return await _database.Table<Playlist>()
+        return await _database!.Table<Playlist>()
             .Where(p => p.Id == playlistId)
             .FirstOrDefaultAsync();
     }
@@ -120,21 +116,19 @@ public class VideoDatabase : IVideoDatabase
         if (playlist.Id != 0)
         {
             playlist.LastModified = DateTime.Now;
-            return await _database.UpdateAsync(playlist);
+            return await _database!.UpdateAsync(playlist);
         }
-        else
-        {
-            playlist.CreatedDate = DateTime.Now;
-            playlist.LastModified = DateTime.Now;
-            return await _database.InsertAsync(playlist);
-        }
+        
+        playlist.CreatedDate = DateTime.Now;
+        playlist.LastModified = DateTime.Now;
+        return await _database.InsertAsync(playlist);
     }
 
     public async Task<int> DeletePlaylistAsync(Playlist playlist)
     {
         await Init();
         
-        await _database.ExecuteAsync("DELETE FROM playlist_items WHERE PlaylistId = ?", playlist.Id);
+        await _database!.ExecuteAsync("DELETE FROM playlist_items WHERE PlaylistId = ?", playlist.Id);
         
         return await _database.DeleteAsync(playlist);
     }
@@ -142,7 +136,7 @@ public class VideoDatabase : IVideoDatabase
     public async Task<List<PlaylistItem>> GetPlaylistItemsAsync(int playlistId)
     {
         await Init();
-        return await _database.Table<PlaylistItem>()
+        return await _database!.Table<PlaylistItem>()
             .Where(pi => pi.PlaylistId == playlistId)
             .OrderBy(pi => pi.Order)
             .ToListAsync();
@@ -152,7 +146,7 @@ public class VideoDatabase : IVideoDatabase
     {
         await Init();
         
-        var existingItem = await _database.Table<PlaylistItem>()
+        var existingItem = await _database!.Table<PlaylistItem>()
             .Where(pi => pi.PlaylistId == playlistId && pi.VideoPath == videoPath)
             .FirstOrDefaultAsync();
             
@@ -188,7 +182,7 @@ public class VideoDatabase : IVideoDatabase
     {
         await Init();
         
-        var item = await _database.Table<PlaylistItem>()
+        var item = await _database!.Table<PlaylistItem>()
             .Where(pi => pi.PlaylistId == playlistId && pi.VideoPath == videoPath)
             .FirstOrDefaultAsync();
             
@@ -218,7 +212,7 @@ public class VideoDatabase : IVideoDatabase
     {
         await Init();
         
-        var item = await _database.Table<PlaylistItem>()
+        var item = await _database!.Table<PlaylistItem>()
             .Where(pi => pi.Id == itemId)
             .FirstOrDefaultAsync();
             
@@ -236,26 +230,22 @@ public class VideoDatabase : IVideoDatabase
         var result = 0;
         foreach (var item in items)
         {
-            result += await _database.UpdateAsync(item);
+            result += await _database!.UpdateAsync(item);
         }
         
         return result;
     }
     
-    public async Task<VideoInfo> GetOrCreateVideoInfoAsync(string filePath, VideoInfo videoInfo = null)
+    public async Task<VideoInfo?> GetOrCreateVideoInfoAsync(string filePath, VideoInfo? videoInfo = null)
     {
         await Init();
     
-        var existingVideo = await GetFavoriteAsync(filePath);
-        if (existingVideo != null)
-        {
-            return existingVideo;
-        }
+        var existing = await GetFavoriteAsync(filePath);
+        if (existing != null)
+            return existing;
     
         if (videoInfo == null)
-        {
             return null;
-        }
     
         var newVideoInfo = new VideoInfo
         {
@@ -266,7 +256,7 @@ public class VideoDatabase : IVideoDatabase
             IsFavorite = false
         };
     
-        await _database.InsertAsync(newVideoInfo);
+        await _database!.InsertAsync(newVideoInfo);
         return newVideoInfo;
     }
 }

@@ -2,6 +2,7 @@
 using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
 using CommunityToolkit.Maui.Views;
+using TheLighthouseWavesPlayerVideoApp.Localization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 

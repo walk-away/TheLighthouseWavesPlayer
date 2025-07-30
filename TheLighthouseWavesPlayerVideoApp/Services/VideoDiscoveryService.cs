@@ -1,8 +1,5 @@
 ﻿using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Devices;
-using Microsoft.Maui.Storage;
 using Path = System.IO.Path;
 
 #if ANDROID
@@ -11,7 +8,6 @@ using Android.Provider;
 using Uri = Android.Net.Uri;
 using Android.Graphics;
 using Android.Media;
-using System.IO;
 #endif
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
@@ -66,95 +62,90 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                     MediaStore.Video.Media.InterfaceConsts.Duration
                 };
 
-                ICursor? cursor = contentResolver.Query(
-                    uri,
-                    projection,
-                    null,
-                    null,
-                    MediaStore.Video.Media.InterfaceConsts.DateAdded + " DESC"
-                );
-
-                if (cursor != null)
+                if (uri != null)
                 {
-                    int dataColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Data);
-                    int titleColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Title);
-                    int durationColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Duration);
-                    // Optional: Get ID if needed later
-                    // int idColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Id);
+                    ICursor? cursor = contentResolver?.Query(
+                        uri,
+                        projection,
+                        null,
+                        null,
+                        MediaStore.Video.Media.InterfaceConsts.DateAdded + " DESC"
+                    );
 
-                    if (cursor.MoveToFirst())
+                    if (cursor != null)
                     {
-                        do
+                        int dataColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Data);
+                        int titleColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Title);
+                        int durationColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Duration);
+
+                        if (cursor.MoveToFirst())
                         {
-                            try
+                            do
                             {
-                                if (dataColumn == -1 || titleColumn == -1 || durationColumn == -1)
+                                try
                                 {
-                                    System.Diagnostics.Debug.WriteLine("Error: Column index not found.");
-                                    continue;
-                                }
-
-                                string filePath = cursor.GetString(dataColumn) ?? string.Empty;
-                                string title = cursor.GetString(titleColumn) ?? string.Empty;
-                                long duration = cursor.GetLong(durationColumn);
-                                // Optional: long mediaStoreId = cursor.GetLong(idColumn);
-
-                                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                                {
-                                    string? thumbnailPath = null;
-                                    try
+                                    if (dataColumn == -1 || titleColumn == -1 || durationColumn == -1)
                                     {
-                                        // --- Thumbnail Generation ---
-                                        // Use FilePath for ThumbnailUtils
-                                        Bitmap? thumbnailBitmap = ThumbnailUtils.CreateVideoThumbnail(filePath, ThumbnailKind.MiniKind);
+                                        System.Diagnostics.Debug.WriteLine("Error: Column index not found.");
+                                        continue;
+                                    }
 
-                                        if (thumbnailBitmap != null)
+                                    string filePath = cursor.GetString(dataColumn) ?? string.Empty;
+                                    string title = cursor.GetString(titleColumn) ?? string.Empty;
+                                    long duration = cursor.GetLong(durationColumn);
+
+                                    if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                                    {
+                                        string? thumbnailPath = null;
+                                        try
                                         {
-                                            // Create a unique filename for the thumbnail in the cache
-                                            string thumbnailFileName = $"thumb_{Path.GetFileNameWithoutExtension(filePath)}_{Guid.NewGuid()}.jpg";
-                                            string cachedThumbnailPath = Path.Combine(FileSystem.CacheDirectory, thumbnailFileName);
+                                            Bitmap? thumbnailBitmap = ThumbnailUtils.CreateVideoThumbnail(filePath, ThumbnailKind.MiniKind);
 
-                                            using (var stream = new FileStream(cachedThumbnailPath, FileMode.Create))
+                                            if (thumbnailBitmap != null)
                                             {
-                                                thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg, 80, stream); // Compress and save
+                                                string thumbnailFileName = $"thumb_{Path.GetFileNameWithoutExtension(filePath)}_{Guid.NewGuid()}.jpg";
+                                                string cachedThumbnailPath = Path.Combine(FileSystem.CacheDirectory, thumbnailFileName);
+
+                                                using (var stream = new FileStream(cachedThumbnailPath, FileMode.Create))
+                                                {
+                                                    thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg ?? throw new InvalidOperationException(), 80, stream); // Compress and save
+                                                }
+                                                thumbnailBitmap.Recycle();
+                                                thumbnailPath = cachedThumbnailPath;
+                                                System.Diagnostics.Debug.WriteLine($"Thumbnail generated: {thumbnailPath}");
                                             }
-                                            thumbnailBitmap.Recycle(); // Release bitmap memory
-                                            thumbnailPath = cachedThumbnailPath; // Store the path to the cached file
-                                            System.Diagnostics.Debug.WriteLine($"Thumbnail generated: {thumbnailPath}");
+                                            else {
+                                                System.Diagnostics.Debug.WriteLine($"Failed to generate thumbnail for: {filePath}");
+                                            }
                                         }
-                                        else {
-                                            System.Diagnostics.Debug.WriteLine($"Failed to generate thumbnail for: {filePath}");
+                                        catch (Exception thumbEx)
+                                        {
+                                            System.Diagnostics.Debug.WriteLine($"Error generating thumbnail for {filePath}: {thumbEx.Message}");
                                         }
-                                        // --- End Thumbnail Generation ---
-                                    }
-                                    catch (Exception thumbEx)
-                                    {
-                                        System.Diagnostics.Debug.WriteLine($"Error generating thumbnail for {filePath}: {thumbEx.Message}");
-                                        // Continue without a thumbnail if generation fails
-                                    }
 
 
-                                    videoFiles.Add(new VideoInfo
+                                        videoFiles.Add(new VideoInfo
+                                        {
+                                            FilePath = filePath,
+                                            Title = string.IsNullOrEmpty(title) ? Path.GetFileNameWithoutExtension(filePath) : title,
+                                            DurationMilliseconds = duration,
+                                            ThumbnailPath = thumbnailPath // Assign the generated path
+                                        });
+                                    }
+                                    else if (!string.IsNullOrEmpty(filePath))
                                     {
-                                        FilePath = filePath,
-                                        Title = string.IsNullOrEmpty(title) ? Path.GetFileNameWithoutExtension(filePath) : title,
-                                        DurationMilliseconds = duration,
-                                        ThumbnailPath = thumbnailPath // Assign the generated path
-                                    });
+                                        System.Diagnostics.Debug.WriteLine($"File not found or path empty: {filePath}");
+                                    }
+
                                 }
-                                else if (!string.IsNullOrEmpty(filePath))
+                                catch (Exception itemEx)
                                 {
-                                    System.Diagnostics.Debug.WriteLine($"File not found or path empty: {filePath}");
+                                    System.Diagnostics.Debug.WriteLine($"Error processing video item: {itemEx.Message}");
                                 }
-
-                            }
-                            catch (Exception itemEx)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"Error processing video item: {itemEx.Message}");
-                            }
-                        } while (cursor.MoveToNext());
+                            } while (cursor.MoveToNext());
+                        }
+                        cursor.Close();
                     }
-                    cursor.Close();
                 }
             }
             catch (Exception queryEx)

@@ -1,45 +1,46 @@
 ﻿using System.Globalization;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
+using Preferences = Microsoft.Maui.Storage.Preferences;
 
 namespace TheLighthouseWavesPlayerVideoApp.Localization.Helpers;
 
 public class LocalizationManager : ILocalizationManager
 {
-    readonly ILocalizedResourcesProvider _resourceProvider;
-
+    private readonly ILocalizedResourcesProvider _resourceProvider;
     private CultureInfo _currentCulture;
 
-    public LocalizationManager(ILocalizedResourcesProvider resoureProvider)
+    public LocalizationManager(ILocalizedResourcesProvider resourceProvider)
     {
-        _resourceProvider = resoureProvider;
+        _resourceProvider = resourceProvider ?? throw new ArgumentNullException(nameof(resourceProvider));
+        _currentCulture = CultureInfo.CurrentCulture;
     }
 
-    public void RestorePreviousCulture(CultureInfo defaultCulture = null)
-        => SetCulture(GetUserCulture(defaultCulture));
-
-    public CultureInfo GetUserCulture(CultureInfo defaultCulture = null)
+    public void RestorePreviousCulture(CultureInfo? defaultCulture = null)
     {
-        if (_currentCulture is null)
+        var culture = GetUserCulture(defaultCulture) ?? CultureInfo.CurrentCulture;
+        SetCulture(culture);
+    }
+
+    public CultureInfo GetUserCulture(CultureInfo? defaultCulture = null)
+    {
+        var name = Preferences.Default.Get("UserCulture", defaultCulture?.Name ?? _currentCulture.Name);
+        try
         {
-            var culture = Preferences.Default.Get("UserCulture", string.Empty);
-            if (string.IsNullOrEmpty(culture))
-            {
-                _currentCulture = defaultCulture ?? CultureInfo.CurrentCulture;
-            }
-            else
-            {
-                _currentCulture = new CultureInfo(culture);
-            }
+            return new CultureInfo(name);
         }
-        return _currentCulture;
+        catch (CultureNotFoundException)
+        {
+            return _currentCulture;
+        }
     }
 
     public void UpdateUserCulture(CultureInfo cultureInfo)
     {
+        if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
         Preferences.Default.Set("UserCulture", cultureInfo.Name);
         SetCulture(cultureInfo);
-        
-        Application.Current.Dispatcher.Dispatch(() =>
+
+        Application.Current?.Dispatcher.Dispatch(() =>
         {
             if (Application.Current.MainPage is Shell shell)
             {
@@ -48,11 +49,13 @@ public class LocalizationManager : ILocalizationManager
         });
     }
 
-    private void UpdateShellLabels(Shell shell)
+    private void UpdateShellLabels(Shell? shell)
     {
-        var provider = LocalizedResourcesProvider.Instance;
+        if (shell == null) return;
+        var provider = _resourceProvider;
+        if (provider == null) return;
 
-        shell.Title = provider["Shell_Title"];
+        shell.Title = provider["Shell_Title"] ?? shell.Title;
 
         foreach (var item in shell.Items)
         {
@@ -62,22 +65,17 @@ public class LocalizationManager : ILocalizationManager
                 {
                     if (tab is Tab tabItem)
                     {
-                        switch (tabItem.Title)
+                        string current = tabItem.Title;
+                        string? newTitle = current switch
                         {
-                            case "Library":
-                            case "Библиотека":
-                                tabItem.Title = provider["Shell_Library"];
-                                break;
-                            case "Favorites":
-                            case "Избранное":
-                                tabItem.Title = provider["Shell_Favorites"];
-                                break;
-                            case "Settings":
-                            case "Настройки":
-                                tabItem.Title = provider["Shell_Settings"];
-                                break;
-                        }
-                        
+                            "Library" or "Библиотека" => provider["Shell_Library"],
+                            "Favorites" or "Избранное" => provider["Shell_Favorites"],
+                            "Settings" or "Настройки" => provider["Shell_Settings"],
+                            _ => null
+                        };
+                        if (!string.IsNullOrEmpty(newTitle))
+                            tabItem.Title = newTitle;
+
                         if (tabItem.Items.Count > 0 && tabItem.Items[0] is ShellContent content)
                         {
                             content.Title = tabItem.Title;
@@ -91,7 +89,7 @@ public class LocalizationManager : ILocalizationManager
     private void SetCulture(CultureInfo cultureInfo)
     {
         _currentCulture = cultureInfo;
-        Application.Current.Dispatcher.Dispatch(() =>
+        Application.Current?.Dispatcher.Dispatch(() =>
         {
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;

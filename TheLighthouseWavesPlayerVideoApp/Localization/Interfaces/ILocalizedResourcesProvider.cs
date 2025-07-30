@@ -9,5 +9,5 @@ public interface ILocalizedResourcesProvider
         get;
     }
 
-    void UpdateCulture(CultureInfo cultureInfo);
+    void UpdateCulture(CultureInfo? cultureInfo);
 }

@@ -5,7 +5,7 @@ namespace TheLighthouseWavesPlayerVideoApp.Interfaces;
 public interface IPlaylistService
 {
     Task<List<Playlist>> GetPlaylistsAsync();
-    Task<Playlist> GetPlaylistAsync(int playlistId);
+    Task<Playlist?> GetPlaylistAsync(int playlistId);
     Task<int> CreatePlaylistAsync(string name, string description = "");
     Task<int> UpdatePlaylistAsync(Playlist playlist);
     Task<int> DeletePlaylistAsync(Playlist playlist);

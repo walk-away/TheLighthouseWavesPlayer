@@ -14,7 +14,7 @@ public partial class VideoInfo : ObservableObject
     public long DurationMilliseconds { get; set; }
     
     [ObservableProperty]
-    private bool isFavorite;
+    private bool _isFavorite;
 
     [Ignore] public TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMilliseconds);
     

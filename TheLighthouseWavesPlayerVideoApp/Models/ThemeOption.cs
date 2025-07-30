@@ -2,8 +2,8 @@
 
 public class ThemeOption
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public AppTheme Theme { get; set; }
 
-    public override string ToString() => Name;
+    public override string? ToString() => Name;
 }

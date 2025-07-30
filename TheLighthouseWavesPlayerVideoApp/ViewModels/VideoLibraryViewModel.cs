@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
@@ -15,43 +16,59 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     private readonly ILocalizedResourcesProvider _resourcesProvider;
     private readonly IPlaylistService _playlistService;
 
-    [ObservableProperty] private ObservableCollection<Playlist> _availablePlaylists;
-    [ObservableProperty] private bool _isSelectingPlaylist;
-    [ObservableProperty] private VideoInfo _videoForPlaylist;
-    [ObservableProperty] private bool _hasPlaylists;
-    [ObservableProperty] ObservableCollection<VideoInfo> _allVideos;
-    [ObservableProperty] ObservableCollection<VideoInfo> _videos;
-    [ObservableProperty] VideoInfo _selectedVideo;
-    [ObservableProperty] string _searchText = string.Empty;
-    [ObservableProperty] ObservableCollection<SortOption> _sortOptions;
-    [ObservableProperty] SortOption _selectedSortOption;
+    [ObservableProperty]
+    private ObservableCollection<Playlist> _availablePlaylists = new();
+
+    [ObservableProperty]
+    private bool _isSelectingPlaylist;
+
+    [ObservableProperty]
+    private VideoInfo _videoForPlaylist = new VideoInfo();
+
+    [ObservableProperty]
+    private bool _hasPlaylists;
+
+    [ObservableProperty]
+    private ObservableCollection<VideoInfo> _allVideos = new();
+
+    [ObservableProperty]
+    private ObservableCollection<VideoInfo> _videos = new();
+
+    [ObservableProperty]
+    private VideoInfo _selectedVideo = new VideoInfo();
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    [ObservableProperty]
+    private ObservableCollection<SortOption> _sortOptions = new();
+
+    [ObservableProperty]
+    private SortOption _selectedSortOption = new SortOption(string.Empty, string.Empty, true);
+
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
 
-    public VideoLibraryViewModel(IVideoDiscoveryService videoDiscoveryService,
+    public VideoLibraryViewModel(
+        IVideoDiscoveryService videoDiscoveryService,
         IFavoritesService favoritesService,
         ILocalizedResourcesProvider resourcesProvider,
         IPlaylistService playlistService)
     {
-        _videoDiscoveryService = videoDiscoveryService;
-        _favoritesService = favoritesService;
-        _resourcesProvider = resourcesProvider;
-        _playlistService = playlistService;
+        _videoDiscoveryService = videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
+        _favoritesService = favoritesService ?? throw new ArgumentNullException(nameof(favoritesService));
+        _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
+        _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
         Title = _resourcesProvider["Library_Title"];
-
-        AllVideos = new ObservableCollection<VideoInfo>();
-        Videos = new ObservableCollection<VideoInfo>();
-        AvailablePlaylists = new ObservableCollection<Playlist>();
 
         _lastSelectedSortProperty = "Title";
         _lastSelectedSortIsAscending = true;
 
         InitializeSortOptions();
 
-        if (resourcesProvider is ObservableObject observableProvider)
+        if (_resourcesProvider is INotifyPropertyChanged notifier)
         {
-            observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
-            observableProvider.PropertyChanged += OnResourceProviderPropertyChanged;
+            notifier.PropertyChanged += OnResourceProviderPropertyChanged;
         }
     }
 
@@ -64,19 +81,15 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
             new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
             new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
         };
-
-        SelectedSortOption = SortOptions[0];
+        SelectedSortOption = SortOptions.First();
     }
 
     private void UpdateSortOptions()
     {
-        if (SelectedSortOption != null)
-        {
-            _lastSelectedSortProperty = SelectedSortOption.Property;
-            _lastSelectedSortIsAscending = SelectedSortOption.IsAscending;
-        }
+        _lastSelectedSortProperty = SelectedSortOption.Property;
+        _lastSelectedSortIsAscending = SelectedSortOption.IsAscending;
 
-        var newSortOptions = new ObservableCollection<SortOption>
+        var newOptions = new ObservableCollection<SortOption>
         {
             new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
             new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
@@ -84,110 +97,81 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
             new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
         };
 
-        SortOptions = newSortOptions;
-
+        SortOptions = newOptions;
         SelectedSortOption = SortOptions.FirstOrDefault(
-                                 o => o.Property == _lastSelectedSortProperty &&
-                                      o.IsAscending == _lastSelectedSortIsAscending)
-                             ?? SortOptions[0];
+            o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending)
+            ?? SortOptions.First();
     }
 
-    private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == "Item")
         {
             Title = _resourcesProvider["Library_Title"];
-
             UpdateSortOptions();
         }
     }
 
-    partial void OnSearchTextChanged(string value)
-    {
-        ApplyFilters();
-    }
+    partial void OnSearchTextChanged(string value) => ApplyFilters();
 
     partial void OnSelectedSortOptionChanged(SortOption value)
     {
-        if (value != null)
-        {
-            _lastSelectedSortProperty = value.Property;
-            _lastSelectedSortIsAscending = value.IsAscending;
-        }
-
+        _lastSelectedSortProperty = value.Property;
+        _lastSelectedSortIsAscending = value.IsAscending;
         ApplyFilters();
     }
 
     private void ApplyFilters()
     {
-        IEnumerable<VideoInfo> filteredVideos = AllVideos;
+        IEnumerable<VideoInfo> filtered = AllVideos;
 
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
-            string searchLower = SearchText.ToLowerInvariant();
-            filteredVideos = filteredVideos.Where(v =>
-                v.Title?.ToLowerInvariant().Contains(searchLower) == true);
+            var lower = SearchText.ToLowerInvariant();
+            filtered = filtered.Where(v => !string.IsNullOrEmpty(v.Title) &&
+                                            v.Title.ToLowerInvariant().Contains(lower));
         }
 
-        if (SelectedSortOption != null)
+        filtered = SelectedSortOption.Property switch
         {
-            switch (SelectedSortOption.Property)
-            {
-                case "Title":
-                    filteredVideos = SelectedSortOption.IsAscending
-                        ? filteredVideos.OrderBy(v => v.Title)
-                        : filteredVideos.OrderByDescending(v => v.Title);
-                    break;
-                case "DurationMilliseconds":
-                    filteredVideos = SelectedSortOption.IsAscending
-                        ? filteredVideos.OrderBy(v => v.DurationMilliseconds)
-                        : filteredVideos.OrderByDescending(v => v.DurationMilliseconds);
-                    break;
-            }
-        }
+            "Title" => SelectedSortOption.IsAscending ? filtered.OrderBy(v => v.Title)
+                                                       : filtered.OrderByDescending(v => v.Title),
+            "DurationMilliseconds" => SelectedSortOption.IsAscending
+                ? filtered.OrderBy(v => v.DurationMilliseconds)
+                : filtered.OrderByDescending(v => v.DurationMilliseconds),
+            _ => filtered
+        };
 
         Videos.Clear();
-        foreach (var video in filteredVideos)
-        {
+        foreach (var video in filtered)
             Videos.Add(video);
-        }
     }
 
     [RelayCommand]
-    async Task LoadVideos()
+    public async Task LoadVideos()
     {
         if (IsBusy) return;
-
         IsBusy = true;
         try
         {
             AllVideos.Clear();
             Videos.Clear();
 
-            var discoveredVideos = await _videoDiscoveryService.DiscoverVideosAsync();
-            if (discoveredVideos != null)
-            {
-                var favoritePaths = await _favoritesService.GetFavoritesAsync();
-                var favoritePathsSet = new HashSet<string>(favoritePaths.Select(f => f.FilePath));
+            var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
+            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ?? new HashSet<string>();
 
-                foreach (var video in discoveredVideos)
+            if (discovered != null)
+            {
+                foreach (var vid in discovered)
                 {
-                    video.IsFavorite = favoritePathsSet.Contains(video.FilePath);
-                    AllVideos.Add(video);
+                    vid.IsFavorite = favs.Contains(vid.FilePath);
+                    AllVideos.Add(vid);
                 }
             }
 
             ApplyFilters();
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error loading videos: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load video library.", "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]
@@ -206,7 +190,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task ToggleFavorite(VideoInfo video)
+    async Task ToggleFavorite(VideoInfo? video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
 
