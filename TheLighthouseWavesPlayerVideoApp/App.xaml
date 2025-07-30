@@ -10,14 +10,11 @@
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
             <converters:DoubleToTimeSpanConverter x:Key="DoubleToTimeSpanConverter" />
-            <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
-            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:BoolToSubtitleButtonColorConverter x:Key="BoolToSubtitleButtonColorConverter" />
             <converters:VolumeToIconConverter x:Key="VolumeToIconConverter" />
             <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
             <converters:BoolToHighlightOpacityConverter x:Key="BoolToHighlightOpacityConverter" />
-            <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
             <converters:BoolToSubtitleTextColorConverter x:Key="BoolToSubtitleTextColorConverter" />
             <converters:EnumEqualityConverter x:Key="EnumEqualityConverter" />
             
