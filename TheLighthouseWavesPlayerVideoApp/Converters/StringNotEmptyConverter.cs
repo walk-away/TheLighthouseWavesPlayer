@@ -1,21 +1,12 @@
 ﻿using System.Globalization;
 
-namespace TheLighthouseWavesPlayerVideoApp.Converters
-{
-    public class StringNotEmptyConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is string stringValue)
-            {
-                return !string.IsNullOrEmpty(stringValue);
-            }
-            return false;
-        }
+namespace TheLighthouseWavesPlayerVideoApp.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+public class StringNotEmptyConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => (value is string s && !string.IsNullOrEmpty(s));
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
 }
