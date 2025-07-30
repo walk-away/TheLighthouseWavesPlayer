@@ -6,31 +6,18 @@ namespace TheLighthouseWavesPlayerVideoApp.Localization.Helpers;
 public class LocalizationManager : ILocalizationManager
 {
     readonly ILocalizedResourcesProvider _resourceProvider;
-
-    private CultureInfo _currentCulture;
+    private CultureInfo _currentCulture = CultureInfo.CurrentCulture;
 
     public LocalizationManager(ILocalizedResourcesProvider resoureProvider)
     {
         _resourceProvider = resoureProvider;
     }
 
-    public void RestorePreviousCulture(CultureInfo defaultCulture = null)
+    public void RestorePreviousCulture(CultureInfo? defaultCulture = null)
         => SetCulture(GetUserCulture(defaultCulture));
 
-    public CultureInfo GetUserCulture(CultureInfo defaultCulture = null)
+    public CultureInfo GetUserCulture(CultureInfo? defaultCulture = null)
     {
-        if (_currentCulture is null)
-        {
-            var culture = Preferences.Default.Get("UserCulture", string.Empty);
-            if (string.IsNullOrEmpty(culture))
-            {
-                _currentCulture = defaultCulture ?? CultureInfo.CurrentCulture;
-            }
-            else
-            {
-                _currentCulture = new CultureInfo(culture);
-            }
-        }
         return _currentCulture;
     }
 
@@ -39,7 +26,7 @@ public class LocalizationManager : ILocalizationManager
         Preferences.Default.Set("UserCulture", cultureInfo.Name);
         SetCulture(cultureInfo);
         
-        Application.Current.Dispatcher.Dispatch(() =>
+        Application.Current?.Dispatcher.Dispatch(() =>
         {
             if (Application.Current.MainPage is Shell shell)
             {
@@ -91,7 +78,7 @@ public class LocalizationManager : ILocalizationManager
     private void SetCulture(CultureInfo cultureInfo)
     {
         _currentCulture = cultureInfo;
-        Application.Current.Dispatcher.Dispatch(() =>
+        Application.Current?.Dispatcher.Dispatch(() =>
         {
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;

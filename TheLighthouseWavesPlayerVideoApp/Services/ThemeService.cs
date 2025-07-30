@@ -1,48 +1,47 @@
 ﻿using TheLighthouseWavesPlayerVideoApp.Interfaces;
 
-namespace TheLighthouseWavesPlayerVideoApp.Services
+namespace TheLighthouseWavesPlayerVideoApp.Services;
+
+public class ThemeService : IThemeService
 {
-    public class ThemeService : IThemeService
+    private const string ThemePreferenceKey = "AppTheme";
+
+    public AppTheme CurrentTheme
     {
-        private const string ThemePreferenceKey = "AppTheme";
-
-        public AppTheme CurrentTheme
+        get
         {
-            get
+            var themeName = Preferences.Default.Get(ThemePreferenceKey, AppTheme.Unspecified.ToString());
+            if (Enum.TryParse<AppTheme>(themeName, out var theme))
             {
-                var themeName = Preferences.Default.Get(ThemePreferenceKey, AppTheme.Unspecified.ToString());
-                if (Enum.TryParse<AppTheme>(themeName, out var theme))
-                {
-                    return theme;
-                }
-
-                return AppTheme.Unspecified;
+                return theme;
             }
-        }
 
-        public void SetTheme(AppTheme theme)
-        {
-            Preferences.Default.Set(ThemePreferenceKey, theme.ToString());
-            ApplyTheme();
+            return AppTheme.Unspecified;
         }
+    }
 
-        public void ApplyTheme()
+    public void SetTheme(AppTheme theme)
+    {
+        Preferences.Default.Set(ThemePreferenceKey, theme.ToString());
+        ApplyTheme();
+    }
+
+    public void ApplyTheme()
+    {
+        Application.Current?.Dispatcher.Dispatch(() =>
         {
-            Application.Current.Dispatcher.Dispatch(() =>
+            switch (CurrentTheme)
             {
-                switch (CurrentTheme)
-                {
-                    case AppTheme.Light:
-                        Application.Current.UserAppTheme = Microsoft.Maui.ApplicationModel.AppTheme.Light;
-                        break;
-                    case AppTheme.Dark:
-                        Application.Current.UserAppTheme = Microsoft.Maui.ApplicationModel.AppTheme.Dark;
-                        break;
-                    case AppTheme.Unspecified:
-                        Application.Current.UserAppTheme = Microsoft.Maui.ApplicationModel.AppTheme.Unspecified;
-                        break;
-                }
-            });
-        }
+                case AppTheme.Light:
+                    Application.Current.UserAppTheme = AppTheme.Light;
+                    break;
+                case AppTheme.Dark:
+                    Application.Current.UserAppTheme = AppTheme.Dark;
+                    break;
+                case AppTheme.Unspecified:
+                    Application.Current.UserAppTheme = AppTheme.Unspecified;
+                    break;
+            }
+        });
     }
 }

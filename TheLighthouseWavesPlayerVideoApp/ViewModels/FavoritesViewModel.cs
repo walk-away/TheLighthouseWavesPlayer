@@ -189,7 +189,7 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task RemoveFavoriteAsync(VideoInfo video)
+    async Task RemoveFavoriteAsync(VideoInfo? video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
 

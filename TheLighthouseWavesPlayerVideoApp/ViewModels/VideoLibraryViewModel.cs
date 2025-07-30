@@ -206,7 +206,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task ToggleFavorite(VideoInfo video)
+    async Task ToggleFavorite(VideoInfo? video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
 

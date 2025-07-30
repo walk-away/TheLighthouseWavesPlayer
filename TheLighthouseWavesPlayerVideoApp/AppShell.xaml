@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:TheLighthouseWavesPlayerVideoApp.Views"
     xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
-    Shell.FlyoutBehavior="Disabled">
+    FlyoutBehavior="Disabled">
 
     <Shell.Title>
         <Binding Path="[Shell_Title]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />

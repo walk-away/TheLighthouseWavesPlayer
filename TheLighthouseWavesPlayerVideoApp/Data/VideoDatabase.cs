@@ -45,7 +45,7 @@ public class VideoDatabase : IVideoDatabase
         return await _database.DeleteAsync(item);
     }
   
-    public async Task<int> UpdateVideoInfoAsync(VideoInfo item)
+    public async Task<int> UpdateVideoInfoAsync(VideoInfo? item)
     {
         await Init();
     
@@ -64,7 +64,7 @@ public class VideoDatabase : IVideoDatabase
         }
     }
 
-    public async Task<int> SaveFavoriteAsync(VideoInfo item)
+    public async Task<int> SaveFavoriteAsync(VideoInfo? item)
     {
         await Init();
 
@@ -242,7 +242,7 @@ public class VideoDatabase : IVideoDatabase
         return result;
     }
     
-    public async Task<VideoInfo> GetOrCreateVideoInfoAsync(string filePath, VideoInfo videoInfo = null)
+    public async Task<VideoInfo> GetOrCreateVideoInfoAsync(string filePath, VideoInfo? videoInfo = null)
     {
         await Init();
     
