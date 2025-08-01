@@ -32,7 +32,7 @@ public partial class VideoLibraryPage : ContentPage
     {
         if (Content is Grid grid && grid.Children.Count > 0)
         {
-            CollectionView collectionView = null;
+            CollectionView? collectionView = null;
                 
             foreach (var child in grid.Children)
             {
