@@ -325,12 +325,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-    private void MediaElement_MediaEnded(object sender, EventArgs e)
+    private void MediaElement_MediaEnded(object? sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");
-    
         _viewModel?.OnMediaEnded();
-        
         _metadataSuccessfullyUpdated = false;
     }
 

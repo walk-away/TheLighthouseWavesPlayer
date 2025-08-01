@@ -30,7 +30,7 @@ public class FavoritesService : IFavoritesService
     {
         if (string.IsNullOrEmpty(filePath)) return false;
         var video = await _database.GetFavoriteAsync(filePath);
-        return video.IsFavorite;
+        return video != null && video.IsFavorite;
     }
 
     public async Task RemoveFavoriteAsync(VideoInfo? video)
