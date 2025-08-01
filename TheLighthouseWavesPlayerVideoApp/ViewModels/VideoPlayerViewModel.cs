@@ -28,8 +28,8 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private int _currentPlaylistIndex = -1;
 
     [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
-    [ObservableProperty] string _filePath;
-    [ObservableProperty] MediaSource _videoSource;
+    [ObservableProperty] string _filePath = "";
+    [ObservableProperty] MediaSource? _videoSource;
     [ObservableProperty] MediaElementState _currentState = MediaElementState.None;
     [ObservableProperty] bool _isFavorite;
     [ObservableProperty] bool _shouldResumePlayback = false;
@@ -40,12 +40,12 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [ObservableProperty] private double _volumeAmplification = 2.0;
     [ObservableProperty] private double _sliderVolume = 0.5;
     [ObservableProperty] bool _isVideoInfoVisible = false;
-    [ObservableProperty] private MediaElement _mediaElement;
+    [ObservableProperty] private MediaElement? _mediaElement;
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
     [ObservableProperty] private bool _isLandscape;
     [ObservableProperty] private int _playlistId;
-    [ObservableProperty] private Playlist _currentPlaylist;
+    [ObservableProperty] private Playlist _currentPlaylist = new Playlist();
     [ObservableProperty] private string _playlistProgressText = string.Empty;
     [ObservableProperty] private bool _isPlaylistMode = false;
     [ObservableProperty] private bool _canGoToNext = false;
@@ -114,7 +114,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         UpdateNavigationButtons();
     }
 
-    private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void OnResourceProviderPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == "Item")
         {
@@ -317,7 +317,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     private void ShufflePlayQueue()
     {
-        VideoInfo currentVideo = _currentPlaylistIndex >= 0 && _currentPlaylistIndex < _playQueue.Count
+        VideoInfo? currentVideo = _currentPlaylistIndex >= 0 && _currentPlaylistIndex < _playQueue.Count
             ? _playQueue[_currentPlaylistIndex]
             : null;
 
@@ -523,7 +523,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
         int left = 0;
         int right = _subtitles.Count - 1;
-        SubtitleItem activeSubtitle = null;
+        SubtitleItem? activeSubtitle = null;
 
         while (left <= right)
         {

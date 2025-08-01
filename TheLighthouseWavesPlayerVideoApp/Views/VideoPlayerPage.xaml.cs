@@ -71,7 +71,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-    private void MediaElement_MediaFailed(object sender, MediaFailedEventArgs e)
+    private void MediaElement_MediaFailed(object? sender, MediaFailedEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine($"Media failed: {e.ErrorMessage}");
 
@@ -79,7 +79,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         {
             try
             {
-                var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+                var resources = LocalizedResourcesProvider.Instance;
                 await Shell.Current.DisplayAlert(
                     resources["Player_Error_Title"],
                     $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
@@ -92,7 +92,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         });
     }
 
-    private void OnPageSizeChanged(object sender, EventArgs e)
+    private void OnPageSizeChanged(object? sender, EventArgs e)
     {
         try
         {
@@ -119,10 +119,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 BackButtonFrame.IsVisible = isLandscape;
             }
 
-            if (_viewModel != null)
-            {
-                _viewModel.IsLandscape = isLandscape;
-            }
+            _viewModel.IsLandscape = isLandscape;
         }
         catch (Exception ex)
         {
@@ -130,9 +127,9 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-    void MediaElement_StateChanged(object sender, MediaStateChangedEventArgs e)
+    private void MediaElement_StateChanged(object? sender, MediaStateChangedEventArgs e)
     {
-        if (_viewModel == null || mediaElement == null) return;
+        if (mediaElement == null || _viewModel == null) return;
 
         _viewModel.CurrentState = e.NewState;
         System.Diagnostics.Debug.WriteLine($"MediaElement State: {e.NewState}");
@@ -142,17 +139,14 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             if (!_metadataSuccessfullyUpdated &&
                 (e.NewState == MediaElementState.Playing || e.NewState == MediaElementState.Buffering))
             {
-                System.Diagnostics.Debug.WriteLine($"Attempting metadata update on state change to {e.NewState}.");
                 TryUpdateMetadata();
             }
 
             if (!_isSeekingFromResume &&
-                (e.NewState == MediaElementState.Paused || e.NewState == MediaElementState.Stopped))
+                (e.NewState == MediaElementState.Paused || e.NewState == MediaElementState.Stopped) &&
+                mediaElement.Position > TimeSpan.Zero)
             {
-                if (mediaElement.Position > TimeSpan.Zero)
-                {
-                    _viewModel.SavePosition(mediaElement.Position);
-                }
+                _viewModel.SavePosition(mediaElement.Position);
             }
 
             if (_isSeekingFromResume && e.NewState == MediaElementState.Playing)
@@ -166,14 +160,14 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-    private void MediaElement_PositionChanged(object sender, MediaPositionChangedEventArgs e)
+    private void MediaElement_PositionChanged(object? sender, MediaPositionChangedEventArgs e)
     {
         try
         {
             var now = DateTime.UtcNow;
             if ((now - _lastSubtitleUpdate).TotalMilliseconds > 200)
             {
-                _viewModel?.UpdateSubtitles(e.Position);
+                _viewModel.UpdateSubtitles(e.Position);
                 _lastSubtitleUpdate = now;
             }
         }
@@ -183,16 +177,15 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         }
     }
 
-    private async void MediaElement_MediaOpened(object sender, EventArgs e)
+    private async void MediaElement_MediaOpened(object? sender, EventArgs e)
     {
         try
         {
             System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
 
-            if (_viewModel == null || mediaElement == null || !_isPageActive)
+            if (!_isPageActive || mediaElement == null || _viewModel == null)
             {
-                System.Diagnostics.Debug.WriteLine(
-                    "MediaElement_MediaOpened skipped: ViewModel, MediaElement is null, or page is not active.");
+                System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened skipped: Preconditions not met.");
                 return;
             }
 
@@ -214,7 +207,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 _resumeDialogShown = true;
 
-                var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+                var resources = LocalizedResourcesProvider.Instance;
                 var title = resources["Player_ResumeDialog_Title"];
                 var messageFormat = resources["Player_ResumeDialog_Message"];
                 var resumeButton = resources["Player_ResumeDialog_Resume"];
@@ -223,41 +216,31 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
                 var message = string.Format(messageFormat, formattedTime);
 
-                System.Diagnostics.Debug.WriteLine("Showing resume dialog");
                 bool resume = await DisplayAlert(title, message, resumeButton, startOverButton);
-                System.Diagnostics.Debug.WriteLine($"Resume dialog result: {resume}");
 
                 if (resume)
                 {
-                    System.Diagnostics.Debug.WriteLine($"User chose to resume at: {_viewModel.ResumePosition}");
                     _isSeekingFromResume = true;
                     mediaElement.SeekTo(_viewModel.ResumePosition);
                     mediaElement.Play();
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("User chose to start from beginning");
                     _viewModel.ClearSavedPosition();
                     mediaElement.Play();
                 }
 
                 _viewModel.ShouldResumePlayback = false;
             }
-            else
+            else if (_viewModel.IsPlaylistMode || mediaElement.ShouldAutoPlay)
             {
-                System.Diagnostics.Debug.WriteLine("Starting playback from beginning or letting AutoPlay handle it.");
-                if (_viewModel.IsPlaylistMode ||
-                    (mediaElement.ShouldAutoPlay && mediaElement.CurrentState != MediaElementState.Playing))
-                {
-                    mediaElement.Play();
-                }
+                mediaElement.Play();
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
-
-            var resources = TheLighthouseWavesPlayerVideoApp.Localization.LocalizedResourcesProvider.Instance;
+            var resources = LocalizedResourcesProvider.Instance;
             await Shell.Current.DisplayAlert(
                 resources["Player_Error_Title"],
                 resources["Player_Error_Playback"],
