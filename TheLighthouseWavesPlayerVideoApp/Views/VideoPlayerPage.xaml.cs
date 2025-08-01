@@ -194,16 +194,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
             TryUpdateMetadata();
             if (!_metadataSuccessfullyUpdated)
-            {
                 SetupMetadataRetryTimer();
-            }
 
-            if (_viewModel.IsPlaylistMode)
-            {
-                _resumeDialogShown = false;
-            }
-
-            if (_viewModel.ShouldResumePlayback && _viewModel.ResumePosition > TimeSpan.Zero && !_resumeDialogShown)
+            if (_viewModel.ShouldResumePlayback
+                && _viewModel.ResumePosition > TimeSpan.Zero
+                && !_resumeDialogShown)
             {
                 _resumeDialogShown = true;
 
@@ -212,12 +207,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 var messageFormat = resources["Player_ResumeDialog_Message"];
                 var resumeButton = resources["Player_ResumeDialog_Resume"];
                 var startOverButton = resources["Player_ResumeDialog_StartOver"];
-
                 var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
                 var message = string.Format(messageFormat, formattedTime);
 
                 bool resume = await DisplayAlert(title, message, resumeButton, startOverButton);
-
                 if (resume)
                 {
                     _isSeekingFromResume = true;
@@ -232,7 +225,8 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
                 _viewModel.ShouldResumePlayback = false;
             }
-            else if (_viewModel.IsPlaylistMode || mediaElement.ShouldAutoPlay)
+            else if (!_viewModel.ShouldResumePlayback
+                     && (_viewModel.IsPlaylistMode || mediaElement.ShouldAutoPlay))
             {
                 mediaElement.Play();
             }

@@ -224,7 +224,8 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     private async Task NextVideo()
     {
-        if (!IsPlaylistMode || !CanGoToNext) return;
+        if (!IsPlaylistMode || !CanGoToNext)
+            return;
 
         if (_currentPlaylistIndex < _playQueue.Count - 1)
         {
@@ -242,14 +243,13 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         var nextVideo = _playQueue[_currentPlaylistIndex];
         FilePath = nextVideo.FilePath;
 
+        CheckForSavedPosition();
+
         UpdateProgressText();
         UpdateNavigationButtons();
 
         await Task.Delay(100);
-        if (MediaElement != null)
-        {
-            MediaElement.Play();
-        }
+        MediaElement?.Play();
     }
 
     [RelayCommand]
@@ -273,8 +273,13 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         var prevVideo = _playQueue[_currentPlaylistIndex];
         FilePath = prevVideo.FilePath;
 
+        CheckForSavedPosition();
+
         UpdateProgressText();
         UpdateNavigationButtons();
+
+        await Task.Delay(100);
+        MediaElement?.Play();
     }
 
     [RelayCommand]
@@ -753,6 +758,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         FilePath = nextVideo1.FilePath;
+                        CheckForSavedPosition();
                         UpdateProgressText();
                         UpdateNavigationButtons();
 
@@ -778,6 +784,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             FilePath = nextVideo2.FilePath;
+                            CheckForSavedPosition();
                             UpdateProgressText();
                             UpdateNavigationButtons();
 
