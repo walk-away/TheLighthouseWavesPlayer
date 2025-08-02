@@ -248,4 +248,16 @@
     <data name="Playlists_EmptyName" xml:space="preserve">
   <value>Playlist name cannot be empty.</value>
 </data>
+    <data name="Playlists_AddNew" xml:space="preserve">
+    <value>Add New Playlist</value>
+</data>
+    <data name="Playlists_EmptyPlaylist" xml:space="preserve">
+    <value>Empty Playlist</value>
+</data>
+    <data name="Playlists_NoVideosToPlay" xml:space="preserve">
+    <value>This playlist has no videos to play</value>
+</data>
+    <data name="Playlists_ErrorPlaying" xml:space="preserve">
+    <value>Failed to play playlist.</value>
+</data>
 </root>

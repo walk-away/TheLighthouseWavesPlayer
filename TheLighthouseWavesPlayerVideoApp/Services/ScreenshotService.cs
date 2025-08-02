@@ -106,13 +106,13 @@ public class ScreenshotService : IScreenshotService
                 try
                 {
                     Handler? handler = surfaceView.Handler ?? platformView.Handler;
-                    if (handler != null)
+                    if (handler != null && Build.VERSION.SdkInt >= BuildVersionCodes.N)
                     {
                         PixelCopy.Request(surfaceView.Holder.Surface, bitmap, listener, handler);
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("No valid Handler found for PixelCopy.");
+                        System.Diagnostics.Debug.WriteLine("No valid Handler found for PixelCopy or insufficient Android version.");
                         tcs.TrySetResult(false);
                     }
                 }
@@ -207,7 +207,7 @@ public class ScreenshotService : IScreenshotService
                     values.Put(MediaStore.IMediaColumns.RelativePath, Path.Combine(picturesDir, "VideoPlayerScreenshots"));
                 }
                 values.Put(MediaStore.IMediaColumns.IsPending, 1);
-                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri ?? throw new InvalidOperationException("ExternalContentUri is null"), values);
             }
             else
             {
@@ -220,7 +220,7 @@ public class ScreenshotService : IScreenshotService
                     string filePath = Path.Combine(directory, fileName);
                     values.Put(MediaStore.IMediaColumns.Data, filePath);
                 }
-                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri ?? throw new InvalidOperationException("ExternalContentUri is null"), values);
             }
 
             if (imageUri == null) 
@@ -302,7 +302,7 @@ public class ScreenshotService : IScreenshotService
                     values.Put(MediaStore.IMediaColumns.RelativePath, Path.Combine(picturesDir, "VideoPlayerScreenshots"));
                 }
                 values.Put(MediaStore.IMediaColumns.IsPending, 1);
-                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri ?? throw new InvalidOperationException("ExternalContentUri is null"), values);
             }
             else
             {
@@ -315,7 +315,7 @@ public class ScreenshotService : IScreenshotService
                     string filePath = Path.Combine(directory, fileName);
                     values.Put(MediaStore.IMediaColumns.Data, filePath);
                 }
-                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+                imageUri = contentResolver.Insert(MediaStore.Images.Media.ExternalContentUri ?? throw new InvalidOperationException("ExternalContentUri is null"), values);
             }
 
             if (imageUri == null) 
