@@ -130,7 +130,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         {
             MainThread.BeginInvokeOnMainThread(() => IsBusy = true);
 
-            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId);
+            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId) ?? throw new InvalidOperationException();
             if (CurrentPlaylist == null)
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
