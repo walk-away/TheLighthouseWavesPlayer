@@ -70,6 +70,7 @@ public class LocalizationManager : ILocalizationManager
                         {
                             "Library" or "Библиотека" => provider["Shell_Library"],
                             "Favorites" or "Избранное" => provider["Shell_Favorites"],
+                            "Playlists" or "Плейлисты" => provider["Shell_Playlists"],
                             "Settings" or "Настройки" => provider["Shell_Settings"],
                             _ => null
                         };

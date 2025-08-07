@@ -3,7 +3,7 @@
 [ContentProperty(nameof(Key))]
 public class TranslateExtension : IMarkupExtension<Binding>
 {
-    public string Key { get; set; }
+    public string? Key { get; set; }
    
     object IMarkupExtension.ProvideValue(
         IServiceProvider serviceProvider) 

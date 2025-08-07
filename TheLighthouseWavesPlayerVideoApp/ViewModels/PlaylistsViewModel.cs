@@ -14,7 +14,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
         private readonly ILocalizedResourcesProvider _resourcesProvider;
 
         [ObservableProperty] private ObservableCollection<Playlist> _playlists;
-        [ObservableProperty] private Playlist _selectedPlaylist;
+        [ObservableProperty] private Playlist? _selectedPlaylist;
         [ObservableProperty] private string _newPlaylistName = string.Empty;
         [ObservableProperty] private string _newPlaylistDescription = string.Empty;
         [ObservableProperty] private bool _isAddingNewPlaylist;
@@ -33,7 +33,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             }
         }
 
-        private void OnResourceProviderPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnResourceProviderPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Item")
             {
@@ -185,7 +185,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels
             await Shell.Current.GoToAsync($"PlaylistDetailPage?PlaylistId={playlist.Id}");
         }
 
-        public async Task RefreshPlaylistsAsync()
+        private async Task RefreshPlaylistsAsync()
         {
             if (IsBusy) return;
 

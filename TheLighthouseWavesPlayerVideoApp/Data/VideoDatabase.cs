@@ -61,7 +61,7 @@ public class VideoDatabase : IVideoDatabase
         existing.DurationMilliseconds = item.DurationMilliseconds;
         existing.ThumbnailPath = item.ThumbnailPath;
         existing.IsFavorite = item.IsFavorite;
-        return await _database.UpdateAsync(existing);
+        return await _database!.UpdateAsync(existing);
     }
 
     public async Task<int> SaveFavoriteAsync(VideoInfo item)
@@ -76,7 +76,7 @@ public class VideoDatabase : IVideoDatabase
         existing.DurationMilliseconds = item.DurationMilliseconds;
         existing.ThumbnailPath = item.ThumbnailPath;
         existing.IsFavorite = item.IsFavorite;
-        return await _database.UpdateAsync(existing);
+        return await _database!.UpdateAsync(existing);
     }
     
     public async Task<int> DeleteFavoriteByPathAsync(string filePath)
@@ -121,7 +121,7 @@ public class VideoDatabase : IVideoDatabase
         
         playlist.CreatedDate = DateTime.Now;
         playlist.LastModified = DateTime.Now;
-        return await _database.InsertAsync(playlist);
+        return await _database!.InsertAsync(playlist);
     }
 
     public async Task<int> DeletePlaylistAsync(Playlist playlist)

@@ -312,6 +312,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add New Playlist.
+        /// </summary>
+        internal static string Playlists_AddNew {
+            get {
+                return ResourceManager.GetString("Playlists_AddNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to Playlist.
         /// </summary>
         internal static string Playlists_AddToPlaylist {
@@ -411,6 +420,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Empty Playlist.
+        /// </summary>
+        internal static string Playlists_EmptyPlaylist {
+            get {
+                return ResourceManager.GetString("Playlists_EmptyPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string Playlists_Error {
@@ -456,6 +474,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to play playlist..
+        /// </summary>
+        internal static string Playlists_ErrorPlaying {
+            get {
+                return ResourceManager.GetString("Playlists_ErrorPlaying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Playlist Name.
         /// </summary>
         internal static string Playlists_Name {
@@ -479,6 +506,15 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         internal static string Playlists_NoPlaylists {
             get {
                 return ResourceManager.GetString("Playlists_NoPlaylists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This playlist has no videos to play.
+        /// </summary>
+        internal static string Playlists_NoVideosToPlay {
+            get {
+                return ResourceManager.GetString("Playlists_NoVideosToPlay", resourceCulture);
             }
         }
         
