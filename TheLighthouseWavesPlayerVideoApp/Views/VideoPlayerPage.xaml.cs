@@ -241,6 +241,14 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 resources["Button_OK"]);
         }
     }
+    
+    private void MediaElement_MediaEnded(object? sender, EventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");
+        _resumeDialogShown = false;
+        _viewModel?.OnMediaEnded();
+        _metadataSuccessfullyUpdated = false;
+    }
 
     private void TryUpdateMetadata()
     {
@@ -318,14 +326,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             _metadataRetryTimer = null;
         }
     }
-
-    private void MediaElement_MediaEnded(object? sender, EventArgs e)
-    {
-        System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");
-        _viewModel?.OnMediaEnded();
-        _metadataSuccessfullyUpdated = false;
-    }
-
+    
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom started.");
