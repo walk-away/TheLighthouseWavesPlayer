@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Models;
+using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.Data;
 
@@ -10,7 +10,7 @@ public interface IVideoDatabase
     Task<int> UpdateVideoInfoAsync(VideoInfo item);
     Task<int> DeleteFavoriteAsync(VideoInfo item);
     Task<int> DeleteFavoriteByPathAsync(string filePath);
-    
+
     Task<List<Playlist>> GetPlaylistsAsync();
     Task<Playlist?> GetPlaylistAsync(int playlistId);
     Task<int> SavePlaylistAsync(Playlist playlist);

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Core.Primitives;
+using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,19 +27,19 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private List<VideoInfo> _playQueue = new List<VideoInfo>();
     private int _currentPlaylistIndex = -1;
 
-    [ObservableProperty] VideoMetadata _videoInfo = new VideoMetadata();
-    [ObservableProperty] string _filePath = "";
-    [ObservableProperty] MediaSource? _videoSource;
-    [ObservableProperty] MediaElementState _currentState = MediaElementState.None;
-    [ObservableProperty] bool _isFavorite;
-    [ObservableProperty] bool _shouldResumePlayback = false;
-    [ObservableProperty] TimeSpan _resumePosition = TimeSpan.Zero;
-    [ObservableProperty] string _currentSubtitleText = string.Empty;
-    [ObservableProperty] bool _hasSubtitles = false;
-    [ObservableProperty] bool _areSubtitlesEnabled = true;
+    [ObservableProperty] private VideoMetadata _videoInfo = new VideoMetadata();
+    [ObservableProperty] private string _filePath = "";
+    [ObservableProperty] private MediaSource? _videoSource;
+    [ObservableProperty] private MediaElementState _currentState = MediaElementState.None;
+    [ObservableProperty] private bool _isFavorite;
+    [ObservableProperty] private bool _shouldResumePlayback = false;
+    [ObservableProperty] private TimeSpan _resumePosition = TimeSpan.Zero;
+    [ObservableProperty] private string _currentSubtitleText = string.Empty;
+    [ObservableProperty] private bool _hasSubtitles = false;
+    [ObservableProperty] private bool _areSubtitlesEnabled = true;
     [ObservableProperty] private double _volumeAmplification = 2.0;
     [ObservableProperty] private double _sliderVolume = 0.5;
-    [ObservableProperty] bool _isVideoInfoVisible = false;
+    [ObservableProperty] private bool _isVideoInfoVisible = false;
     [ObservableProperty] private MediaElement? _mediaElement;
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
@@ -124,13 +124,17 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     private async Task InitializePlaylistAsync()
     {
-        if (PlaylistId <= 0) return;
+        if (PlaylistId <= 0)
+        {
+            return;
+        }
 
         try
         {
             MainThread.BeginInvokeOnMainThread(() => IsBusy = true);
 
-            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId) ?? throw new InvalidOperationException();
+            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId) ??
+                              throw new InvalidOperationException();
             if (CurrentPlaylist == null)
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
@@ -194,7 +198,9 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private void UpdateProgressText()
     {
         if (!IsPlaylistMode || _currentPlaylistIndex < 0 || _currentPlaylistIndex >= _playQueue.Count)
+        {
             return;
+        }
 
         PlaylistProgressText =
             $"{_resourcesProvider["PlaylistPlayer_Video"] ?? "Видео"} {_currentPlaylistIndex + 1} {_resourcesProvider["PlaylistPlayer_Of"] ?? "из"} {_playQueue.Count}";
@@ -225,7 +231,9 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private async Task NextVideo()
     {
         if (!IsPlaylistMode || !CanGoToNext)
+        {
             return;
+        }
 
         if (_currentPlaylistIndex < _playQueue.Count - 1)
         {
@@ -255,7 +263,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     private async Task PreviousVideo()
     {
-        if (!IsPlaylistMode || !CanGoToPrevious) return;
+        if (!IsPlaylistMode || !CanGoToPrevious)
+        {
+            return;
+        }
 
         if (_currentPlaylistIndex > 0)
         {
@@ -297,7 +308,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     private void ToggleShuffle()
     {
-        if (!IsPlaylistMode) return;
+        if (!IsPlaylistMode)
+        {
+            return;
+        }
 
         IsShuffleEnabled = !IsShuffleEnabled;
 
@@ -410,13 +424,13 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void ToggleVideoInfo()
+    private void ToggleVideoInfo()
     {
         IsVideoInfoVisible = !IsVideoInfoVisible;
     }
 
     [RelayCommand]
-    async Task CaptureScreenshot()
+    private async Task CaptureScreenshot()
     {
         if (MediaElement == null)
         {
@@ -493,7 +507,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     private async Task LoadSubtitlesAsync()
     {
-        if (string.IsNullOrEmpty(FilePath)) return;
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            return;
+        }
 
         try
         {
@@ -522,7 +539,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         if (!HasSubtitles || !AreSubtitlesEnabled || _subtitles.Count == 0)
         {
             if (CurrentSubtitleText != string.Empty)
+            {
                 CurrentSubtitleText = string.Empty;
+            }
+
             return;
         }
 
@@ -559,7 +579,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void ToggleSubtitles()
+    private void ToggleSubtitles()
     {
         AreSubtitlesEnabled = !AreSubtitlesEnabled;
         if (!AreSubtitlesEnabled)
@@ -582,7 +602,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     public void CheckForSavedPosition()
     {
-        if (string.IsNullOrEmpty(FilePath)) return;
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            return;
+        }
 
         string key = PositionPreferenceKeyPrefix + FilePath;
         long savedTicks = Preferences.Get(key, 0L);
@@ -602,7 +625,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     public void SavePosition(TimeSpan currentPosition)
     {
-        if (string.IsNullOrEmpty(FilePath) || currentPosition <= TimeSpan.Zero) return;
+        if (string.IsNullOrEmpty(FilePath) || currentPosition <= TimeSpan.Zero)
+        {
+            return;
+        }
 
         string key = PositionPreferenceKeyPrefix + FilePath;
         Preferences.Set(key, currentPosition.Ticks);
@@ -611,7 +637,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     public void ClearSavedPosition()
     {
-        if (string.IsNullOrEmpty(FilePath)) return;
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            return;
+        }
 
         string key = PositionPreferenceKeyPrefix + FilePath;
         if (Preferences.ContainsKey(key))
@@ -625,9 +654,12 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void ToggleMute()
+    private void ToggleMute()
     {
-        if (MediaElement == null) return;
+        if (MediaElement == null)
+        {
+            return;
+        }
 
         if (MediaElement.Volume > 0)
         {
@@ -643,16 +675,19 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task ToggleFavoriteAsync()
+    private async Task ToggleFavoriteAsync()
     {
-        if (string.IsNullOrEmpty(FilePath)) return;
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            return;
+        }
 
         try
         {
             var video = new VideoInfo
             {
-                FilePath = this.FilePath,
-                Title = Path.GetFileNameWithoutExtension(this.FilePath),
+                FilePath = FilePath,
+                Title = Path.GetFileNameWithoutExtension(FilePath),
                 DurationMilliseconds = (long)VideoInfo.Duration.TotalMilliseconds
             };
 
@@ -812,7 +847,10 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 
     public void Cleanup()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+        {
+            return;
+        }
 
         _screenWakeService.AllowScreenSleep();
         System.Diagnostics.Debug.WriteLine("ViewModel cleanup: Allowing screen to sleep");
@@ -826,14 +864,17 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void GoBack()
+    private void GoBack()
     {
         Shell.Current.GoToAsync("..");
     }
 
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+        {
+            return;
+        }
 
         if (_resourcesProvider is ObservableObject observableProvider)
         {

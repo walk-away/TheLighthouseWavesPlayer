@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using TheLighthouseWavesPlayerVideoApp.Views;
-using System.ComponentModel;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
@@ -14,15 +14,15 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
     private readonly IFavoritesService _favoritesService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
 
-    [ObservableProperty] ObservableCollection<VideoInfo> _allFavoriteVideos = new();
+    [ObservableProperty] private ObservableCollection<VideoInfo> _allFavoriteVideos = new();
 
-    [ObservableProperty] ObservableCollection<VideoInfo> _favoriteVideos = new();
+    [ObservableProperty] private ObservableCollection<VideoInfo> _favoriteVideos = new();
 
-    [ObservableProperty] string _searchText = string.Empty;
+    [ObservableProperty] private string _searchText = string.Empty;
 
-    [ObservableProperty] ObservableCollection<SortOption> _sortOptions = new();
+    [ObservableProperty] private ObservableCollection<SortOption> _sortOptions = new();
 
-    [ObservableProperty] SortOption _selectedSortOption = new SortOption(string.Empty, string.Empty, true);
+    [ObservableProperty] private SortOption _selectedSortOption = new SortOption(string.Empty, string.Empty, true);
 
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
@@ -71,9 +71,8 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
         };
 
         SortOptions = newOptions;
-        SelectedSortOption = SortOptions.FirstOrDefault(
-                                 o => o.Property == _lastSelectedSortProperty &&
-                                      o.IsAscending == _lastSelectedSortIsAscending)
+        SelectedSortOption = SortOptions.FirstOrDefault(o => o.Property == _lastSelectedSortProperty &&
+                                                             o.IsAscending == _lastSelectedSortIsAscending)
                              ?? SortOptions.First();
     }
 
@@ -127,9 +126,12 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task LoadFavoritesAsync()
+    private async Task LoadFavoritesAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         IsBusy = true;
         try
@@ -160,32 +162,44 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void ClearSearch()
+    private void ClearSearch()
     {
         SearchText = string.Empty;
     }
 
     [RelayCommand]
-    async Task GoToDetailsAsync(VideoInfo? video)
+    private async Task GoToDetailsAsync(VideoInfo? video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+        if (video == null || string.IsNullOrEmpty(video.FilePath))
+        {
+            return;
+        }
 
         await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
     }
 
     [RelayCommand]
-    async Task RemoveFavoriteAsync(VideoInfo? video)
+    private async Task RemoveFavoriteAsync(VideoInfo? video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+        if (video == null || string.IsNullOrEmpty(video.FilePath))
+        {
+            return;
+        }
 
         try
         {
             await _favoritesService.RemoveFavoriteAsync(video);
             var toRemove = AllFavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
-            if (toRemove != null) AllFavoriteVideos.Remove(toRemove);
+            if (toRemove != null)
+            {
+                AllFavoriteVideos.Remove(toRemove);
+            }
 
             var filteredRemove = FavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
-            if (filteredRemove != null) FavoriteVideos.Remove(filteredRemove);
+            if (filteredRemove != null)
+            {
+                FavoriteVideos.Remove(filteredRemove);
+            }
 
             await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
         }

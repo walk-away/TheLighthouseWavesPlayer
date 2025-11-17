@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SQLite;
 
 namespace TheLighthouseWavesPlayerVideoApp.Models;
@@ -9,7 +9,7 @@ public partial class Playlist : ObservableObject
     [PrimaryKey, AutoIncrement] public int Id { get; set; }
 
     [ObservableProperty] private string? _name = string.Empty;
-    
+
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     public DateTime LastModified { get; set; } = DateTime.Now;
@@ -20,12 +20,14 @@ public partial class Playlist : ObservableObject
 
     [Ignore] public TimeSpan TotalDuration { get; set; }
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(VideoCountDisplay))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(VideoCountDisplay))]
     private int _displayVideoCount;
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(TotalDurationDisplay))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalDurationDisplay))]
     private TimeSpan _displayTotalDuration;
-    
+
     [ObservableProperty]
     private bool _isSelected;
 

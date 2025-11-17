@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp.Models;
+namespace TheLighthouseWavesPlayerVideoApp.Models;
 
 public class SortOption
 {

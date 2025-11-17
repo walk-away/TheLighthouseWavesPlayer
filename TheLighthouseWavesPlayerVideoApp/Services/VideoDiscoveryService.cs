@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 using Path = System.IO.Path;
 
@@ -18,7 +18,9 @@ public class VideoDiscoveryService : IVideoDiscoveryService
     {
         var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
         if (status == PermissionStatus.Granted)
+        {
             return true;
+        }
 
         if (Permissions.ShouldShowRationale<Permissions.StorageRead>())
         {
@@ -30,7 +32,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
         return status == PermissionStatus.Granted;
     }
 
-     public async Task<IList<VideoInfo>> DiscoverVideosAsync()
+    public async Task<IList<VideoInfo>> DiscoverVideosAsync()
     {
         if (!await RequestPermissionsAsync())
         {
@@ -51,6 +53,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                     System.Diagnostics.Debug.WriteLine("Error: Platform.CurrentActivity is null.");
                     return;
                 }
+
                 var contentResolver = context.ContentResolver;
 
                 Uri? uri = MediaStore.Video.Media.ExternalContentUri;
@@ -110,11 +113,13 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                                 {
                                                     thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg ?? throw new InvalidOperationException(), 80, stream); // Compress and save
                                                 }
+
                                                 thumbnailBitmap.Recycle();
                                                 thumbnailPath = cachedThumbnailPath;
                                                 System.Diagnostics.Debug.WriteLine($"Thumbnail generated: {thumbnailPath}");
                                             }
-                                            else {
+                                            else
+                                            {
                                                 System.Diagnostics.Debug.WriteLine($"Failed to generate thumbnail for: {filePath}");
                                             }
                                         }
@@ -122,7 +127,6 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                         {
                                             System.Diagnostics.Debug.WriteLine($"Error generating thumbnail for {filePath}: {thumbEx.Message}");
                                         }
-
 
                                         videoFiles.Add(new VideoInfo
                                         {
@@ -136,7 +140,6 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                     {
                                         System.Diagnostics.Debug.WriteLine($"File not found or path empty: {filePath}");
                                     }
-
                                 }
                                 catch (Exception itemEx)
                                 {
@@ -144,6 +147,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                 }
                             } while (cursor.MoveToNext());
                         }
+
                         cursor.Close();
                     }
                 }
@@ -151,7 +155,8 @@ public class VideoDiscoveryService : IVideoDiscoveryService
             catch (Exception queryEx)
             {
                 System.Diagnostics.Debug.WriteLine($"Error querying MediaStore: {queryEx.Message}");
-                MainThread.BeginInvokeOnMainThread(async () => {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
                     await Shell.Current.DisplayAlert("Error", "Could not retrieve video list.", "OK");
                 });
             }

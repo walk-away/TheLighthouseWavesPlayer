@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
 

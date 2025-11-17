@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Maui.Core.Primitives;
-using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
+using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 using TheLighthouseWavesPlayerVideoApp.Localization;
+using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
@@ -129,7 +129,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     private void MediaElement_StateChanged(object? sender, MediaStateChangedEventArgs e)
     {
-        if (mediaElement == null || _viewModel == null) return;
+        if (mediaElement == null || _viewModel == null)
+        {
+            return;
+        }
 
         _viewModel.CurrentState = e.NewState;
         System.Diagnostics.Debug.WriteLine($"MediaElement State: {e.NewState}");
@@ -194,7 +197,9 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
             TryUpdateMetadata();
             if (!_metadataSuccessfullyUpdated)
+            {
                 SetupMetadataRetryTimer();
+            }
 
             if (_viewModel.ShouldResumePlayback
                 && _viewModel.ResumePosition > TimeSpan.Zero
@@ -241,7 +246,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 resources["Button_OK"]);
         }
     }
-    
+
     private void MediaElement_MediaEnded(object? sender, EventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("MediaElement_MediaEnded fired.");
@@ -252,7 +257,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     private void TryUpdateMetadata()
     {
-        if (_metadataSuccessfullyUpdated || _viewModel == null || mediaElement == null) return;
+        if (_metadataSuccessfullyUpdated || _viewModel == null || mediaElement == null)
+        {
+            return;
+        }
 
         try
         {
@@ -326,7 +334,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             _metadataRetryTimer = null;
         }
     }
-    
+
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom started.");
@@ -398,7 +406,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed) return;
+        if (_isDisposed)
+        {
+            return;
+        }
 
         UnsubscribeFromEvents();
         StopAndDisposeRetryTimer();

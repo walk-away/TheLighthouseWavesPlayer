@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
@@ -20,6 +20,7 @@ public class PlaylistService : IPlaylistService
         {
             await UpdatePlaylistStatisticsAsync(playlist);
         }
+
         return playlists;
     }
 
@@ -30,24 +31,28 @@ public class PlaylistService : IPlaylistService
         {
             await UpdatePlaylistStatisticsAsync(playlist);
         }
+
         return playlist;
     }
 
     public async Task<int> CreatePlaylistAsync(string name, string description = "")
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Playlist name cannot be empty.", nameof(name));
-        var playlist = new Playlist
+        if (string.IsNullOrWhiteSpace(name))
         {
-            Name = name,
-            CreatedDate = DateTime.Now,
-            LastModified = DateTime.Now
-        };
+            throw new ArgumentException("Playlist name cannot be empty.", nameof(name));
+        }
+
+        var playlist = new Playlist { Name = name, CreatedDate = DateTime.Now, LastModified = DateTime.Now };
         return await _videoDatabase.SavePlaylistAsync(playlist);
     }
 
     public async Task<int> UpdatePlaylistAsync(Playlist playlist)
     {
-        if (playlist == null) throw new ArgumentNullException(nameof(playlist));
+        if (playlist == null)
+        {
+            throw new ArgumentNullException(nameof(playlist));
+        }
+
         playlist.LastModified = DateTime.Now;
         await UpdatePlaylistStatisticsAsync(playlist);
         return await _videoDatabase.SavePlaylistAsync(playlist);
@@ -55,7 +60,11 @@ public class PlaylistService : IPlaylistService
 
     public Task<int> DeletePlaylistAsync(Playlist playlist)
     {
-        if (playlist == null) throw new ArgumentNullException(nameof(playlist));
+        if (playlist == null)
+        {
+            throw new ArgumentNullException(nameof(playlist));
+        }
+
         return _videoDatabase.DeletePlaylistAsync(playlist);
     }
 
@@ -72,12 +81,17 @@ public class PlaylistService : IPlaylistService
                 result.Add(videoInfo);
             }
         }
+
         return result;
     }
 
     public async Task<int> AddVideoToPlaylistAsync(int playlistId, VideoInfo video)
     {
-        if (video == null) throw new ArgumentNullException(nameof(video));
+        if (video == null)
+        {
+            throw new ArgumentNullException(nameof(video));
+        }
+
         var videoCopy = new VideoInfo
         {
             FilePath = video.FilePath,
@@ -95,6 +109,7 @@ public class PlaylistService : IPlaylistService
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 
@@ -112,6 +127,7 @@ public class PlaylistService : IPlaylistService
                 validVideos++;
             }
         }
+
         playlist.VideoCount = validVideos;
         playlist.DisplayVideoCount = validVideos;
         var duration = TimeSpan.FromMilliseconds(totalDuration);
@@ -128,16 +144,22 @@ public class PlaylistService : IPlaylistService
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 
     public async Task<int> ReorderPlaylistAsync(int playlistId, List<PlaylistItem> items)
     {
-        if (items == null) throw new ArgumentNullException(nameof(items));
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         for (int i = 0; i < items.Count; i++)
         {
             items[i].Order = i;
         }
+
         var result = await _videoDatabase.UpdatePlaylistItemOrderAsync(items);
         var playlist = await _videoDatabase.GetPlaylistAsync(playlistId);
         if (playlist != null)
@@ -145,6 +167,7 @@ public class PlaylistService : IPlaylistService
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 

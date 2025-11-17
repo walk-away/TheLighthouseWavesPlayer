@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.ViewModels;
+using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 

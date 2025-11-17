@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
@@ -9,10 +9,14 @@ public class SubtitleService : ISubtitleService
     public async Task<List<SubtitleItem>> LoadSubtitlesAsync(string filePath)
     {
         if (string.IsNullOrEmpty(filePath))
+        {
             return new List<SubtitleItem>();
+        }
 
         if (!File.Exists(filePath))
+        {
             return new List<SubtitleItem>();
+        }
 
         try
         {
@@ -34,23 +38,33 @@ public class SubtitleService : ISubtitleService
         foreach (var block in blocks)
         {
             if (string.IsNullOrWhiteSpace(block))
+            {
                 continue;
+            }
 
             var lines = Regex.Split(block, @"\r\n|\n");
             if (lines.Length < 3)
+            {
                 continue;
+            }
 
             if (!int.TryParse(lines[0], out int index))
+            {
                 continue;
+            }
 
             var timecodeLine = lines[1];
             var timecodes = timecodeLine.Split(" --> ");
             if (timecodes.Length != 2)
+            {
                 continue;
+            }
 
             if (!TryParseTimecode(timecodes[0], out TimeSpan startTime) ||
                 !TryParseTimecode(timecodes[1], out TimeSpan endTime))
+            {
                 continue;
+            }
 
             var text = string.Join(" ", lines.Skip(2));
 

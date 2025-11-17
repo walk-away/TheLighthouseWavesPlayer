@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -144,13 +144,19 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
         Videos.Clear();
         foreach (var video in filtered)
+        {
             Videos.Add(video);
+        }
     }
 
     [RelayCommand]
     public async Task LoadVideos()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
+
         IsBusy = true;
         try
         {
@@ -171,28 +177,36 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
             ApplyFilters();
         }
-        finally { IsBusy = false; }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
-    void ClearSearch()
+    private void ClearSearch()
     {
         SearchText = string.Empty;
     }
 
     [RelayCommand]
-    async Task GoToDetails(VideoInfo video)
+    private async Task GoToDetails(VideoInfo video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath))
+        {
             return;
+        }
 
         await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
     }
 
     [RelayCommand]
-    async Task ToggleFavorite(VideoInfo? video)
+    private async Task ToggleFavorite(VideoInfo? video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+        if (video == null || string.IsNullOrEmpty(video.FilePath))
+        {
+            return;
+        }
 
         try
         {
@@ -220,9 +234,12 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task ShowPlaylistSelection(VideoInfo video)
+    private async Task ShowPlaylistSelection(VideoInfo video)
     {
-        if (video == null) return;
+        if (video == null)
+        {
+            return;
+        }
 
         try
         {
@@ -265,9 +282,12 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task SavePlaylistSelection()
+    private async Task SavePlaylistSelection()
     {
-        if (VideoForPlaylist == null) return;
+        if (VideoForPlaylist == null)
+        {
+            return;
+        }
 
         try
         {
@@ -311,13 +331,13 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void CancelPlaylistSelection()
+    private void CancelPlaylistSelection()
     {
         IsSelectingPlaylist = false;
     }
 
     [RelayCommand]
-    async Task CheckPlaylistsExist()
+    private async Task CheckPlaylistsExist()
     {
         try
         {

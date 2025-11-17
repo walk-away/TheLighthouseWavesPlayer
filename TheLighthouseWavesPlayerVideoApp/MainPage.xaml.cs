@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp;
+namespace TheLighthouseWavesPlayerVideoApp;
 
 public partial class MainPage : ContentPage
 {

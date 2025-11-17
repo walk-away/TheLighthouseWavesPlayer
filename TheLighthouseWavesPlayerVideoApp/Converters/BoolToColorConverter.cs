@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Converters;
 
@@ -10,7 +10,10 @@ public class BoolToColorConverter : IValueConverter
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool b)
+        {
             return b ? TrueColor : FalseColor;
+        }
+
         return FalseColor;
     }
 

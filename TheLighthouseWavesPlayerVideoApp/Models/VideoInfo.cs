@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SQLite;
 
 namespace TheLighthouseWavesPlayerVideoApp.Models;
@@ -12,11 +12,11 @@ public partial class VideoInfo : ObservableObject
     public string FilePath { get; set; } = null!;
     public string? ThumbnailPath { get; set; }
     public long DurationMilliseconds { get; set; }
-    
+
     [ObservableProperty]
     private bool _isFavorite;
 
     [Ignore] public TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMilliseconds);
-    
+
     [Ignore] public string FormattedDuration => Duration.ToString(@"hh\:mm\:ss");
 }

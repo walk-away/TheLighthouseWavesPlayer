@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp.Constants;
+namespace TheLighthouseWavesPlayerVideoApp.Constants;
 
 public static class DatabaseConstants
 {
@@ -9,6 +9,6 @@ public static class DatabaseConstants
         SQLite.SQLiteOpenFlags.Create |
         SQLite.SQLiteOpenFlags.SharedCache;
 
-    public static string DatabasePath =>
-        Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
+    public static string DatabasePath
+        => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
 }
