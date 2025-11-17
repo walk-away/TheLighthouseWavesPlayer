@@ -48,6 +48,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
+    private bool _isInitialized = false;
 
     public VideoLibraryViewModel(
         IVideoDiscoveryService videoDiscoveryService,
@@ -153,17 +154,16 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    public async Task LoadVideos()
+    private async Task LoadVideos()
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
+        if (IsBusy) return;
         IsBusy = true;
         try
         {
+            System.Diagnostics.Debug.WriteLine("LoadVideos: Starting...");
+
             var status = await _videoDiscoveryService.RequestPermissionsAsync();
+            System.Diagnostics.Debug.WriteLine($"LoadVideos: Permission status = {status}");
 
             if (status == PermissionStatus.Granted)
             {
@@ -171,6 +171,8 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
                 Videos.Clear();
 
                 var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
+                System.Diagnostics.Debug.WriteLine($"LoadVideos: Discovered {discovered?.Count ?? 0} videos");
+
                 var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ??
                            new HashSet<string>();
 
@@ -184,9 +186,12 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
                 }
 
                 ApplyFilters();
+                _isInitialized = true;
+                System.Diagnostics.Debug.WriteLine($"LoadVideos: Successfully loaded {AllVideos.Count} videos");
             }
             else
             {
+                System.Diagnostics.Debug.WriteLine("LoadVideos: Permission not granted, showing dialog");
                 var openSettings = await Shell.Current.DisplayAlert(
                     _resourcesProvider["Permissions_Storage_Title"],
                     _resourcesProvider["Permissions_Storage_Message"],
@@ -198,6 +203,10 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
                     AppInfo.ShowSettingsUI();
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"LoadVideos: Error - {ex.Message}\n{ex.StackTrace}");
         }
         finally
         {
@@ -373,9 +382,53 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         }
     }
 
+    private async Task RefreshFavoriteStatuses()
+    {
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("RefreshFavoriteStatuses: Starting...");
+
+            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ??
+                       new HashSet<string>();
+
+            int updatedCount = 0;
+            foreach (var video in AllVideos)
+            {
+                bool newStatus = favs.Contains(video.FilePath);
+                if (video.IsFavorite != newStatus)
+                {
+                    video.IsFavorite = newStatus;
+                    updatedCount++;
+                }
+            }
+
+            foreach (var video in Videos)
+            {
+                video.IsFavorite = favs.Contains(video.FilePath);
+            }
+
+            System.Diagnostics.Debug.WriteLine($"RefreshFavoriteStatuses: Updated {updatedCount} videos");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error refreshing favorite statuses: {ex.Message}");
+        }
+    }
+
     public async Task OnAppearing()
     {
-        await LoadVideos();
+        System.Diagnostics.Debug.WriteLine(
+            $"OnAppearing: _isInitialized={_isInitialized}, AllVideos.Count={AllVideos.Count}");
+
+        if (!_isInitialized || AllVideos.Count == 0)
+        {
+            await LoadVideos();
+        }
+        else
+        {
+            await RefreshFavoriteStatuses();
+        }
+
         await CheckPlaylistsExist();
     }
 

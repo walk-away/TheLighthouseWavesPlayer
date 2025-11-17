@@ -338,25 +338,44 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom started.");
-        _isPageActive = false;
-        _resumeDialogShown = false;
-        StopAndDisposeRetryTimer();
 
-        TimeSpan currentPosition = TimeSpan.Zero;
-        if (mediaElement != null && (mediaElement.CurrentState == MediaElementState.Playing ||
-                                     mediaElement.CurrentState == MediaElementState.Paused))
+        try
         {
-            currentPosition = mediaElement.Position;
-            mediaElement.Stop();
-            System.Diagnostics.Debug.WriteLine($"Stopped MediaElement. Current position: {currentPosition}");
+            _isPageActive = false;
+            _resumeDialogShown = false;
+            StopAndDisposeRetryTimer();
+
+            TimeSpan currentPosition = TimeSpan.Zero;
+            if (mediaElement != null)
+            {
+                currentPosition = mediaElement.Position;
+                if (mediaElement.CurrentState == MediaElementState.Playing ||
+                    mediaElement.CurrentState == MediaElementState.Paused)
+                {
+                    try
+                    {
+                        mediaElement.Stop();
+                        System.Diagnostics.Debug.WriteLine(
+                            $"Stopped MediaElement. Current position: {currentPosition}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error stopping MediaElement: {ex.Message}");
+                    }
+                }
+            }
+
+            _viewModel?.OnNavigatedFrom(currentPosition);
+
+            UnsubscribeFromEvents();
+
+            base.OnNavigatedFrom(args);
+            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
         }
-
-        _viewModel?.OnNavigatedFrom(currentPosition);
-
-        UnsubscribeFromEvents();
-
-        base.OnNavigatedFrom(args);
-        System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex.Message}\n{ex.StackTrace}");
+        }
     }
 
     protected override async void OnAppearing()
@@ -399,22 +418,56 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     protected override void OnDisappearing()
     {
-        base.OnDisappearing();
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnDisappearing started.");
 
-        _viewModel?.Cleanup();
+            base.OnDisappearing();
+
+            _viewModel?.Cleanup();
+
+            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnDisappearing finished.");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
+        }
     }
 
     public void Dispose()
     {
-        if (_isDisposed)
+        try
         {
-            return;
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.Dispose started.");
+
+            UnsubscribeFromEvents();
+            StopAndDisposeRetryTimer();
+
+            if (mediaElement != null)
+            {
+                try
+                {
+                    mediaElement.Handler?.DisconnectHandler();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error disconnecting MediaElement handler: {ex.Message}");
+                }
+            }
+
+            _viewModel?.Dispose();
+
+            _isDisposed = true;
+            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.Dispose finished.");
         }
-
-        UnsubscribeFromEvents();
-        StopAndDisposeRetryTimer();
-        _viewModel?.Dispose();
-
-        _isDisposed = true;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in Dispose: {ex.Message}");
+        }
     }
 }

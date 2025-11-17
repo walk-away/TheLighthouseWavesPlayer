@@ -2,7 +2,7 @@ using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage
 {
     private readonly SettingsViewModel _viewModel;
 

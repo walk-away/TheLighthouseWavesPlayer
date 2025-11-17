@@ -5,7 +5,7 @@ using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 
 namespace TheLighthouseWavesPlayerVideoApp;
 
-public partial class App : Application
+public partial class App
 {
     private readonly ILocalizationManager _localizationManager;
 

@@ -26,6 +26,7 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
 
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
+    private bool _isInitialized = false;
 
     public FavoritesViewModel(IFavoritesService favoritesService, ILocalizedResourcesProvider resourcesProvider)
     {
@@ -120,11 +121,6 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
         }
     }
 
-    public async Task OnAppearing()
-    {
-        await LoadFavoritesAsync();
-    }
-
     [RelayCommand]
     private async Task LoadFavoritesAsync()
     {
@@ -149,6 +145,7 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
             }
 
             ApplyFilters();
+            _isInitialized = true;
         }
         catch (Exception ex)
         {
@@ -159,6 +156,11 @@ public partial class FavoritesViewModel : BaseViewModel, IDisposable
         {
             IsBusy = false;
         }
+    }
+
+    public async Task OnAppearing()
+    {
+        await LoadFavoritesAsync();
     }
 
     [RelayCommand]

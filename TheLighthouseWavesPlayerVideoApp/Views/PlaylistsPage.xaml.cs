@@ -2,7 +2,7 @@ using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class PlaylistsPage : ContentPage
+public partial class PlaylistsPage
 {
     private readonly PlaylistsViewModel _viewModel;
 
@@ -13,14 +13,24 @@ public partial class PlaylistsPage : ContentPage
         _viewModel = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
 
-        if (_viewModel != null)
+        Task.Run(async () =>
         {
-            await _viewModel.OnAppearing();
-        }
+            try
+            {
+                if (_viewModel != null)
+                {
+                    await _viewModel.OnAppearing();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in PlaylistsPage.OnAppearing: {ex.Message}");
+            }
+        });
     }
 
     protected override void OnDisappearing()

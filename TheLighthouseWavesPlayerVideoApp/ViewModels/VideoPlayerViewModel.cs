@@ -63,12 +63,12 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         ILocalizedResourcesProvider resourcesProvider,
         IPlaylistService playlistService)
     {
-        _favoritesService = favoritesService;
-        _subtitleService = subtitleService;
-        _screenshotService = screenshotService;
-        _screenWakeService = screenWakeService;
-        _resourcesProvider = resourcesProvider;
-        _playlistService = playlistService;
+        _favoritesService = favoritesService ?? throw new ArgumentNullException(nameof(favoritesService));
+        _subtitleService = subtitleService ?? throw new ArgumentNullException(nameof(subtitleService));
+        _screenshotService = screenshotService ?? throw new ArgumentNullException(nameof(screenshotService));
+        _screenWakeService = screenWakeService ?? throw new ArgumentNullException(nameof(screenWakeService));
+        _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
+        _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
         Title = _resourcesProvider["Player_Title"];
 
         if (resourcesProvider is ObservableObject observableProvider)
@@ -716,6 +716,16 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine($"VideoPlayerViewModel.OnNavigatedFrom - Position: {currentPosition}");
+
+            if (MediaElement != null)
+            {
+                if (MediaElement.CurrentState == MediaElementState.Playing)
+                {
+                    MediaElement.Pause();
+                }
+            }
+
             if ((CurrentState == MediaElementState.Playing || CurrentState == MediaElementState.Paused)
                 && currentPosition > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
             {
@@ -735,7 +745,7 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex}");
+            System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -852,21 +862,63 @@ public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             return;
         }
 
-        _screenWakeService.AllowScreenSleep();
-        System.Diagnostics.Debug.WriteLine("ViewModel cleanup: Allowing screen to sleep");
-
-        if (MediaElement?.Position > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
+        try
         {
-            SavePosition(MediaElement.Position);
-        }
+            System.Diagnostics.Debug.WriteLine("ViewModel cleanup started");
 
-        MediaElement = null;
+            _screenWakeService.AllowScreenSleep();
+
+            if (MediaElement?.Position > TimeSpan.Zero && !string.IsNullOrEmpty(FilePath))
+            {
+                SavePosition(MediaElement.Position);
+            }
+
+            if (MediaElement != null)
+            {
+                try
+                {
+                    if (MediaElement.CurrentState == MediaElementState.Playing)
+                    {
+                        MediaElement.Stop();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error stopping MediaElement: {ex.Message}");
+                }
+
+                MediaElement = null;
+            }
+
+            System.Diagnostics.Debug.WriteLine("ViewModel cleanup completed");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in Cleanup: {ex.Message}");
+        }
     }
 
     [RelayCommand]
-    private void GoBack()
+    private async Task GoBack()
     {
-        Shell.Current.GoToAsync("..");
+        try
+        {
+            if (MediaElement != null && CurrentState == MediaElementState.Playing)
+            {
+                MediaElement.Pause();
+            }
+
+            if (MediaElement?.Position > TimeSpan.Zero)
+            {
+                SavePosition(MediaElement.Position);
+            }
+
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in GoBack: {ex.Message}");
+        }
     }
 
     public void Dispose()

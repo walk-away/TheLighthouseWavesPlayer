@@ -21,8 +21,8 @@ public partial class PlaylistsViewModel : BaseViewModel, IDisposable
 
     public PlaylistsViewModel(IPlaylistService playlistService, ILocalizedResourcesProvider resourcesProvider)
     {
-        _playlistService = playlistService;
-        _resourcesProvider = resourcesProvider;
+        _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
+        _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
         Title = _resourcesProvider["Playlists_Title"] ?? "Playlists";
 
         Playlists = new ObservableCollection<Playlist>();

@@ -8,15 +8,4 @@ namespace TheLighthouseWavesPlayerVideoApp;
                            ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
-    /*
-     
-    protected override void OnCreate(Bundle savedInstanceState)
-    {
-        base.OnCreate(savedInstanceState);
-        
-        // Keep the screen on during app usage
-        Window.AddFlags(WindowManagerFlags.KeepScreenOn);
-    }
-     
-     */
 }
