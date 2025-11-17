@@ -14,29 +14,53 @@ namespace TheLighthouseWavesPlayerVideoApp.Services;
 
 public class VideoDiscoveryService : IVideoDiscoveryService
 {
-    public async Task<bool> RequestPermissionsAsync()
+    public async Task<PermissionStatus> RequestPermissionsAsync()
     {
-        var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
-        if (status == PermissionStatus.Granted)
+        PermissionStatus status;
+        if (DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.Version.Major >= 13)
         {
-            return true;
+            status = await Permissions.CheckStatusAsync<Permissions.Media>();
+            if (status == PermissionStatus.Granted)
+            {
+                return status;
+            }
+
+            if (status == PermissionStatus.Denied)
+            {
+                return status;
+            }
+
+            status = await Permissions.RequestAsync<Permissions.Media>();
+        }
+        else
+        {
+            status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
+            if (status == PermissionStatus.Granted)
+            {
+                return status;
+            }
+
+            if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
+            {
+                return status;
+            }
+
+            status = await Permissions.RequestAsync<Permissions.StorageRead>();
         }
 
-        if (Permissions.ShouldShowRationale<Permissions.StorageRead>())
-        {
-            await Shell.Current.DisplayAlert("Permission Needed", "Storage permission is required to find video files.", "OK");
-        }
-
-        status = await Permissions.RequestAsync<Permissions.StorageRead>();
-
-        return status == PermissionStatus.Granted;
+        return status;
     }
 
     public async Task<IList<VideoInfo>> DiscoverVideosAsync()
     {
-        if (!await RequestPermissionsAsync())
+        var status = await Permissions.CheckStatusAsync<Permissions.Media>();
+        if (DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.Version.Major < 13)
         {
-            await Shell.Current.DisplayAlert("Permission Denied", "Cannot access videos without storage permission.", "OK");
+            status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
+        }
+
+        if (status != PermissionStatus.Granted)
+        {
             return new List<VideoInfo>();
         }
 
@@ -58,11 +82,10 @@ public class VideoDiscoveryService : IVideoDiscoveryService
 
                 Uri? uri = MediaStore.Video.Media.ExternalContentUri;
 
-                string[] projection = {
-                    MediaStore.Video.Media.InterfaceConsts.Id,
-                    MediaStore.Video.Media.InterfaceConsts.Data,
-                    MediaStore.Video.Media.InterfaceConsts.Title,
-                    MediaStore.Video.Media.InterfaceConsts.Duration
+                string[] projection =
+                {
+                    MediaStore.Video.Media.InterfaceConsts.Id, MediaStore.Video.Media.InterfaceConsts.Data,
+                    MediaStore.Video.Media.InterfaceConsts.Title, MediaStore.Video.Media.InterfaceConsts.Duration
                 };
 
                 if (uri != null)
@@ -102,48 +125,50 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                         string? thumbnailPath = null;
                                         try
                                         {
-                                            Bitmap? thumbnailBitmap = ThumbnailUtils.CreateVideoThumbnail(filePath, ThumbnailKind.MiniKind);
+                                            Bitmap? thumbnailBitmap =
+                                                ThumbnailUtils.CreateVideoThumbnail(filePath, ThumbnailKind.MiniKind);
 
                                             if (thumbnailBitmap != null)
                                             {
-                                                string thumbnailFileName = $"thumb_{Path.GetFileNameWithoutExtension(filePath)}_{Guid.NewGuid()}.jpg";
-                                                string cachedThumbnailPath = Path.Combine(FileSystem.CacheDirectory, thumbnailFileName);
+                                                string thumbnailFileName =
+                                                    $"thumb_{Path.GetFileNameWithoutExtension(filePath)}_{Guid.NewGuid()}.jpg";
+                                                string cachedThumbnailPath = Path.Combine(FileSystem.CacheDirectory,
+                                                    thumbnailFileName);
 
-                                                using (var stream = new FileStream(cachedThumbnailPath, FileMode.Create))
+                                                using (var stream = new FileStream(cachedThumbnailPath,
+                                                           FileMode.Create))
                                                 {
-                                                    thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg ?? throw new InvalidOperationException(), 80, stream); // Compress and save
+                                                    thumbnailBitmap.Compress(
+                                                        Bitmap.CompressFormat.Jpeg ??
+                                                        throw new InvalidOperationException(), 80,
+                                                        stream);
                                                 }
 
                                                 thumbnailBitmap.Recycle();
                                                 thumbnailPath = cachedThumbnailPath;
-                                                System.Diagnostics.Debug.WriteLine($"Thumbnail generated: {thumbnailPath}");
-                                            }
-                                            else
-                                            {
-                                                System.Diagnostics.Debug.WriteLine($"Failed to generate thumbnail for: {filePath}");
                                             }
                                         }
                                         catch (Exception thumbEx)
                                         {
-                                            System.Diagnostics.Debug.WriteLine($"Error generating thumbnail for {filePath}: {thumbEx.Message}");
+                                            System.Diagnostics.Debug.WriteLine(
+                                                $"Error generating thumbnail for {filePath}: {thumbEx.Message}");
                                         }
 
                                         videoFiles.Add(new VideoInfo
                                         {
                                             FilePath = filePath,
-                                            Title = string.IsNullOrEmpty(title) ? Path.GetFileNameWithoutExtension(filePath) : title,
+                                            Title = string.IsNullOrEmpty(title)
+                                                ? Path.GetFileNameWithoutExtension(filePath)
+                                                : title,
                                             DurationMilliseconds = duration,
-                                            ThumbnailPath = thumbnailPath // Assign the generated path
+                                            ThumbnailPath = thumbnailPath
                                         });
-                                    }
-                                    else if (!string.IsNullOrEmpty(filePath))
-                                    {
-                                        System.Diagnostics.Debug.WriteLine($"File not found or path empty: {filePath}");
                                     }
                                 }
                                 catch (Exception itemEx)
                                 {
-                                    System.Diagnostics.Debug.WriteLine($"Error processing video item: {itemEx.Message}");
+                                    System.Diagnostics.Debug.WriteLine(
+                                        $"Error processing video item: {itemEx.Message}");
                                 }
                             } while (cursor.MoveToNext());
                         }
@@ -162,8 +187,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
             }
         });
 #else
-        // Handle non-Android platforms
-        System.Diagnostics.Debug.WriteLine("Video discovery with thumbnail generation is only implemented for Android.");
+        System.Diagnostics.Debug.WriteLine("Video discovery is only implemented for Android.");
         await Task.CompletedTask;
         return new List<VideoInfo>();
 #endif

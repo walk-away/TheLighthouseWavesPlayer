@@ -1,27 +1,18 @@
 <Project>
-
-    <PropertyGroup>
-        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-        <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <!-- MAUI Core Packages -->
-        <PackageVersion Include="Microsoft.Maui.Controls" Version="8.0.90" />
-        <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.90" />
-
-        <!-- Community Toolkit -->
-        <PackageVersion Include="CommunityToolkit.Maui" Version="9.1.0" />
-        <PackageVersion Include="CommunityToolkit.Maui.MediaElement" Version="4.1.2" />
-        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-
-        <!-- Microsoft Extensions -->
-        <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
-
-        <!-- Data & Storage -->
-        <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
-        <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Community Toolkit -->
+    <PackageVersion Include="CommunityToolkit.Maui" Version="9.1.1" />
+    <PackageVersion Include="CommunityToolkit.Maui.MediaElement" Version="4.1.2" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <!-- Microsoft Extensions -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    <!-- Data & Storage -->
+    <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+  </ItemGroup>
 </Project>

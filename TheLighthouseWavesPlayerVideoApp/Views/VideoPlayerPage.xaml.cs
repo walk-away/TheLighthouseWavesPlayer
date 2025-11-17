@@ -81,7 +81,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 var resources = LocalizedResourcesProvider.Instance;
                 await Shell.Current.DisplayAlert(
-                    resources["Player_Error_Title"],
+                    resources!["Player_Error_Title"],
                     $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
                     resources["Button_OK"]);
             }
@@ -208,7 +208,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 _resumeDialogShown = true;
 
                 var resources = LocalizedResourcesProvider.Instance;
-                var title = resources["Player_ResumeDialog_Title"];
+                var title = resources!["Player_ResumeDialog_Title"];
                 var messageFormat = resources["Player_ResumeDialog_Message"];
                 var resumeButton = resources["Player_ResumeDialog_Resume"];
                 var startOverButton = resources["Player_ResumeDialog_StartOver"];
@@ -241,7 +241,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
             var resources = LocalizedResourcesProvider.Instance;
             await Shell.Current.DisplayAlert(
-                resources["Player_Error_Title"],
+                resources!["Player_Error_Title"],
                 resources["Player_Error_Playback"],
                 resources["Button_OK"]);
         }

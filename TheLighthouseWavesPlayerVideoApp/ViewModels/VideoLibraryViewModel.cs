@@ -55,7 +55,8 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         ILocalizedResourcesProvider resourcesProvider,
         IPlaylistService playlistService)
     {
-        _videoDiscoveryService = videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
+        _videoDiscoveryService =
+            videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
         _favoritesService = favoritesService ?? throw new ArgumentNullException(nameof(favoritesService));
         _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
         _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
@@ -98,9 +99,10 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         };
 
         SortOptions = newOptions;
-        SelectedSortOption = SortOptions.FirstOrDefault(
-            o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending)
-            ?? SortOptions.First();
+        SelectedSortOption = SortOptions.FirstOrDefault(o =>
+                                 o.Property == _lastSelectedSortProperty &&
+                                 o.IsAscending == _lastSelectedSortIsAscending)
+                             ?? SortOptions.First();
     }
 
     private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -129,13 +131,14 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         {
             var lower = SearchText.ToLowerInvariant();
             filtered = filtered.Where(v => !string.IsNullOrEmpty(v.Title) &&
-                                            v.Title.ToLowerInvariant().Contains(lower));
+                                           v.Title.ToLowerInvariant().Contains(lower));
         }
 
         filtered = SelectedSortOption.Property switch
         {
-            "Title" => SelectedSortOption.IsAscending ? filtered.OrderBy(v => v.Title)
-                                                       : filtered.OrderByDescending(v => v.Title),
+            "Title" => SelectedSortOption.IsAscending
+                ? filtered.OrderBy(v => v.Title)
+                : filtered.OrderByDescending(v => v.Title),
             "DurationMilliseconds" => SelectedSortOption.IsAscending
                 ? filtered.OrderBy(v => v.DurationMilliseconds)
                 : filtered.OrderByDescending(v => v.DurationMilliseconds),
@@ -160,22 +163,41 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         IsBusy = true;
         try
         {
-            AllVideos.Clear();
-            Videos.Clear();
+            var status = await _videoDiscoveryService.RequestPermissionsAsync();
 
-            var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
-            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ?? new HashSet<string>();
-
-            if (discovered != null)
+            if (status == PermissionStatus.Granted)
             {
-                foreach (var vid in discovered)
+                AllVideos.Clear();
+                Videos.Clear();
+
+                var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
+                var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ??
+                           new HashSet<string>();
+
+                if (discovered != null)
                 {
-                    vid.IsFavorite = favs.Contains(vid.FilePath);
-                    AllVideos.Add(vid);
+                    foreach (var vid in discovered)
+                    {
+                        vid.IsFavorite = favs.Contains(vid.FilePath);
+                        AllVideos.Add(vid);
+                    }
+                }
+
+                ApplyFilters();
+            }
+            else
+            {
+                var openSettings = await Shell.Current.DisplayAlert(
+                    _resourcesProvider["Permissions_Storage_Title"],
+                    _resourcesProvider["Permissions_Storage_Message"],
+                    _resourcesProvider["Permissions_Open_Settings"],
+                    _resourcesProvider["Button_OK"]);
+
+                if (openSettings)
+                {
+                    AppInfo.ShowSettingsUI();
                 }
             }
-
-            ApplyFilters();
         }
         finally
         {

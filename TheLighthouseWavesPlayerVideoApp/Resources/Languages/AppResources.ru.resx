@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -256,7 +256,16 @@
     <data name="Playlists_NoVideosToPlay" xml:space="preserve">
     <value>В этом плейлисте нет видео для воспроизведения</value>
 </data>
-    <data name="Playlists_ErrorPlaying" xml:space="preserve">
+  <data name="Playlists_ErrorPlaying" xml:space="preserve">
     <value>Не удалось воспроизвести плейлист.</value>
+</data>
+  <data name="Permissions_Storage_Title" xml:space="preserve">
+  <value>Требуется разрешение</value>
+</data>
+  <data name="Permissions_Storage_Message" xml:space="preserve">
+  <value>Этому приложению нужен доступ к вашим видео для их отображения. Пожалуйста, предоставьте разрешение в настройках приложения.</value>
+</data>
+  <data name="Permissions_Open_Settings" xml:space="preserve">
+  <value>Открыть настройки</value>
 </data>
 </root>
