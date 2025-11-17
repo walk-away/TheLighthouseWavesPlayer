@@ -3,6 +3,7 @@ using TheLighthouseWavesPlayerVideoApp.Models;
 using Path = System.IO.Path;
 
 #if ANDROID
+using Android.Content;
 using Android.Database;
 using Android.Provider;
 using Uri = Android.Net.Uri;
@@ -51,6 +52,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
         return status;
     }
 
+    [Obsolete("Obsolete")]
     public async Task<IList<VideoInfo>> DiscoverVideosAsync()
     {
         var status = await Permissions.CheckStatusAsync<Permissions.Media>();
@@ -79,7 +81,6 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                 }
 
                 var contentResolver = context.ContentResolver;
-
                 Uri? uri = MediaStore.Video.Media.ExternalContentUri;
 
                 string[] projection =
@@ -100,6 +101,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
 
                     if (cursor != null)
                     {
+                        int idColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Id);
                         int dataColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Data);
                         int titleColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Title);
                         int durationColumn = cursor.GetColumnIndex(MediaStore.Video.Media.InterfaceConsts.Duration);
@@ -110,23 +112,59 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                             {
                                 try
                                 {
-                                    if (dataColumn == -1 || titleColumn == -1 || durationColumn == -1)
+                                    if (idColumn == -1 || dataColumn == -1 || titleColumn == -1 || durationColumn == -1)
                                     {
                                         System.Diagnostics.Debug.WriteLine("Error: Column index not found.");
                                         continue;
                                     }
 
+                                    long id = cursor.GetLong(idColumn);
                                     string filePath = cursor.GetString(dataColumn) ?? string.Empty;
                                     string title = cursor.GetString(titleColumn) ?? string.Empty;
                                     long duration = cursor.GetLong(durationColumn);
 
                                     if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
                                     {
+                                        if (duration <= 0)
+                                        {
+                                            try
+                                            {
+                                                using var retriever = new MediaMetadataRetriever();
+                                                retriever.SetDataSource(filePath);
+                                                string? durationString =
+                                                    retriever.ExtractMetadata(MetadataKey.Duration);
+                                                if (long.TryParse(durationString, out long retrievedDuration))
+                                                {
+                                                    duration = retrievedDuration;
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                System.Diagnostics.Debug.WriteLine(
+                                                    $"Failed to retrieve duration for {filePath}: {ex.Message}");
+                                            }
+                                        }
+
                                         string? thumbnailPath = null;
+                                        Bitmap? thumbnailBitmap = null;
                                         try
                                         {
-                                            Bitmap? thumbnailBitmap =
-                                                ThumbnailUtils.CreateVideoThumbnail(filePath, ThumbnailKind.MiniKind);
+                                            if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                                            {
+                                                var videoUri =
+                                                    ContentUris.WithAppendedId(
+                                                        MediaStore.Video.Media.ExternalContentUri, id);
+                                                thumbnailBitmap = contentResolver.LoadThumbnail(videoUri,
+                                                    new Android.Util.Size(120, 120), null);
+                                            }
+
+                                            if (thumbnailBitmap == null)
+                                            {
+                                                using var retriever = new MediaMetadataRetriever();
+                                                retriever.SetDataSource(filePath);
+                                                thumbnailBitmap = retriever.GetFrameAtTime(1_000_000,
+                                                    MediaMetadataRetriever.OptionClosestSync);
+                                            }
 
                                             if (thumbnailBitmap != null)
                                             {
@@ -138,10 +176,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                                 using (var stream = new FileStream(cachedThumbnailPath,
                                                            FileMode.Create))
                                                 {
-                                                    thumbnailBitmap.Compress(
-                                                        Bitmap.CompressFormat.Jpeg ??
-                                                        throw new InvalidOperationException(), 80,
-                                                        stream);
+                                                    thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg, 80, stream);
                                                 }
 
                                                 thumbnailBitmap.Recycle();
@@ -189,7 +224,6 @@ public class VideoDiscoveryService : IVideoDiscoveryService
 #else
         System.Diagnostics.Debug.WriteLine("Video discovery is only implemented for Android.");
         await Task.CompletedTask;
-        return new List<VideoInfo>();
 #endif
 
         return videoFiles;

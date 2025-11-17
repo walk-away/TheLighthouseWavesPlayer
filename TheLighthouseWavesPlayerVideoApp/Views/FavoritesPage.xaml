@@ -6,44 +6,44 @@
              xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:FavoritesViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.FavoritesPage">
-    
+
     <ContentPage.Title>
         <Binding Path="[Favorites_Title]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
     </ContentPage.Title>
-    
+
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        
+
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
-            <SearchBar Grid.Column="0" 
+            <SearchBar Grid.Column="0"
                        Text="{Binding SearchText}"
                        HorizontalOptions="Fill">
                 <SearchBar.Placeholder>
                     <Binding Path="[Favorites_Search]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </SearchBar.Placeholder>
             </SearchBar>
-            <Button Grid.Column="1" 
+            <Button Grid.Column="1"
                     Command="{Binding ClearSearchCommand}"
                     IsVisible="{Binding SearchText, Converter={StaticResource StringNotEmptyConverter}}"
-                    Margin="0,0,5,0" 
+                    Margin="0,0,5,0"
                     VerticalOptions="Center">
                 <Button.Text>
                     <Binding Path="[Search_Clear]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Button.Text>
             </Button>
         </Grid>
-        
+
         <!-- Sort Options -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto, *" Margin="10,0,10,5">
-            <Label Grid.Column="0" 
+            <Label Grid.Column="0"
                    VerticalOptions="Center">
                 <Label.Text>
                     <Binding Path="[Sort_By]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Label.Text>
             </Label>
-            <Picker Grid.Column="1" 
-                    ItemsSource="{Binding SortOptions}" 
+            <Picker Grid.Column="1"
+                    ItemsSource="{Binding SortOptions}"
                     SelectedItem="{Binding SelectedSortOption}"
-                    HorizontalOptions="Fill" 
+                    HorizontalOptions="Fill"
                     Margin="5,0,0,0" />
         </Grid>
 
@@ -68,8 +68,8 @@
 
                         <StackLayout Grid.Column="0" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
-                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small"
-                                   TextColor="Gray" />
+                            <Label Text="{Binding FormattedDuration}" FontSize="Small"
+                                   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
                         </StackLayout>
 
                         <Frame Grid.Column="1"
@@ -99,9 +99,9 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
 
-        <Button Grid.Row="3" 
+        <Button Grid.Row="3"
                 Command="{Binding LoadFavoritesCommand}"
-                IsEnabled="{Binding IsNotBusy}" 
+                IsEnabled="{Binding IsNotBusy}"
                 Margin="10"
                 HorizontalOptions="Center">
             <Button.Text>

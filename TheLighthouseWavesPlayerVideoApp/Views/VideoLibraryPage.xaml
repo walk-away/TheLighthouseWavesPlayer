@@ -114,7 +114,7 @@
                         <!-- Video Details -->
                         <StackLayout Grid.Column="1" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
-                            <Label Text="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="Small"
+                            <Label Text="{Binding FormattedDuration}" FontSize="Small"
                                    TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
                         </StackLayout>
 
@@ -155,7 +155,7 @@
                                              Padding="0"
                                              Aspect="AspectFit" />
                             </Frame>
-                            
+
                             <!-- Add to Playlist Button -->
                             <Frame
                                 BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
@@ -198,7 +198,7 @@
                 <Binding Path="[Library_Refresh]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
             </Button.Text>
         </Button>
-        
+
         <!-- Playlist Selection Popup -->
         <Grid IsVisible="{Binding IsSelectingPlaylist}"
               BackgroundColor="{AppThemeBinding Light=#80000000, Dark=#80000000}"
@@ -212,8 +212,8 @@
 
                 <StackLayout Spacing="15">
                     <Label Text="{Binding Path=[Playlists_AddToPlaylist], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
-                           FontSize="Large" 
-                           HorizontalOptions="Center" 
+                           FontSize="Large"
+                           HorizontalOptions="Center"
                            FontAttributes="Bold" />
 
                     <Label Text="{Binding VideoForPlaylist.Title}"
@@ -240,11 +240,11 @@
                     </CollectionView>
 
                     <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="Center">
-                        <Button Text="{Binding Path=[Playlists_Cancel], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}" 
+                        <Button Text="{Binding Path=[Playlists_Cancel], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
                                 Command="{Binding CancelPlaylistSelectionCommand}"
                                 WidthRequest="120" />
-    
-                        <Button Text="{Binding Path=[Playlists_Save], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}" 
+
+                        <Button Text="{Binding Path=[Playlists_Save], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
                                 Command="{Binding SavePlaylistSelectionCommand}"
                                 WidthRequest="120" />
                     </StackLayout>
