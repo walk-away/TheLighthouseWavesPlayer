@@ -16,6 +16,9 @@
     <ApplicationTitle>TheLighthouseWavesPlayerVideoApp</ApplicationTitle>
     <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
 
+    <!-- Neutral Resources Language -->
+    <NeutralLanguage>en-US</NeutralLanguage>
+
     <!-- Versioning -->
     <ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>

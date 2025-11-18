@@ -13,6 +13,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly ILocalizationManager _localizationManager;
     private readonly IThemeService _themeService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
+    private bool _isInitializing;
 
     [ObservableProperty]
     private ObservableCollection<LanguageOption> _availableLanguages = new();
@@ -37,76 +38,112 @@ public partial class SettingsViewModel : BaseViewModel
         IThemeService themeService,
         ILocalizedResourcesProvider resourcesProvider)
     {
-        _localizationManager = localizationManager ?? throw new ArgumentNullException(nameof(localizationManager));
-        _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
-        _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
+        ArgumentNullException.ThrowIfNull(localizationManager);
+        ArgumentNullException.ThrowIfNull(themeService);
+        ArgumentNullException.ThrowIfNull(resourcesProvider);
+
+        _localizationManager = localizationManager;
+        _themeService = themeService;
+        _resourcesProvider = resourcesProvider;
 
         _pageTitle = _resourcesProvider["Settings_PageTitle"];
         _languageLabel = _resourcesProvider["Settings_LanguageLabel"];
 
+        InitializeLanguages();
+        InitializeThemes();
+    }
+
+    private void InitializeLanguages()
+    {
         AvailableLanguages = new ObservableCollection<LanguageOption>
         {
-            new LanguageOption { Name = "English", Culture = new CultureInfo("en-US") },
-            new LanguageOption { Name = "Русский", Culture = new CultureInfo("ru-RU") }
+            new() { Name = "English", Culture = new CultureInfo("en-US") },
+            new() { Name = "Русский", Culture = new CultureInfo("ru-RU") }
         };
 
         var currentCulture = _localizationManager.GetUserCulture() ?? CultureInfo.CurrentCulture;
         SelectedLanguage = AvailableLanguages.FirstOrDefault(l =>
                                l.Culture?.Name == currentCulture.Name)
                            ?? AvailableLanguages[0];
-
-        InitializeThemeOptions();
-
-        if (AvailableThemes.Count > 0)
-        {
-            var currentTheme = _themeService.CurrentTheme;
-            SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-                                t.Theme == currentTheme)
-                            ?? AvailableThemes[0];
-        }
     }
 
-    private void InitializeThemeOptions()
+    private void InitializeThemes()
     {
+        _isInitializing = true;
+
         AvailableThemes = new ObservableCollection<ThemeOption>
         {
-            new ThemeOption { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light },
-            new ThemeOption { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark },
-            new ThemeOption { Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified }
+            new() { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light },
+            new() { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark },
+            new() { Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified }
         };
+
+        var currentTheme = _themeService.CurrentTheme;
+
+        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == currentTheme)
+                        ?? AvailableThemes[0];
+
+        _isInitializing = false;
     }
 
     private void UpdateThemeOptionsLabels()
     {
-        InitializeThemeOptions();
-        var selected = SelectedTheme?.Theme ?? AppTheme.Unspecified;
-        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == selected)
+        _isInitializing = true;
+
+        var selectedThemeValue = SelectedTheme?.Theme ?? AppTheme.Unspecified;
+
+        AvailableThemes.Clear();
+        AvailableThemes.Add(
+            new ThemeOption { Name = _resourcesProvider["Settings_ThemeLight"], Theme = AppTheme.Light });
+        AvailableThemes.Add(new ThemeOption { Name = _resourcesProvider["Settings_ThemeDark"], Theme = AppTheme.Dark });
+        AvailableThemes.Add(new ThemeOption
+        {
+            Name = _resourcesProvider["Settings_ThemeSystem"], Theme = AppTheme.Unspecified
+        });
+
+        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == selectedThemeValue)
                         ?? AvailableThemes[0];
+
+        _isInitializing = false;
     }
 
     partial void OnSelectedLanguageChanged(LanguageOption value)
     {
-        if (value?.Culture != null)
+        if (_isInitializing || value?.Culture == null)
         {
-            _localizationManager.UpdateUserCulture(value.Culture);
-            UpdateThemeOptionsLabels();
+            return;
         }
+
+        _localizationManager.UpdateUserCulture(value.Culture);
+
+        PageTitle = _resourcesProvider["Settings_PageTitle"];
+        LanguageLabel = _resourcesProvider["Settings_LanguageLabel"];
+
+        UpdateThemeOptionsLabels();
     }
 
     partial void OnSelectedThemeChanged(ThemeOption value)
     {
-        if (value != null)
+        if (_isInitializing || value == null)
         {
-            _themeService.SetTheme(value.Theme);
+            return;
         }
+
+        _themeService.SetTheme(value.Theme);
     }
 
     [RelayCommand]
     private void ResetSettings()
     {
+        _isInitializing = true;
+
         SelectedLanguage = AvailableLanguages[0];
-        SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-                            t.Theme == AppTheme.Unspecified)
+        _localizationManager.UpdateUserCulture(AvailableLanguages[0].Culture!);
+
+        SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == AppTheme.Unspecified)
                         ?? AvailableThemes[0];
+        _themeService.SetTheme(AppTheme.Unspecified);
+
+        _isInitializing = false;
     }
 }
