@@ -4,33 +4,28 @@
 [![Language: C#](https://img.shields.io/badge/Language-C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android)](https://www.android.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Download Latest Version](https://img.shields.io/github/v/release/walk-away/TheLighthouseWavesPlayer?style=for-the-badge&logo=github&label=Download%20Latest)](https://github.com/walk-away/TheLighthouseWavesPlayer/releases/latest)
 
 A modern video player application for Android built with .NET MAUI, featuring intelligent video management, multilingual support, and enhanced playback capabilities.
 
-![App Screenshot](Screenshots/Screenshot(2).png)
-![App Screenshot](Screenshots/Screenshot(3).png)
-![App Screenshot](Screenshots/Screenshot(4).png)
-![App Screenshot](Screenshots/Screenshot(5).png)
-![App Screenshot](Screenshots/Screenshot(6).png)
-![App Screenshot](Screenshots/Screenshot(7).png)
-![App Screenshot](Screenshots/Screenshot(8).png)
-![App Screenshot](Screenshots/Screenshot(9).png)
-![App Screenshot](Screenshots/Screenshot(10).png)
-![App Screenshot](Screenshots/Screenshot(11).png)
-![App Screenshot](Screenshots/Screenshot(12).png)
-![App Screenshot](Screenshots/Screenshot(13).png)
-![App Screenshot](Screenshots/Screenshot(14).png)
-![App Screenshot](Screenshots/Screenshot(15).png)
-![App Screenshot](Screenshots/Screenshot(16).png)
+| | | |
+|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot(2).png" width="260"> | <img src="Screenshots/Screenshot(3).png" width="260"> | <img src="Screenshots/Screenshot(4).png" width="260"> |
+| <img src="Screenshots/Screenshot(5).png" width="260"> | <img src="Screenshots/Screenshot(6).png" width="260"> | <img src="Screenshots/Screenshot(7).png" width="260"> |
+| <img src="Screenshots/Screenshot(8).png" width="260"> | <img src="Screenshots/Screenshot(9).png" width="260"> | <img src="Screenshots/Screenshot(10).png" width="260"> |
+| <img src="Screenshots/Screenshot(11).png" width="260"> | <img src="Screenshots/Screenshot(12).png" width="260"> | <img src="Screenshots/Screenshot(13).png" width="260"> |
+| <img src="Screenshots/Screenshot(14).png" width="260"> | <img src="Screenshots/Screenshot(15).png" width="260"> | <img src="Screenshots/Screenshot(16).png" width="260"> |
+
 ### V 1.1
-![App Screenshot](Screenshots/Screenshot(17).png)
-![App Screenshot](Screenshots/Screenshot(18).png)
+| | |
+|:---:|:---:|
+| <img src="Screenshots/Screenshot(17).png" width="260"> | <img src="Screenshots/Screenshot(18).png" width="260"> |
 
 ### Example of using the application
 
-![Alt Text](Screenshots/untitled.gif)
+<img src="Screenshots/untitled.gif" width="260">
 
-## Features ✨
+## Features
 
 **🎥 Media Management**
 - Automatic video discovery from local storage
@@ -58,7 +53,7 @@ A modern video player application for Android built with .NET MAUI, featuring in
 - MediaElement integration
 - Robust error handling
 
-## Supported Platforms 📋
+## Supported Platforms
 - Android
 
 ## Contributions
