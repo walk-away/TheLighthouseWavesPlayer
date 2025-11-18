@@ -40,7 +40,6 @@ A modern video player application for Android built with .NET MAUI, featuring in
 - Playlist system with creation, management and playback capabilities
 
 **🎬 Playback Engine**
-- Subtitle support (.SRT files)
 - Resume playback functionality
 - Screenshot capture capability
 - Media metadata display (resolution, duration, file info)
@@ -72,7 +71,7 @@ Bohdan Harabadzhyu
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## YouTube Review
 <details>

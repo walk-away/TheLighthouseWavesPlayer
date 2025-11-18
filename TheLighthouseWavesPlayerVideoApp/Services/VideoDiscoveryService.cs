@@ -141,7 +141,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
                                     long duration = GetAccurateDuration(filePath, durationFromMediaStore);
 
                                     string finalTitle = GetBestTitle(title, displayName, filePath);
-                                    string? thumbnailPath = GenerateThumbnail(contentResolver, id, filePath);
+                                    string? thumbnailPath = GenerateThumbnail(contentResolver!, id, filePath);
 
                                     videoFiles.Add(new VideoInfo
                                     {
@@ -349,7 +349,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
             {
                 try
                 {
-                    var videoUri = ContentUris.WithAppendedId(MediaStore.Video.Media.ExternalContentUri, videoId);
+                    var videoUri = ContentUris.WithAppendedId(MediaStore.Video.Media.ExternalContentUri!, videoId);
                     thumbnailBitmap = contentResolver.LoadThumbnail(videoUri, new Android.Util.Size(320, 240), null);
                     System.Diagnostics.Debug.WriteLine($"Thumbnail loaded via ContentResolver for {filePath}");
                 }
@@ -411,7 +411,7 @@ public class VideoDiscoveryService : IVideoDiscoveryService
 
                 using (var stream = new FileStream(cachedThumbnailPath, FileMode.Create))
                 {
-                    thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg, 85, stream);
+                    thumbnailBitmap.Compress(Bitmap.CompressFormat.Jpeg!, 85, stream);
                 }
 
                 thumbnailBitmap.Recycle();

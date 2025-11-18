@@ -17,8 +17,8 @@
     <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
 
     <!-- Versioning -->
-    <ApplicationDisplayVersion>1.3</ApplicationDisplayVersion>
-    <ApplicationVersion>3</ApplicationVersion>
+    <ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
 
     <!-- Platform Support -->
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -28,14 +28,24 @@
 
     <!-- Android Settings -->
     <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidCreatePackagePerAbi Condition="'$(Configuration)' == 'Release'">true</AndroidCreatePackagePerAbi>
     <AndroidLinkMode Condition="'$(Configuration)' == 'Release'">Full</AndroidLinkMode>
 
     <!-- Code Analysis -->
     <AnalysisLevel>latest</AnalysisLevel>
+    <LangVersion>12</LangVersion>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">false</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+
+    <!-- Package Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <!-- Warnings as Errors -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <!-- Debug Configuration -->
