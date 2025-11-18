@@ -2,7 +2,7 @@ using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class FavoritesPage
+public partial class FavoritesPage : ContentPage
 {
     private readonly FavoritesViewModel _viewModel;
 
@@ -13,24 +13,13 @@ public partial class FavoritesPage
         _viewModel = viewModel;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        Task.Run(async () =>
+        if (_viewModel != null)
         {
-            try
-            {
-                if (_viewModel != null)
-                {
-                    await _viewModel.OnAppearing();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error in FavoritesPage.OnAppearing: {ex.Message}");
-            }
-        });
+            await _viewModel.OnAppearing();
+        }
     }
 
     protected override void OnDisappearing()

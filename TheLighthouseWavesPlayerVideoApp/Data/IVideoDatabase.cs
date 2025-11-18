@@ -18,7 +18,7 @@ public interface IVideoDatabase
     Task<List<PlaylistItem>> GetPlaylistItemsAsync(int playlistId);
     Task<int> AddVideoToPlaylistAsync(int playlistId, string videoPath);
     Task<int> RemoveVideoFromPlaylistAsync(int playlistId, string videoPath);
-    Task<int> UpdatePlaylistItemOrderAsync(IReadOnlyList<PlaylistItem> items);
+    Task<int> UpdatePlaylistItemOrderAsync(List<PlaylistItem> items);
     Task<int> ReorderPlaylistItemAsync(int itemId, int newOrder);
     Task<VideoInfo?> GetOrCreateVideoInfoAsync(string filePath, VideoInfo? videoInfo = null);
 }

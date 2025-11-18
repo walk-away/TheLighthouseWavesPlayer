@@ -48,7 +48,6 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
-    private bool _isInitialized = false;
 
     public VideoLibraryViewModel(
         IVideoDiscoveryService videoDiscoveryService,
@@ -56,8 +55,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         ILocalizedResourcesProvider resourcesProvider,
         IPlaylistService playlistService)
     {
-        _videoDiscoveryService =
-            videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
+        _videoDiscoveryService = videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
         _favoritesService = favoritesService ?? throw new ArgumentNullException(nameof(favoritesService));
         _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
         _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
@@ -100,10 +98,9 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         };
 
         SortOptions = newOptions;
-        SelectedSortOption = SortOptions.FirstOrDefault(o =>
-                                 o.Property == _lastSelectedSortProperty &&
-                                 o.IsAscending == _lastSelectedSortIsAscending)
-                             ?? SortOptions.First();
+        SelectedSortOption = SortOptions.FirstOrDefault(
+            o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending)
+            ?? SortOptions.First();
     }
 
     private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -132,14 +129,13 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         {
             var lower = SearchText.ToLowerInvariant();
             filtered = filtered.Where(v => !string.IsNullOrEmpty(v.Title) &&
-                                           v.Title.ToLowerInvariant().Contains(lower));
+                                            v.Title.ToLowerInvariant().Contains(lower));
         }
 
         filtered = SelectedSortOption.Property switch
         {
-            "Title" => SelectedSortOption.IsAscending
-                ? filtered.OrderBy(v => v.Title)
-                : filtered.OrderByDescending(v => v.Title),
+            "Title" => SelectedSortOption.IsAscending ? filtered.OrderBy(v => v.Title)
+                                                       : filtered.OrderByDescending(v => v.Title),
             "DurationMilliseconds" => SelectedSortOption.IsAscending
                 ? filtered.OrderBy(v => v.DurationMilliseconds)
                 : filtered.OrderByDescending(v => v.DurationMilliseconds),
@@ -148,96 +144,55 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
         Videos.Clear();
         foreach (var video in filtered)
-        {
             Videos.Add(video);
-        }
     }
 
     [RelayCommand]
-    private async Task LoadVideos()
+    public async Task LoadVideos()
     {
         if (IsBusy) return;
         IsBusy = true;
         try
         {
-            System.Diagnostics.Debug.WriteLine("LoadVideos: Starting...");
+            AllVideos.Clear();
+            Videos.Clear();
 
-            var status = await _videoDiscoveryService.RequestPermissionsAsync();
-            System.Diagnostics.Debug.WriteLine($"LoadVideos: Permission status = {status}");
+            var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
+            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ?? new HashSet<string>();
 
-            if (status == PermissionStatus.Granted)
+            if (discovered != null)
             {
-                AllVideos.Clear();
-                Videos.Clear();
-
-                var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
-                System.Diagnostics.Debug.WriteLine($"LoadVideos: Discovered {discovered?.Count ?? 0} videos");
-
-                var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ??
-                           new HashSet<string>();
-
-                if (discovered != null)
+                foreach (var vid in discovered)
                 {
-                    foreach (var vid in discovered)
-                    {
-                        vid.IsFavorite = favs.Contains(vid.FilePath);
-                        AllVideos.Add(vid);
-                    }
-                }
-
-                ApplyFilters();
-                _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine($"LoadVideos: Successfully loaded {AllVideos.Count} videos");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("LoadVideos: Permission not granted, showing dialog");
-                var openSettings = await Shell.Current.DisplayAlert(
-                    _resourcesProvider["Permissions_Storage_Title"],
-                    _resourcesProvider["Permissions_Storage_Message"],
-                    _resourcesProvider["Permissions_Open_Settings"],
-                    _resourcesProvider["Button_OK"]);
-
-                if (openSettings)
-                {
-                    AppInfo.ShowSettingsUI();
+                    vid.IsFavorite = favs.Contains(vid.FilePath);
+                    AllVideos.Add(vid);
                 }
             }
+
+            ApplyFilters();
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"LoadVideos: Error - {ex.Message}\n{ex.StackTrace}");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]
-    private void ClearSearch()
+    void ClearSearch()
     {
         SearchText = string.Empty;
     }
 
     [RelayCommand]
-    private async Task GoToDetails(VideoInfo video)
+    async Task GoToDetails(VideoInfo video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath))
-        {
             return;
-        }
 
         await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
     }
 
     [RelayCommand]
-    private async Task ToggleFavorite(VideoInfo? video)
+    async Task ToggleFavorite(VideoInfo? video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath))
-        {
-            return;
-        }
+        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
 
         try
         {
@@ -265,12 +220,9 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    private async Task ShowPlaylistSelection(VideoInfo video)
+    async Task ShowPlaylistSelection(VideoInfo video)
     {
-        if (video == null)
-        {
-            return;
-        }
+        if (video == null) return;
 
         try
         {
@@ -313,12 +265,9 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    private async Task SavePlaylistSelection()
+    async Task SavePlaylistSelection()
     {
-        if (VideoForPlaylist == null)
-        {
-            return;
-        }
+        if (VideoForPlaylist == null) return;
 
         try
         {
@@ -362,13 +311,13 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    private void CancelPlaylistSelection()
+    void CancelPlaylistSelection()
     {
         IsSelectingPlaylist = false;
     }
 
     [RelayCommand]
-    private async Task CheckPlaylistsExist()
+    async Task CheckPlaylistsExist()
     {
         try
         {
@@ -382,53 +331,9 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         }
     }
 
-    private async Task RefreshFavoriteStatuses()
-    {
-        try
-        {
-            System.Diagnostics.Debug.WriteLine("RefreshFavoriteStatuses: Starting...");
-
-            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ??
-                       new HashSet<string>();
-
-            int updatedCount = 0;
-            foreach (var video in AllVideos)
-            {
-                bool newStatus = favs.Contains(video.FilePath);
-                if (video.IsFavorite != newStatus)
-                {
-                    video.IsFavorite = newStatus;
-                    updatedCount++;
-                }
-            }
-
-            foreach (var video in Videos)
-            {
-                video.IsFavorite = favs.Contains(video.FilePath);
-            }
-
-            System.Diagnostics.Debug.WriteLine($"RefreshFavoriteStatuses: Updated {updatedCount} videos");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error refreshing favorite statuses: {ex.Message}");
-        }
-    }
-
     public async Task OnAppearing()
     {
-        System.Diagnostics.Debug.WriteLine(
-            $"OnAppearing: _isInitialized={_isInitialized}, AllVideos.Count={AllVideos.Count}");
-
-        if (!_isInitialized || AllVideos.Count == 0)
-        {
-            await LoadVideos();
-        }
-        else
-        {
-            await RefreshFavoriteStatuses();
-        }
-
+        await LoadVideos();
         await CheckPlaylistsExist();
     }
 

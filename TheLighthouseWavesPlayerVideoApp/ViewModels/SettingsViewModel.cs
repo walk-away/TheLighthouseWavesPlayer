@@ -52,8 +52,8 @@ public partial class SettingsViewModel : BaseViewModel
 
         var currentCulture = _localizationManager.GetUserCulture() ?? CultureInfo.CurrentCulture;
         SelectedLanguage = AvailableLanguages.FirstOrDefault(l =>
-            l.Culture?.Name == currentCulture.Name)
-            ?? AvailableLanguages[0];
+                               l.Culture?.Name == currentCulture.Name)
+                           ?? AvailableLanguages[0];
 
         InitializeThemeOptions();
 
@@ -61,8 +61,8 @@ public partial class SettingsViewModel : BaseViewModel
         {
             var currentTheme = _themeService.CurrentTheme;
             SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-                t.Theme == currentTheme)
-                ?? AvailableThemes[0];
+                                t.Theme == currentTheme)
+                            ?? AvailableThemes[0];
         }
     }
 
@@ -81,7 +81,7 @@ public partial class SettingsViewModel : BaseViewModel
         InitializeThemeOptions();
         var selected = SelectedTheme?.Theme ?? AppTheme.Unspecified;
         SelectedTheme = AvailableThemes.FirstOrDefault(t => t.Theme == selected)
-                         ?? AvailableThemes[0];
+                        ?? AvailableThemes[0];
     }
 
     partial void OnSelectedLanguageChanged(LanguageOption value)
@@ -106,7 +106,7 @@ public partial class SettingsViewModel : BaseViewModel
     {
         SelectedLanguage = AvailableLanguages[0];
         SelectedTheme = AvailableThemes.FirstOrDefault(t =>
-            t.Theme == AppTheme.Unspecified)
-            ?? AvailableThemes[0];
+                            t.Theme == AppTheme.Unspecified)
+                        ?? AvailableThemes[0];
     }
 }

@@ -11,11 +11,7 @@ public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesP
 
     private CultureInfo? _currentCulture;
 
-    public static LocalizedResourcesProvider? Instance
-    {
-        get;
-        private set;
-    }
+    public static LocalizedResourcesProvider Instance { get; private set; } = null!;
 
     public string this[string key]
         => _resourceManager.GetString(key, _currentCulture)

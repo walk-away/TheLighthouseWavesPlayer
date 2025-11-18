@@ -15,9 +15,7 @@ public class VideoDatabase : IVideoDatabase
     private async Task Init()
     {
         if (_database is not null)
-        {
             return;
-        }
 
         _database = new SQLiteAsyncConnection(
             DatabaseConstants.DatabasePath,
@@ -47,21 +45,17 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> DeleteFavoriteAsync(VideoInfo item)
     {
-        ArgumentNullException.ThrowIfNull(item);
         await Init();
         return await _database!.DeleteAsync(item);
     }
 
     public async Task<int> UpdateVideoInfoAsync(VideoInfo item)
     {
-        ArgumentNullException.ThrowIfNull(item);
         await Init();
 
         var existing = await GetFavoriteAsync(item.FilePath);
         if (existing == null)
-        {
             return await _database!.InsertAsync(item);
-        }
 
         existing.Title = item.Title;
         existing.DurationMilliseconds = item.DurationMilliseconds;
@@ -72,14 +66,11 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> SaveFavoriteAsync(VideoInfo item)
     {
-        ArgumentNullException.ThrowIfNull(item);
         await Init();
 
         var existing = await GetFavoriteAsync(item.FilePath);
         if (existing == null)
-        {
             return await _database!.InsertAsync(item);
-        }
 
         existing.Title = item.Title;
         existing.DurationMilliseconds = item.DurationMilliseconds;
@@ -90,7 +81,6 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> DeleteFavoriteByPathAsync(string filePath)
     {
-        ArgumentNullException.ThrowIfNull(filePath);
         await Init();
 
         var item = await GetFavoriteAsync(filePath);
@@ -121,7 +111,6 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> SavePlaylistAsync(Playlist playlist)
     {
-        ArgumentNullException.ThrowIfNull(playlist);
         await Init();
 
         if (playlist.Id != 0)
@@ -137,7 +126,6 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> DeletePlaylistAsync(Playlist playlist)
     {
-        ArgumentNullException.ThrowIfNull(playlist);
         await Init();
 
         await _database!.ExecuteAsync("DELETE FROM playlist_items WHERE PlaylistId = ?", playlist.Id);
@@ -156,7 +144,6 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> AddVideoToPlaylistAsync(int playlistId, string videoPath)
     {
-        ArgumentNullException.ThrowIfNull(videoPath);
         await Init();
 
         var existingItem = await _database!.Table<PlaylistItem>()
@@ -164,9 +151,7 @@ public class VideoDatabase : IVideoDatabase
             .FirstOrDefaultAsync();
 
         if (existingItem != null)
-        {
             return 0;
-        }
 
         var maxOrder = await _database.Table<PlaylistItem>()
             .Where(pi => pi.PlaylistId == playlistId)
@@ -195,7 +180,6 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<int> RemoveVideoFromPlaylistAsync(int playlistId, string videoPath)
     {
-        ArgumentNullException.ThrowIfNull(videoPath);
         await Init();
 
         var item = await _database!.Table<PlaylistItem>()
@@ -203,9 +187,7 @@ public class VideoDatabase : IVideoDatabase
             .FirstOrDefaultAsync();
 
         if (item == null)
-        {
             return 0;
-        }
 
         var result = await _database.DeleteAsync(item);
 
@@ -235,17 +217,14 @@ public class VideoDatabase : IVideoDatabase
             .FirstOrDefaultAsync();
 
         if (item == null)
-        {
             return 0;
-        }
 
         item.Order = newOrder;
         return await _database.UpdateAsync(item);
     }
 
-    public async Task<int> UpdatePlaylistItemOrderAsync(IReadOnlyList<PlaylistItem> items)
+    public async Task<int> UpdatePlaylistItemOrderAsync(List<PlaylistItem> items)
     {
-        ArgumentNullException.ThrowIfNull(items);
         await Init();
 
         var result = 0;
@@ -259,19 +238,14 @@ public class VideoDatabase : IVideoDatabase
 
     public async Task<VideoInfo?> GetOrCreateVideoInfoAsync(string filePath, VideoInfo? videoInfo = null)
     {
-        ArgumentNullException.ThrowIfNull(filePath);
         await Init();
 
         var existing = await GetFavoriteAsync(filePath);
         if (existing != null)
-        {
             return existing;
-        }
 
         if (videoInfo == null)
-        {
             return null;
-        }
 
         var newVideoInfo = new VideoInfo
         {

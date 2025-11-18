@@ -6,6 +6,8 @@ namespace TheLighthouseWavesPlayerVideoApp.Models;
 [Table("favorites")]
 public partial class VideoInfo : ObservableObject
 {
+    [PrimaryKey, AutoIncrement] public int Id { get; set; }
+
     public string Title { get; set; } = null!;
     public string FilePath { get; set; } = null!;
     public string? ThumbnailPath { get; set; }
@@ -15,12 +17,7 @@ public partial class VideoInfo : ObservableObject
     private bool _isFavorite;
 
     [Ignore]
-    private TimeSpan Duration => DurationMilliseconds > 0
-        ? TimeSpan.FromMilliseconds(DurationMilliseconds)
-        : TimeSpan.Zero;
+    private TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMilliseconds);
 
-    [Ignore]
-    public string FormattedDuration => DurationMilliseconds > 0
-        ? Duration.ToString(@"hh\:mm\:ss")
-        : "Unknown";
+    [Ignore] public string FormattedDuration => Duration.ToString(@"hh\:mm\:ss");
 }

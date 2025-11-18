@@ -2,10 +2,9 @@ using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class VideoLibraryPage
+public partial class VideoLibraryPage : ContentPage
 {
     private readonly VideoLibraryViewModel _viewModel;
-    private bool _isAnimating;
 
     public VideoLibraryPage(VideoLibraryViewModel viewModel)
     {
@@ -14,25 +13,14 @@ public partial class VideoLibraryPage
         _viewModel = viewModel;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        Task.Run(async () =>
+        if (_viewModel != null)
         {
-            try
-            {
-                if (_viewModel != null)
-                {
-                    await _viewModel.OnAppearing();
-                    await MainThread.InvokeOnMainThreadAsync(() => AnimateItemsAsync());
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error in VideoLibraryPage.OnAppearing: {ex.Message}");
-            }
-        });
+            await _viewModel.OnAppearing();
+            AnimateItems();
+        }
     }
 
     protected override void OnDisappearing()
@@ -40,22 +28,10 @@ public partial class VideoLibraryPage
         base.OnDisappearing();
     }
 
-    private async Task AnimateItemsAsync()
+    private async void AnimateItems()
     {
-        if (_isAnimating)
+        if (Content is Grid grid && grid.Children.Count > 0)
         {
-            return;
-        }
-
-        try
-        {
-            _isAnimating = true;
-
-            if (Content is not Grid grid || grid.Children.Count == 0)
-            {
-                return;
-            }
-
             CollectionView? collectionView = null;
 
             foreach (var child in grid.Children)
@@ -67,47 +43,35 @@ public partial class VideoLibraryPage
                 }
             }
 
-            if (collectionView == null)
+            if (collectionView != null)
             {
-                return;
-            }
+                await Task.Delay(100);
 
-            await Task.Delay(100);
+                var itemsLayout = collectionView.GetVisualTreeDescendants()
+                        .FirstOrDefault(x => x is Microsoft.Maui.Controls.Compatibility.StackLayout)
+                    as Microsoft.Maui.Controls.Compatibility.StackLayout;
 
-            var itemsLayout = collectionView.GetVisualTreeDescendants()
-                    .FirstOrDefault(x => x is Microsoft.Maui.Controls.Compatibility.StackLayout)
-                as Microsoft.Maui.Controls.Compatibility.StackLayout;
-
-            if (itemsLayout == null)
-            {
-                return;
-            }
-
-            uint delay = 0;
-            foreach (var item in itemsLayout.Children)
-            {
-                if (item is Grid itemGrid)
+                if (itemsLayout != null)
                 {
-                    itemGrid.Opacity = 0;
-                    itemGrid.TranslationY = 50;
+                    uint delay = 0;
+                    foreach (var item in itemsLayout.Children)
+                    {
+                        if (item is Grid itemGrid)
+                        {
+                            itemGrid.Opacity = 0;
+                            itemGrid.TranslationY = 50;
 
-                    await Task.Delay((int)delay);
-                    await Task.WhenAll(
-                        itemGrid.FadeTo(1, 300),
-                        itemGrid.TranslateTo(0, 0, 300, Easing.SpringOut)
-                    );
+                            await Task.Delay((int)delay);
+                            await Task.WhenAll(
+                                itemGrid.FadeTo(1, 300),
+                                itemGrid.TranslateTo(0, 0, 300, Easing.SpringOut)
+                            );
 
-                    delay += 50;
+                            delay += 50;
+                        }
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error in AnimateItems: {ex.Message}");
-        }
-        finally
-        {
-            _isAnimating = false;
         }
     }
 }

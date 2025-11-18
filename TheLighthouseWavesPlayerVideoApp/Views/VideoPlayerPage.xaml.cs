@@ -1,8 +1,8 @@
+﻿using CommunityToolkit.Maui.Core.Primitives;
+using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
-using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 using TheLighthouseWavesPlayerVideoApp.Localization;
-using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
@@ -81,7 +81,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             {
                 var resources = LocalizedResourcesProvider.Instance;
                 await Shell.Current.DisplayAlert(
-                    resources!["Player_Error_Title"],
+                    resources["Player_Error_Title"],
                     $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
                     resources["Button_OK"]);
             }
@@ -129,10 +129,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     private void MediaElement_StateChanged(object? sender, MediaStateChangedEventArgs e)
     {
-        if (mediaElement == null || _viewModel == null)
-        {
-            return;
-        }
+        if (mediaElement == null || _viewModel == null) return;
 
         _viewModel.CurrentState = e.NewState;
         System.Diagnostics.Debug.WriteLine($"MediaElement State: {e.NewState}");
@@ -197,9 +194,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
             TryUpdateMetadata();
             if (!_metadataSuccessfullyUpdated)
-            {
                 SetupMetadataRetryTimer();
-            }
 
             if (_viewModel.ShouldResumePlayback
                 && _viewModel.ResumePosition > TimeSpan.Zero
@@ -208,7 +203,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 _resumeDialogShown = true;
 
                 var resources = LocalizedResourcesProvider.Instance;
-                var title = resources!["Player_ResumeDialog_Title"];
+                var title = resources["Player_ResumeDialog_Title"];
                 var messageFormat = resources["Player_ResumeDialog_Message"];
                 var resumeButton = resources["Player_ResumeDialog_Resume"];
                 var startOverButton = resources["Player_ResumeDialog_StartOver"];
@@ -241,7 +236,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
             var resources = LocalizedResourcesProvider.Instance;
             await Shell.Current.DisplayAlert(
-                resources!["Player_Error_Title"],
+                resources["Player_Error_Title"],
                 resources["Player_Error_Playback"],
                 resources["Button_OK"]);
         }
@@ -257,10 +252,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     private void TryUpdateMetadata()
     {
-        if (_metadataSuccessfullyUpdated || _viewModel == null || mediaElement == null)
-        {
-            return;
-        }
+        if (_metadataSuccessfullyUpdated || _viewModel == null || mediaElement == null) return;
 
         try
         {
@@ -338,44 +330,25 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom started.");
+        _isPageActive = false;
+        _resumeDialogShown = false;
+        StopAndDisposeRetryTimer();
 
-        try
+        TimeSpan currentPosition = TimeSpan.Zero;
+        if (mediaElement != null && (mediaElement.CurrentState == MediaElementState.Playing ||
+                                     mediaElement.CurrentState == MediaElementState.Paused))
         {
-            _isPageActive = false;
-            _resumeDialogShown = false;
-            StopAndDisposeRetryTimer();
-
-            TimeSpan currentPosition = TimeSpan.Zero;
-            if (mediaElement != null)
-            {
-                currentPosition = mediaElement.Position;
-                if (mediaElement.CurrentState == MediaElementState.Playing ||
-                    mediaElement.CurrentState == MediaElementState.Paused)
-                {
-                    try
-                    {
-                        mediaElement.Stop();
-                        System.Diagnostics.Debug.WriteLine(
-                            $"Stopped MediaElement. Current position: {currentPosition}");
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error stopping MediaElement: {ex.Message}");
-                    }
-                }
-            }
-
-            _viewModel?.OnNavigatedFrom(currentPosition);
-
-            UnsubscribeFromEvents();
-
-            base.OnNavigatedFrom(args);
-            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
+            currentPosition = mediaElement.Position;
+            mediaElement.Stop();
+            System.Diagnostics.Debug.WriteLine($"Stopped MediaElement. Current position: {currentPosition}");
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error in OnNavigatedFrom: {ex.Message}\n{ex.StackTrace}");
-        }
+
+        _viewModel?.OnNavigatedFrom(currentPosition);
+
+        UnsubscribeFromEvents();
+
+        base.OnNavigatedFrom(args);
+        System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
     }
 
     protected override async void OnAppearing()
@@ -418,56 +391,19 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
 
     protected override void OnDisappearing()
     {
-        try
-        {
-            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnDisappearing started.");
+        base.OnDisappearing();
 
-            base.OnDisappearing();
-
-            _viewModel?.Cleanup();
-
-            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnDisappearing finished.");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
-        }
+        _viewModel?.Cleanup();
     }
 
     public void Dispose()
     {
-        try
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
+        if (_isDisposed) return;
 
-            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.Dispose started.");
+        UnsubscribeFromEvents();
+        StopAndDisposeRetryTimer();
+        _viewModel?.Dispose();
 
-            UnsubscribeFromEvents();
-            StopAndDisposeRetryTimer();
-
-            if (mediaElement != null)
-            {
-                try
-                {
-                    mediaElement.Handler?.DisconnectHandler();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error disconnecting MediaElement handler: {ex.Message}");
-                }
-            }
-
-            _viewModel?.Dispose();
-
-            _isDisposed = true;
-            System.Diagnostics.Debug.WriteLine("VideoPlayerPage.Dispose finished.");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error in Dispose: {ex.Message}");
-        }
+        _isDisposed = true;
     }
 }
