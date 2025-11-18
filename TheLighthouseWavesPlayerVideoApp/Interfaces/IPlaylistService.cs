@@ -13,7 +13,7 @@ public interface IPlaylistService
     Task<List<VideoInfo>> GetPlaylistVideosAsync(int playlistId);
     Task<int> AddVideoToPlaylistAsync(int playlistId, VideoInfo video);
     Task<int> RemoveVideoFromPlaylistAsync(int playlistId, string videoPath);
-    Task<int> ReorderPlaylistAsync(int playlistId, List<PlaylistItem> items);
+    Task<int> ReorderPlaylistAsync(int playlistId, IReadOnlyList<PlaylistItem> items);
     Task<bool> IsVideoInPlaylistAsync(int playlistId, string videoFilePath);
     Task UpdatePlaylistStatisticsAsync(Playlist playlist);
 }

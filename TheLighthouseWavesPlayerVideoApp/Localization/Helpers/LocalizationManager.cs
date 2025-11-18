@@ -36,10 +36,7 @@ public class LocalizationManager : ILocalizationManager
 
     public void UpdateUserCulture(CultureInfo cultureInfo)
     {
-        if (cultureInfo == null)
-        {
-            throw new ArgumentNullException(nameof(cultureInfo));
-        }
+        ArgumentNullException.ThrowIfNull(cultureInfo);
 
         Preferences.Default.Set("UserCulture", cultureInfo.Name);
         SetCulture(cultureInfo);
