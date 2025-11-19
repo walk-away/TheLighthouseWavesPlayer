@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:behaviors="clr-namespace:TheLighthouseWavesPlayerVideoApp.Behaviors"
              xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
@@ -151,30 +152,26 @@
                 <Frame Grid.Column="0"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
-                    <ImageButton BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipback.svg"
                                  Command="{Binding PreviousVideoCommand}"
                                  IsEnabled="{Binding CanGoToPrevious}"
                                  Opacity="{Binding CanGoToPrevious, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit" />
+                                 WidthRequest="24" />
                 </Frame>
 
                 <!-- Next Button -->
                 <Frame Grid.Column="1"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
-                    <ImageButton BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipforward.svg"
                                  Command="{Binding NextVideoCommand}"
                                  IsEnabled="{Binding CanGoToNext}"
                                  Opacity="{Binding CanGoToNext, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit" />
+                                 WidthRequest="24" />
                 </Frame>
 
                 <!-- Spacer -->
@@ -185,39 +182,33 @@
                     <!-- None Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
-                        <ImageButton BackgroundColor="Transparent"
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
                                      Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
                                      WidthRequest="24"
-                                     Padding="0"
-                                     Opacity="0.5"
-                                     Aspect="AspectFit" />
+                                     Opacity="0.5" />
                     </Frame>
 
                     <!-- All Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
-                        <ImageButton BackgroundColor="Transparent"
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
                                      Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24"
-                                     Padding="0"
-                                     Aspect="AspectFit" />
+                                     WidthRequest="24" />
                     </Frame>
 
                     <!-- One Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
                         <Grid>
-                            <ImageButton BackgroundColor="Transparent"
+                            <ImageButton Style="{StaticResource ThemedIconButton}"
                                          Source="repeat.svg"
                                          Command="{Binding ToggleRepeatModeCommand}"
                                          HeightRequest="24"
-                                         WidthRequest="24"
-                                         Padding="0"
-                                         Aspect="AspectFit" />
+                                         WidthRequest="24" />
                             <Label Text="1"
                                    FontSize="8"
                                    HorizontalOptions="Center"
@@ -232,14 +223,12 @@
                 <Frame Grid.Column="4"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,0,0">
-                    <ImageButton BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="shuffle.svg"
                                  Command="{Binding ToggleShuffleCommand}"
                                  Opacity="{Binding IsShuffleEnabled, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit" />
+                                 WidthRequest="24" />
                 </Frame>
             </Grid>
         </Border>
@@ -296,13 +285,11 @@
                        x:Name="BackButtonFrame"
                        IsVisible="{Binding IsLandscape}">
                     <ImageButton x:Name="BackButton"
-                                 BackgroundColor="Transparent"
+                                 Style="{StaticResource ThemedIconButton}"
                                  Source="arrow.svg"
                                  Command="{Binding GoBackCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="Back" />
                 </Frame>
 
@@ -311,13 +298,11 @@
                        Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
                     <ImageButton x:Name="VolumeIcon"
-                                 BackgroundColor="Transparent"
+                                 Style="{StaticResource ThemedIconButton}"
                                  Source="{Binding Source={x:Reference VolumeSlider}, Path=Value, Converter={StaticResource VolumeToIconConverter}}"
                                  Command="{Binding ToggleMuteCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
                 </Frame>
 
@@ -339,13 +324,11 @@
                        HasShadow="False"
                        IsVisible="{Binding HasSubtitles}"
                        Margin="3,0">
-                    <ImageButton Source="sliders.svg"
-                                 BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="sliders.svg"
                                  Command="{Binding ToggleSubtitlesCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
                 </Frame>
 
@@ -353,13 +336,11 @@
                 <Frame Grid.Column="4"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="3,0">
-                    <ImageButton Source="image.svg"
-                                 BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="image.svg"
                                  Command="{Binding CaptureScreenshotCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
                 </Frame>
 
@@ -367,13 +348,11 @@
                 <Frame Grid.Column="5"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="3,0">
-                    <ImageButton Source="video.svg"
-                                 BackgroundColor="Transparent"
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="video.svg"
                                  Command="{Binding ToggleVideoInfoCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
                 </Frame>
 
@@ -381,24 +360,20 @@
                 <Grid Grid.Column="6" Margin="3,0,0,0">
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                        <ImageButton Source="bookmark.svg"
-                                     BackgroundColor="Transparent"
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
+                                     Source="bookmark.svg"
                                      Command="{Binding ToggleFavoriteCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24"
-                                     Padding="0"
-                                     Aspect="AspectFit" />
+                                     WidthRequest="24" />
                     </Frame>
 
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding IsFavorite}">
-                        <ImageButton Source="trash.svg"
-                                     BackgroundColor="Transparent"
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
+                                     Source="trash.svg"
                                      Command="{Binding ToggleFavoriteCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24"
-                                     Padding="0"
-                                     Aspect="AspectFit" />
+                                     WidthRequest="24" />
                     </Frame>
                 </Grid>
             </Grid>

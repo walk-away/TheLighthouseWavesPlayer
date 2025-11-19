@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
              xmlns:viewModels="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:behaviors="clr-namespace:TheLighthouseWavesPlayerVideoApp.Behaviors"
              xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              xmlns:converters="clr-namespace:TheLighthouseWavesPlayerVideoApp.Converters"
              x:DataType="viewModels:VideoLibraryViewModel"
@@ -128,14 +129,12 @@
                                 CornerRadius="8"
                                 HasShadow="False"
                                 IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                                <ImageButton Source="bookmark.png"
-                                             BackgroundColor="Transparent"
+                                <ImageButton Style="{StaticResource ThemedIconButton}"
+                                             Source="bookmark.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                              CommandParameter="{Binding .}"
                                              HeightRequest="28"
-                                             WidthRequest="28"
-                                             Padding="0"
-                                             Aspect="AspectFit" />
+                                             WidthRequest="28" />
                             </Frame>
 
                             <!-- Remove Favorite Button -->
@@ -146,14 +145,12 @@
                                 CornerRadius="8"
                                 HasShadow="False"
                                 IsVisible="{Binding IsFavorite}">
-                                <ImageButton Source="trash.png"
-                                             BackgroundColor="Transparent"
+                                <ImageButton Style="{StaticResource ThemedIconButton}"
+                                             Source="trash.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ToggleFavoriteCommand}"
                                              CommandParameter="{Binding .}"
                                              HeightRequest="28"
-                                             WidthRequest="28"
-                                             Padding="0"
-                                             Aspect="AspectFit" />
+                                             WidthRequest="28" />
                             </Frame>
 
                             <!-- Add to Playlist Button -->
@@ -164,14 +161,12 @@
                                 CornerRadius="8"
                                 HasShadow="False"
                                 IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=HasPlaylists}">
-                                <ImageButton Source="playlist_add.svg"
-                                             BackgroundColor="Transparent"
+                                <ImageButton Style="{StaticResource ThemedIconButton}"
+                                             Source="playlist_add.svg"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VideoLibraryViewModel}}, Path=ShowPlaylistSelectionCommand}"
                                              CommandParameter="{Binding .}"
                                              HeightRequest="28"
-                                             WidthRequest="28"
-                                             Padding="0"
-                                             Aspect="AspectFit" />
+                                             WidthRequest="28" />
                             </Frame>
                         </HorizontalStackLayout>
                     </Grid>
@@ -211,10 +206,11 @@
                    Padding="20">
 
                 <StackLayout Spacing="15">
-                    <Label Text="{Binding Path=[Playlists_AddToPlaylist], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
-                           FontSize="Large"
-                           HorizontalOptions="Center"
-                           FontAttributes="Bold" />
+                    <Label
+                        Text="{Binding Path=[Playlists_AddToPlaylist], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
+                        FontSize="Large"
+                        HorizontalOptions="Center"
+                        FontAttributes="Bold" />
 
                     <Label Text="{Binding VideoForPlaylist.Title}"
                            HorizontalOptions="Center"
@@ -240,13 +236,15 @@
                     </CollectionView>
 
                     <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="Center">
-                        <Button Text="{Binding Path=[Playlists_Cancel], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
-                                Command="{Binding CancelPlaylistSelectionCommand}"
-                                WidthRequest="120" />
+                        <Button
+                            Text="{Binding Path=[Playlists_Cancel], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
+                            Command="{Binding CancelPlaylistSelectionCommand}"
+                            WidthRequest="120" />
 
-                        <Button Text="{Binding Path=[Playlists_Save], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
-                                Command="{Binding SavePlaylistSelectionCommand}"
-                                WidthRequest="120" />
+                        <Button
+                            Text="{Binding Path=[Playlists_Save], Source={x:Static localization1:LocalizedResourcesProvider.Instance}}"
+                            Command="{Binding SavePlaylistSelectionCommand}"
+                            WidthRequest="120" />
                     </StackLayout>
                 </StackLayout>
             </Frame>

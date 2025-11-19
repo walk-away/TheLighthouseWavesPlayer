@@ -3,7 +3,9 @@
 
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:TheLighthouseWavesPlayerVideoApp.Behaviors"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
 
     <!-- ==============================================
          ANIMATION RESOURCES
@@ -351,14 +353,14 @@
     </Style>
 
     <!-- ==============================================
-         IMAGE BUTTON
-         ============================================== -->
-    <Style TargetType="ImageButton">
+     THEMED IMAGE BUTTON STYLE
+     ============================================== -->
+    <Style TargetType="ImageButton" x:Key="ThemedIconButton">
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="8" />
-        <Setter Property="MinimumHeightRequest" Value="44" />
-        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Aspect" Value="AspectFit" />
+        <Setter Property="behaviors:TintBehavior.TintColor"
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

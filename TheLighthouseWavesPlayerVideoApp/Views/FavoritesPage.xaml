@@ -1,8 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
              xmlns:model="clr-namespace:TheLighthouseWavesPlayerVideoApp.Models"
+             xmlns:behaviors="clr-namespace:TheLighthouseWavesPlayerVideoApp.Behaviors"
              xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:FavoritesViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.FavoritesPage">
@@ -18,7 +20,8 @@
                        Text="{Binding SearchText}"
                        HorizontalOptions="Fill">
                 <SearchBar.Placeholder>
-                    <Binding Path="[Favorites_Search]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Favorites_Search]"
+                             Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </SearchBar.Placeholder>
             </SearchBar>
             <Button Grid.Column="1"
@@ -27,7 +30,8 @@
                     Margin="0,0,5,0"
                     VerticalOptions="Center">
                 <Button.Text>
-                    <Binding Path="[Search_Clear]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+                    <Binding Path="[Search_Clear]"
+                             Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                 </Button.Text>
             </Button>
         </Grid>
@@ -53,7 +57,8 @@
             <CollectionView.EmptyView>
                 <Label HorizontalOptions="Center" VerticalOptions="Center">
                     <Label.Text>
-                        <Binding Path="[Favorites_NoVideos]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+                        <Binding Path="[Favorites_NoVideos]"
+                                 Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
                     </Label.Text>
                 </Label>
             </CollectionView.EmptyView>
@@ -79,14 +84,12 @@
                                CornerRadius="8"
                                HasShadow="False"
                                VerticalOptions="Center">
-                            <ImageButton Source="trash.png"
-                                         BackgroundColor="Transparent"
+                            <ImageButton Style="{StaticResource ThemedIconButton}"
+                                         Source="trash.png"
                                          Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
                                          CommandParameter="{Binding .}"
                                          HeightRequest="28"
-                                         WidthRequest="28"
-                                         Padding="0"
-                                         Aspect="AspectFit" />
+                                         WidthRequest="28" />
                         </Frame>
                     </Grid>
                 </DataTemplate>
@@ -105,7 +108,8 @@
                 Margin="10"
                 HorizontalOptions="Center">
             <Button.Text>
-                <Binding Path="[Favorites_Refresh]" Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
+                <Binding Path="[Favorites_Refresh]"
+                         Source="{x:Static localization1:LocalizedResourcesProvider.Instance}" />
             </Button.Text>
         </Button>
     </Grid>
