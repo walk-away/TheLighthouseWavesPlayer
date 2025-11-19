@@ -26,15 +26,10 @@
     <!-- Platform Support -->
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 
-    <!-- Build Optimization -->
-    <EnableLLVM Condition="'$(Configuration)' == 'Release'">true</EnableLLVM>
-
     <!-- Android Settings -->
     <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidCreatePackagePerAbi Condition="'$(Configuration)' == 'Release'">true</AndroidCreatePackagePerAbi>
-    <AndroidLinkMode Condition="'$(Configuration)' == 'Release'">Full</AndroidLinkMode>
 
     <!-- Code Analysis -->
     <AnalysisLevel>latest</AnalysisLevel>
@@ -68,9 +63,15 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <AndroidLinkMode>Full</AndroidLinkMode>
+
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+
+    <EnableLLVM>false</EnableLLVM>
+
+    <RuntimeIdentifiers>android-arm64;android-arm;android-x64</RuntimeIdentifiers>
 
     <!-- Signing from environment variables -->
     <AndroidKeyStore Condition="'$(ANDROID_KEYSTORE_PATH)' != ''">true</AndroidKeyStore>
