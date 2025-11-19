@@ -10,7 +10,7 @@ namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 [QueryProperty(nameof(FilePath), "FilePath")]
 [QueryProperty(nameof(PlaylistId), "PlaylistId")]
-public partial class VideoPlayerViewModel : BaseViewModel, IDisposable
+public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
 {
     private readonly IFavoritesService _favoritesService;
     private readonly ISubtitleService _subtitleService;

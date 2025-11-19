@@ -8,7 +8,7 @@ using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public partial class SettingsViewModel : BaseViewModel
+public sealed partial class SettingsViewModel : BaseViewModel
 {
     private readonly ILocalizationManager _localizationManager;
     private readonly IThemeService _themeService;
