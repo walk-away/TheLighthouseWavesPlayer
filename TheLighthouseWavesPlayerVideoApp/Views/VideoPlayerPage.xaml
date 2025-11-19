@@ -60,18 +60,11 @@
 
             <!-- Subtitle overlay -->
             <Border IsVisible="{Binding HasSubtitles}"
-                    HorizontalOptions="Center"
+                    Style="{StaticResource SubtitleContainerBorder}"
                     VerticalOptions="End"
-                    Margin="0,0,0,20"
-                    StrokeShape="RoundRectangle 10"
-                    BackgroundColor="#80000000"
-                    Padding="10,5"
-                    MaximumWidthRequest="600">
+                    Margin="0,0,0,20">
                 <Label Text="{Binding CurrentSubtitleText}"
-                       TextColor="White"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Center" />
+                       Style="{StaticResource SubtitleLabel}" />
             </Border>
 
             <!-- Video Info Overlay -->
@@ -116,16 +109,16 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
                 Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
                 StrokeThickness="1"
-                Margin="{OnPlatform Default='10,5', Android='10,5', iOS='10,5'}"
-                Padding="{OnPlatform Default='15,10', Android='15,10', iOS='15,10'}"
+                Margin="10,5"
+                Padding="15,10"
                 IsVisible="{Binding IsPlaylistControlsVisible}">
             <Border.Shadow>
-                <Shadow Brush="{AppThemeBinding Light={StaticResource ElevationColor}, Dark={StaticResource ElevationColorDark}}"
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Shadow2}, Dark={StaticResource Shadow3}}"
                         Offset="0,2"
                         Radius="4"
-                        Opacity="0.2" />
+                        Opacity="0.3" />
             </Border.Shadow>
-            
+
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="OrientationStates">
@@ -150,17 +143,13 @@
                     </VisualStateGroup>
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
-            
+
             <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto"
                   VerticalOptions="Center">
 
                 <!-- Previous Button -->
                 <Frame Grid.Column="0"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
                     <ImageButton BackgroundColor="Transparent"
                                  Source="skipback.svg"
@@ -175,11 +164,7 @@
 
                 <!-- Next Button -->
                 <Frame Grid.Column="1"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
                     <ImageButton BackgroundColor="Transparent"
                                  Source="skipforward.svg"
@@ -198,13 +183,8 @@
                 <!-- Repeat Mode Toggle -->
                 <Grid Grid.Column="3" Margin="3,0">
                     <!-- None Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
                         <ImageButton BackgroundColor="Transparent"
                                      Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
@@ -216,13 +196,8 @@
                     </Frame>
 
                     <!-- All Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
                         <ImageButton BackgroundColor="Transparent"
                                      Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
@@ -233,13 +208,8 @@
                     </Frame>
 
                     <!-- One Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
                         <Grid>
                             <ImageButton BackgroundColor="Transparent"
                                          Source="repeat.svg"
@@ -260,11 +230,7 @@
 
                 <!-- Shuffle Toggle -->
                 <Frame Grid.Column="4"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,0,0">
                     <ImageButton BackgroundColor="Transparent"
                                  Source="shuffle.svg"
@@ -284,15 +250,15 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
                 Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
                 StrokeThickness="1"
-                Margin="{OnPlatform Default='10,5,10,10', Android='10,5,10,10', iOS='10,5,10,10'}"
-                Padding="{OnPlatform Default='15', Android='15', iOS='15'}">
+                Margin="10,5,10,10"
+                Padding="15">
             <Border.Shadow>
-                <Shadow Brush="{AppThemeBinding Light={StaticResource ElevationColor}, Dark={StaticResource ElevationColorDark}}"
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Shadow2}, Dark={StaticResource Shadow3}}"
                         Offset="0,2"
                         Radius="4"
-                        Opacity="0.2" />
+                        Opacity="0.3" />
             </Border.Shadow>
-            
+
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="OrientationStates">
@@ -317,7 +283,7 @@
                     </VisualStateGroup>
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
-            
+
             <!-- Standard Controls -->
             <Grid x:Name="BottomControlsGrid"
                   ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
@@ -325,11 +291,7 @@
 
                 <!-- Back Button - only visible in landscape mode -->
                 <Frame Grid.Column="0"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0"
                        x:Name="BackButtonFrame"
                        IsVisible="{Binding IsLandscape}">
@@ -346,11 +308,7 @@
 
                 <!-- Volume Icon -->
                 <Frame Grid.Column="1"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,3,0">
                     <ImageButton x:Name="VolumeIcon"
                                  BackgroundColor="Transparent"
@@ -393,11 +351,7 @@
 
                 <!-- Screenshot Button -->
                 <Frame Grid.Column="4"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="3,0">
                     <ImageButton Source="image.svg"
                                  BackgroundColor="Transparent"
@@ -411,11 +365,7 @@
 
                 <!-- Video Info Button -->
                 <Frame Grid.Column="5"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
+                       Style="{StaticResource VideoControlFrame}"
                        Margin="3,0">
                     <ImageButton Source="video.svg"
                                  BackgroundColor="Transparent"
@@ -429,13 +379,8 @@
 
                 <!-- Favorite Toggle Button -->
                 <Grid Grid.Column="6" Margin="3,0,0,0">
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
                         <ImageButton Source="bookmark.svg"
                                      BackgroundColor="Transparent"
                                      Command="{Binding ToggleFavoriteCommand}"
@@ -445,13 +390,8 @@
                                      Aspect="AspectFit" />
                     </Frame>
 
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding IsFavorite}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           IsVisible="{Binding IsFavorite}">
                         <ImageButton Source="trash.svg"
                                      BackgroundColor="Transparent"
                                      Command="{Binding ToggleFavoriteCommand}"

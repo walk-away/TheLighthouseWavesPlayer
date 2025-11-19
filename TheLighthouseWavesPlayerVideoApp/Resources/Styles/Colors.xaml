@@ -1,32 +1,44 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <?xaml-comp compile="true" ?>
-<ResourceDictionary 
+
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Modern Monochrome Color Palette -->
-    <Color x:Key="Primary">#1E1E1E</Color>             <!-- Dark accent -->
-    <Color x:Key="PrimaryDark">#000000</Color>         <!-- Darker version for dark theme -->
-    <Color x:Key="PrimaryLight">#3E3E3E</Color>        <!-- Lighter version of primary -->
-    
-    <Color x:Key="Surface">#FFFFFF</Color>             <!-- Pure white for surfaces -->
-    <Color x:Key="Background">#F9F9F9</Color>          <!-- Off-white for backgrounds -->
-    <Color x:Key="BackgroundDark">#1E1E1E</Color>      <!-- Dark mode background -->
-    <Color x:Key="SurfaceDark">#2D2D2D</Color>         <!-- Dark surface -->
+    <Color x:Key="Primary">#1E1E1E</Color>
+    <Color x:Key="PrimaryDark">#000000</Color>
+    <Color x:Key="PrimaryLight">#3E3E3E</Color>
+    <Color x:Key="PrimaryAccent">#2196F3</Color>        <!-- Blue accent for highlights -->
+
+    <Color x:Key="Surface">#FFFFFF</Color>
+    <Color x:Key="Background">#F9F9F9</Color>
+    <Color x:Key="BackgroundDark">#121212</Color>       <!-- True dark mode -->
+    <Color x:Key="SurfaceDark">#1E1E1E</Color>
+    <Color x:Key="SurfaceVariant">#F5F5F5</Color>
+    <Color x:Key="SurfaceVariantDark">#2D2D2D</Color>
 
     <!-- Text Colors -->
-    <Color x:Key="TextPrimary">#212121</Color>         <!-- Near black for text -->
-    <Color x:Key="TextSecondary">#757575</Color>       <!-- Medium gray for secondary text -->
-    <Color x:Key="TextHint">#9E9E9E</Color>            <!-- Light gray for hints/placeholders -->
-    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>     <!-- White text for dark mode -->
-    <Color x:Key="TextSecondaryDark">#DADADA</Color>   <!-- Light gray text for dark mode -->
-    
+    <Color x:Key="TextPrimary">#212121</Color>
+    <Color x:Key="TextSecondary">#757575</Color>
+    <Color x:Key="TextHint">#9E9E9E</Color>
+    <Color x:Key="TextDisabled">#BDBDBD</Color>
+    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>
+    <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
+    <Color x:Key="TextHintDark">#707070</Color>
+
     <!-- System Colors -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
-    <Color x:Key="Error">#E53935</Color>               <!-- Error/delete color -->
-    <Color x:Key="Success">#43A047</Color>             <!-- Success color -->
-    
+    <Color x:Key="Error">#D32F2F</Color>
+    <Color x:Key="ErrorDark">#EF5350</Color>
+    <Color x:Key="Success">#388E3C</Color>
+    <Color x:Key="SuccessDark">#66BB6A</Color>
+    <Color x:Key="Warning">#F57C00</Color>
+    <Color x:Key="WarningDark">#FFA726</Color>
+    <Color x:Key="Info">#1976D2</Color>
+    <Color x:Key="InfoDark">#42A5F5</Color>
+
     <!-- Gray Scale -->
     <Color x:Key="Gray50">#FAFAFA</Color>
     <Color x:Key="Gray100">#F5F5F5</Color>
@@ -40,43 +52,75 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#121212</Color>
 
-    <!-- Elevation Colors for Shadows -->
-    <Color x:Key="ElevationColor">#1A000000</Color>    <!-- 10% opacity black -->
-    <Color x:Key="ElevationColorDark">#33000000</Color><!-- 20% opacity black -->
-    
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
-    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}"/>
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Background}"/>
-    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}"/>
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
-    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}"/>
-    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
-    <SolidColorBrush x:Key="TextPrimaryDarkBrush" Color="{StaticResource TextPrimaryDark}"/>
-    <SolidColorBrush x:Key="TextSecondaryDarkBrush" Color="{StaticResource TextSecondaryDark}"/>
-    
-    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}"/>
-    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
-    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
-    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
-    
-    <SolidColorBrush x:Key="Gray50Brush" Color="{StaticResource Gray50}"/>
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray700Brush" Color="{StaticResource Gray700}"/>
-    <SolidColorBrush x:Key="Gray800Brush" Color="{StaticResource Gray800}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
-    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
-    
-    <!-- Overlay Colors with Consistent Transparency -->
-    <Color x:Key="OverlayTextLight">#1E1E1E</Color>  
-    <Color x:Key="OverlayTextDark">#FFFFFF</Color>    
-    <Color x:Key="OverlayBackgroundLight">#D0FFFFFF</Color> <!-- 82% opacity white -->
-    <Color x:Key="OverlayBackgroundDark">#D01E1E1E</Color>  <!-- 82% opacity dark -->
+    <!-- Elevation & Shadow Colors -->
+    <Color x:Key="Shadow1">#08000000</Color>           <!-- 3% opacity -->
+    <Color x:Key="Shadow2">#14000000</Color>           <!-- 8% opacity -->
+    <Color x:Key="Shadow3">#1F000000</Color>           <!-- 12% opacity -->
+    <Color x:Key="Shadow4">#29000000</Color>           <!-- 16% opacity -->
+    <Color x:Key="Shadow5">#33000000</Color>           <!-- 20% opacity -->
+
+    <!-- Overlay Colors -->
+    <Color x:Key="OverlayLight">#14000000</Color>      <!-- 8% black -->
+    <Color x:Key="OverlayMedium">#3D000000</Color>     <!-- 24% black -->
+    <Color x:Key="OverlayHeavy">#66000000</Color>      <!-- 40% black -->
+    <Color x:Key="OverlayScrim">#99000000</Color>      <!-- 60% black -->
+
+    <Color x:Key="OverlayTextLight">#1E1E1E</Color>
+    <Color x:Key="OverlayTextDark">#FFFFFF</Color>
+    <Color x:Key="OverlayBackgroundLight">#F5FFFFFF</Color> <!-- 96% white -->
+    <Color x:Key="OverlayBackgroundDark">#F01E1E1E</Color>  <!-- 94% dark -->
+
+    <!-- State Colors -->
+    <Color x:Key="HoverLight">#0A000000</Color>        <!-- 4% black -->
+    <Color x:Key="HoverDark">#14FFFFFF</Color>         <!-- 8% white -->
+    <Color x:Key="PressedLight">#1F000000</Color>      <!-- 12% black -->
+    <Color x:Key="PressedDark">#29FFFFFF</Color>       <!-- 16% white -->
+    <Color x:Key="FocusLight">#1F2196F3</Color>        <!-- 12% blue -->
+    <Color x:Key="FocusDark">#2964B5F6</Color>         <!-- 16% light blue -->
+
+    <!-- Video Player Specific -->
+    <Color x:Key="VideoControlBackground">#CC000000</Color> <!-- 80% black -->
+    <Color x:Key="VideoControlBackgroundHover">#E6000000</Color> <!-- 90% black -->
+    <Color x:Key="VideoOverlay">#66000000</Color>      <!-- 40% black -->
+    <Color x:Key="SubtitleBackground">#E6000000</Color> <!-- 90% black -->
+
+    <!-- Gradients -->
+    <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#1E1E1E" Offset="0.0" />
+        <GradientStop Color="#3E3E3E" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2196F3" Offset="0.0" />
+        <GradientStop Color="#1976D2" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="VideoOverlayGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#00000000" Offset="0.0" />
+        <GradientStop Color="#99000000" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Solid Color Brushes -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}" />
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}" />
+    <SolidColorBrush x:Key="PrimaryAccentBrush" Color="{StaticResource PrimaryAccent}" />
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Background}" />
+    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}" />
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}" />
+    <SolidColorBrush x:Key="SurfaceVariantBrush" Color="{StaticResource SurfaceVariant}" />
+    <SolidColorBrush x:Key="SurfaceVariantDarkBrush" Color="{StaticResource SurfaceVariantDark}" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+    <SolidColorBrush x:Key="TextHintBrush" Color="{StaticResource TextHint}" />
+    <SolidColorBrush x:Key="TextPrimaryDarkBrush" Color="{StaticResource TextPrimaryDark}" />
+    <SolidColorBrush x:Key="TextSecondaryDarkBrush" Color="{StaticResource TextSecondaryDark}" />
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}" />
 </ResourceDictionary>
