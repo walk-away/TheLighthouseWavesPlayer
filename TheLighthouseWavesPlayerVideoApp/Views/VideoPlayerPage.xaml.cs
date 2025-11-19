@@ -6,18 +6,18 @@ using TheLighthouseWavesPlayerVideoApp.Localization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class VideoPlayerPage : ContentPage, IDisposable
+public partial class VideoPlayerPage : IDisposable
 {
     private readonly VideoPlayerViewModel _viewModel;
-    private bool _isSeekingFromResume = false;
+    private bool _isSeekingFromResume;
     private DateTime _lastSubtitleUpdate = DateTime.MinValue;
-    private bool _metadataSuccessfullyUpdated = false;
-    private bool _isPageActive = false;
+    private bool _metadataSuccessfullyUpdated;
+    private bool _isPageActive;
     private System.Timers.Timer? _metadataRetryTimer;
-    private bool _isDisposed = false;
+    private bool _isDisposed;
     private readonly object _eventLock = new object();
-    private bool _eventsSubscribed = false;
-    private bool _resumeDialogShown = false;
+    private bool _eventsSubscribed;
+    private bool _resumeDialogShown;
 
     public VideoPlayerPage(VideoPlayerViewModel viewModel)
     {
@@ -85,6 +85,11 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                     $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
                     resources["Button_OK"]);
             }
+            catch (InvalidOperationException ioEx)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Error displaying failure dialog (Invalid Operation): {ioEx.Message}");
+            }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error displaying failure dialog: {ex.Message}");
@@ -97,6 +102,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         try
         {
             UpdateOrientationState();
+        }
+        catch (InvalidOperationException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Invalid operation updating orientation state: {ioEx.Message}");
         }
         catch (Exception ex)
         {
@@ -120,6 +129,10 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             }
 
             _viewModel.IsLandscape = isLandscape;
+        }
+        catch (InvalidOperationException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to update visual state (Invalid Operation): {ioEx.Message}");
         }
         catch (Exception ex)
         {
@@ -231,6 +244,15 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
                 mediaElement.Play();
             }
         }
+        catch (InvalidOperationException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Invalid operation in MediaElement_MediaOpened: {ioEx}");
+            var resources = LocalizedResourcesProvider.Instance;
+            await Shell.Current.DisplayAlert(
+                resources["Player_Error_Title"],
+                resources["Player_Error_Playback"],
+                resources["Button_OK"]);
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
@@ -266,7 +288,7 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
             if (!string.IsNullOrEmpty(_viewModel.FilePath) && currentWidth > 0 && currentHeight > 0 &&
                 currentDuration > TimeSpan.Zero)
             {
-                Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
                     await _viewModel.UpdateVideoMetadataAsync(currentWidth, currentHeight, currentDuration);
                     MainThread.BeginInvokeOnMainThread(() =>
@@ -396,14 +418,23 @@ public partial class VideoPlayerPage : ContentPage, IDisposable
         _viewModel?.Cleanup();
     }
 
-    public void Dispose()
+    protected virtual void Dispose(bool disposing)
     {
         if (_isDisposed) return;
 
-        UnsubscribeFromEvents();
-        StopAndDisposeRetryTimer();
-        _viewModel?.Dispose();
+        if (disposing)
+        {
+            UnsubscribeFromEvents();
+            StopAndDisposeRetryTimer();
+            _viewModel?.Dispose();
+        }
 
         _isDisposed = true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

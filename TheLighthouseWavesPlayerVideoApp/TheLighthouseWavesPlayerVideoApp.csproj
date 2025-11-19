@@ -43,6 +43,9 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
+    <!-- Suppress non-critical warnings -->
+    <NoWarn>$(NoWarn);CA1031;CA1416;CA1724;CA2000;CA2008</NoWarn>
+
     <!-- Package Management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
@@ -68,8 +71,6 @@
     <AndroidLinkMode>Full</AndroidLinkMode>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
-
-
 
     <!-- Signing from environment variables -->
     <AndroidKeyStore Condition="'$(ANDROID_KEYSTORE_PATH)' != ''">true</AndroidKeyStore>
@@ -107,10 +108,9 @@
     <PackageReference Include="CommunityToolkit.Mvvm"/>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>
-    <PackageReference Include="Microsoft.Maui.Controls" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
+    <PackageReference Include="Microsoft.Maui.Controls"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
     <PackageReference Include="sqlite-net-pcl"/>
-    <PackageReference Include="SQLitePCLRaw.bundle_green"/>
   </ItemGroup>
 
   <!-- Localization Resources -->

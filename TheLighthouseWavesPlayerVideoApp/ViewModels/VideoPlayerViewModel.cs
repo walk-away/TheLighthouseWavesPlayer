@@ -21,7 +21,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     private const string PositionPreferenceKeyPrefix = "lastpos_";
     private List<SubtitleItem> _subtitles = new List<SubtitleItem>();
     private double _previousVolume = 0.5;
-    private bool _isDisposed = false;
+    private bool _isDisposed;
     private readonly SemaphoreSlim _metadataUpdateLock = new SemaphoreSlim(1, 1);
     private List<VideoInfo> _playlistVideos = new List<VideoInfo>();
     private List<VideoInfo> _playQueue = new List<VideoInfo>();
@@ -32,14 +32,14 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [ObservableProperty] MediaSource? _videoSource;
     [ObservableProperty] MediaElementState _currentState = MediaElementState.None;
     [ObservableProperty] bool _isFavorite;
-    [ObservableProperty] bool _shouldResumePlayback = false;
+    [ObservableProperty] bool _shouldResumePlayback;
     [ObservableProperty] TimeSpan _resumePosition = TimeSpan.Zero;
     [ObservableProperty] string _currentSubtitleText = string.Empty;
-    [ObservableProperty] bool _hasSubtitles = false;
+    [ObservableProperty] bool _hasSubtitles;
     [ObservableProperty] bool _areSubtitlesEnabled = true;
     [ObservableProperty] private double _volumeAmplification = 2.0;
     [ObservableProperty] private double _sliderVolume = 0.5;
-    [ObservableProperty] bool _isVideoInfoVisible = false;
+    [ObservableProperty] bool _isVideoInfoVisible;
     [ObservableProperty] private MediaElement? _mediaElement;
     [ObservableProperty] private bool _isReturningFromNavigation;
     [ObservableProperty] private TimeSpan _lastKnownPosition = TimeSpan.Zero;
@@ -47,11 +47,11 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     [ObservableProperty] private int _playlistId;
     [ObservableProperty] private Playlist _currentPlaylist = new Playlist();
     [ObservableProperty] private string _playlistProgressText = string.Empty;
-    [ObservableProperty] private bool _isPlaylistMode = false;
-    [ObservableProperty] private bool _canGoToNext = false;
-    [ObservableProperty] private bool _canGoToPrevious = false;
-    [ObservableProperty] private bool _isPlaylistControlsVisible = false;
-    [ObservableProperty] private bool _isShuffleEnabled = false;
+    [ObservableProperty] private bool _isPlaylistMode;
+    [ObservableProperty] private bool _canGoToNext;
+    [ObservableProperty] private bool _canGoToPrevious;
+    [ObservableProperty] private bool _isPlaylistControlsVisible;
+    [ObservableProperty] private bool _isShuffleEnabled;
     [ObservableProperty] private RepeatMode _repeatMode = RepeatMode.None;
     [ObservableProperty] private string _repeatModeIcon = "🔁";
 
@@ -82,7 +82,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         if (value > 0)
         {
             IsPlaylistMode = true;
-            Task.Run(async () => await InitializePlaylistAsync());
+            _ = Task.Run(async () => await InitializePlaylistAsync());
         }
         else
         {
@@ -130,7 +130,8 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
         {
             MainThread.BeginInvokeOnMainThread(() => IsBusy = true);
 
-            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId) ?? throw new InvalidOperationException();
+            CurrentPlaylist = await _playlistService.GetPlaylistAsync(PlaylistId) ??
+                              throw new InvalidOperationException();
             if (CurrentPlaylist == null)
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
@@ -171,6 +172,17 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                 UpdateProgressText();
                 UpdateNavigationButtons();
                 IsPlaylistControlsVisible = _playQueue.Count > 1;
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await Shell.Current.DisplayAlert(
+                    _resourcesProvider["PlaylistPlayer_Error"] ?? "Ошибка",
+                    _resourcesProvider["PlaylistPlayer_PlaylistNotFound"] ?? "Плейлист не найден",
+                    _resourcesProvider["Button_OK"] ?? "ОК");
+                await Shell.Current.GoToAsync("..");
             });
         }
         catch (Exception ex)
@@ -327,7 +339,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             : null;
 
         var shuffled = _playlistVideos.ToList();
-        var random = new Random();
+        var random = Random.Shared;
 
         for (int i = shuffled.Count - 1; i > 0; i--)
         {
@@ -398,10 +410,15 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             System.Diagnostics.Debug.WriteLine($"Error loading video metadata (File Not Found): {fnfEx.Message}");
             VideoInfo = new VideoMetadata { FileName = "Error: File not found" };
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException uaEx)
         {
-            System.Diagnostics.Debug.WriteLine($"Error loading video metadata: {ex.Message}");
-            VideoInfo = new VideoMetadata { FileName = "Error loading metadata" };
+            System.Diagnostics.Debug.WriteLine($"Error loading video metadata (Unauthorized Access): {uaEx.Message}");
+            VideoInfo = new VideoMetadata { FileName = "Error: Access denied" };
+        }
+        catch (IOException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading video metadata (IO Exception): {ioEx.Message}");
+            VideoInfo = new VideoMetadata { FileName = "Error: IO error" };
         }
         finally
         {
@@ -444,6 +461,14 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
             await Shell.Current.DisplayAlert(
                 _resourcesProvider["Player_Error_Title"],
                 _resourcesProvider["Player_Permission_Error"],
+                _resourcesProvider["Button_OK"]);
+        }
+        catch (IOException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Screenshot IO error: {ioEx.Message}");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Player_Error_Title"],
+                _resourcesProvider["Player_Screenshot_Error"],
                 _resourcesProvider["Button_OK"]);
         }
         catch (Exception ex)
@@ -509,6 +534,12 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                 System.Diagnostics.Debug.WriteLine($"Loaded {_subtitles.Count} subtitles from {srtFilePath}");
             }
         }
+        catch (FileNotFoundException fnfEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Subtitle file not found: {fnfEx.Message}");
+            HasSubtitles = false;
+            _subtitles.Clear();
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error loading subtitles: {ex.Message}");
@@ -521,7 +552,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
     {
         if (!HasSubtitles || !AreSubtitlesEnabled || _subtitles.Count == 0)
         {
-            if (CurrentSubtitleText != string.Empty)
+            if (!string.IsNullOrEmpty(CurrentSubtitleText))
                 CurrentSubtitleText = string.Empty;
             return;
         }
@@ -667,6 +698,14 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                 IsFavorite = true;
             }
         }
+        catch (InvalidOperationException ioEx)
+        {
+            System.Diagnostics.Debug.WriteLine($"Invalid operation toggling favorite: {ioEx.Message}");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Error_Title"],
+                _resourcesProvider["Error_Favorites_Update"],
+                _resourcesProvider["Button_OK"]);
+        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error toggling favorite in player: {ex.Message}");
@@ -762,7 +801,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                         UpdateProgressText();
                         UpdateNavigationButtons();
 
-                        Task.Delay(100).ContinueWith(_ =>
+                        _ = Task.Delay(100).ContinueWith(_ =>
                         {
                             MainThread.BeginInvokeOnMainThread(() =>
                             {
@@ -771,7 +810,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                                     MediaElement.Play();
                                 }
                             });
-                        });
+                        }, TaskScheduler.Default);
                     });
                     break;
 
@@ -788,7 +827,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                             UpdateProgressText();
                             UpdateNavigationButtons();
 
-                            Task.Delay(100).ContinueWith(_ =>
+                            _ = Task.Delay(100).ContinueWith(_ =>
                             {
                                 MainThread.BeginInvokeOnMainThread(() =>
                                 {
@@ -797,7 +836,7 @@ public sealed partial class VideoPlayerViewModel : BaseViewModel, IDisposable
                                         MediaElement.Play();
                                     }
                                 });
-                            });
+                            }, TaskScheduler.Default);
                         });
                     }
 
