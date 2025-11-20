@@ -182,39 +182,65 @@
                     <!-- None Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
-                        <ImageButton Style="{StaticResource ThemedIconButton}"
-                                     Source="repeat.svg"
+                        <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
                                      WidthRequest="24"
-                                     Opacity="0.5" />
+                                     BackgroundColor="Transparent"
+                                     Padding="0"
+                                     Aspect="AspectFit"
+                                     Opacity="0.5">
+                            <ImageButton.Behaviors>
+                                <toolkit:IconTintColorBehavior
+                                    TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                            </ImageButton.Behaviors>
+                        </ImageButton>
                     </Frame>
 
                     <!-- All Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
-                        <ImageButton Style="{StaticResource ThemedIconButton}"
-                                     Source="repeat.svg"
+                        <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24" />
+                                     WidthRequest="24"
+                                     BackgroundColor="Transparent"
+                                     Padding="0"
+                                     Aspect="AspectFit"
+                                     behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}"
+                                     Opacity="1.0">
+                            <ImageButton.Behaviors>
+                                <toolkit:IconTintColorBehavior
+                                    TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                            </ImageButton.Behaviors>
+                        </ImageButton>
                     </Frame>
 
                     <!-- One Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
                         <Grid>
-                            <ImageButton Style="{StaticResource ThemedIconButton}"
-                                         Source="repeat.svg"
+                            <ImageButton Source="repeat.svg"
                                          Command="{Binding ToggleRepeatModeCommand}"
                                          HeightRequest="24"
-                                         WidthRequest="24" />
+                                         WidthRequest="24"
+                                         BackgroundColor="Transparent"
+                                         Padding="0"
+                                         Aspect="AspectFit"
+                                         behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}"
+                                         Opacity="1.0">
+                                <ImageButton.Behaviors>
+                                    <toolkit:IconTintColorBehavior
+                                        TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                                </ImageButton.Behaviors>
+                            </ImageButton>
                             <Label Text="1"
                                    FontSize="8"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
                                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   FontAttributes="Bold" />
+                                   FontAttributes="Bold"
+                                   InputTransparent="True" />
                         </Grid>
                     </Frame>
                 </Grid>
@@ -223,12 +249,31 @@
                 <Frame Grid.Column="4"
                        Style="{StaticResource VideoControlFrame}"
                        Margin="0,0,0,0">
-                    <ImageButton Style="{StaticResource ThemedIconButton}"
-                                 Source="shuffle.svg"
+                    <ImageButton Source="shuffle.svg"
                                  Command="{Binding ToggleShuffleCommand}"
-                                 Opacity="{Binding IsShuffleEnabled, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24" />
+                                 WidthRequest="24"
+                                 BackgroundColor="Transparent"
+                                 Padding="0"
+                                 Aspect="AspectFit"
+                                 behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}">
+                        <ImageButton.Behaviors>
+                            <toolkit:IconTintColorBehavior
+                                TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                        </ImageButton.Behaviors>
+                        <ImageButton.Triggers>
+                            <DataTrigger TargetType="ImageButton"
+                                         Binding="{Binding IsShuffleEnabled}"
+                                         Value="True">
+                                <Setter Property="Opacity" Value="1.0" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="ImageButton"
+                                         Binding="{Binding IsShuffleEnabled}"
+                                         Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </ImageButton.Triggers>
+                    </ImageButton>
                 </Frame>
             </Grid>
         </Border>
