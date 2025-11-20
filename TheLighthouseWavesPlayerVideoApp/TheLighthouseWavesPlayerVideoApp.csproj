@@ -13,7 +13,7 @@
     <Nullable>enable</Nullable>
 
     <!-- App Identity -->
-    <ApplicationTitle>TheLighthouseWavesPlayerVideoApp</ApplicationTitle>
+    <ApplicationTitle>TheLighthouseWavesPlayer</ApplicationTitle>
     <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
 
     <!-- Neutral Resources Language -->
