@@ -359,6 +359,8 @@
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Aspect" Value="AspectFit" />
+        <Setter Property="HeightRequest" Value="28" />
+        <Setter Property="WidthRequest" Value="28" />
         <Setter Property="behaviors:TintBehavior.TintColor"
                 Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -379,12 +381,12 @@
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor"
                                     Value="{AppThemeBinding Light={StaticResource HoverLight}, Dark={StaticResource HoverDark}}" />
-                            <Setter Property="Scale" Value="1.05" />
+                            <Setter Property="Scale" Value="1.08" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Pressed">
                         <VisualState.Setters>
-                            <Setter Property="Scale" Value="0.96" />
+                            <Setter Property="Scale" Value="0.94" />
                             <Setter Property="BackgroundColor"
                                     Value="{AppThemeBinding Light={StaticResource PressedLight}, Dark={StaticResource PressedDark}}" />
                         </VisualState.Setters>
@@ -589,9 +591,11 @@
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor"
                 Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="6" />
         <Setter Property="HasShadow" Value="False" />
+        <Setter Property="MinimumHeightRequest" Value="48" />
+        <Setter Property="MinimumWidthRequest" Value="48" />
     </Style>
 
     <Style x:Key="VideoItemFrame" TargetType="Frame">

@@ -146,12 +146,13 @@
             </VisualStateManager.VisualStateGroups>
 
             <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto"
-                  VerticalOptions="Center">
+                  VerticalOptions="Center"
+                  ColumnSpacing="8">
 
                 <!-- Previous Button -->
                 <Frame Grid.Column="0"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="0,0,3,0">
+                       Margin="0">
                     <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipback.svg"
                                  Command="{Binding PreviousVideoCommand}"
@@ -164,7 +165,7 @@
                 <!-- Next Button -->
                 <Frame Grid.Column="1"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="0,0,3,0">
+                       Margin="0">
                     <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipforward.svg"
                                  Command="{Binding NextVideoCommand}"
@@ -178,9 +179,10 @@
                 <BoxView Grid.Column="2" />
 
                 <!-- Repeat Mode Toggle -->
-                <Grid Grid.Column="3" Margin="3,0">
+                <Grid Grid.Column="3">
                     <!-- None Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
                         <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
@@ -199,6 +201,7 @@
 
                     <!-- All Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
                         <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
@@ -218,6 +221,7 @@
 
                     <!-- One Mode -->
                     <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
                            IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
                         <Grid>
                             <ImageButton Source="repeat.svg"
@@ -248,7 +252,7 @@
                 <!-- Shuffle Toggle -->
                 <Frame Grid.Column="4"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="0,0,0,0">
+                       Margin="0">
                     <ImageButton Source="shuffle.svg"
                                  Command="{Binding ToggleShuffleCommand}"
                                  HeightRequest="24"
@@ -321,12 +325,13 @@
             <!-- Standard Controls -->
             <Grid x:Name="BottomControlsGrid"
                   ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
-                  VerticalOptions="Center">
+                  VerticalOptions="Center"
+                  ColumnSpacing="8">
 
                 <!-- Back Button - only visible in landscape mode -->
                 <Frame Grid.Column="0"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="0,0,3,0"
+                       Margin="0"
                        x:Name="BackButtonFrame"
                        IsVisible="{Binding IsLandscape}">
                     <ImageButton x:Name="BackButton"
@@ -341,7 +346,7 @@
                 <!-- Volume Icon -->
                 <Frame Grid.Column="1"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="0,0,3,0">
+                       Margin="0">
                     <ImageButton x:Name="VolumeIcon"
                                  Style="{StaticResource ThemedIconButton}"
                                  Source="{Binding Source={x:Reference VolumeSlider}, Path=Value, Converter={StaticResource VolumeToIconConverter}}"
@@ -357,6 +362,7 @@
                         Minimum="0"
                         Maximum="1"
                         MaximumWidthRequest="150"
+                        Margin="8,0"
                         Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
                         VerticalOptions="Center" />
 
@@ -364,11 +370,13 @@
                 <Frame Grid.Column="3"
                        BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
                        BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
+                       Padding="6"
+                       CornerRadius="10"
                        HasShadow="False"
                        IsVisible="{Binding HasSubtitles}"
-                       Margin="3,0">
+                       Margin="0"
+                       MinimumHeightRequest="48"
+                       MinimumWidthRequest="48">
                     <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="sliders.svg"
                                  Command="{Binding ToggleSubtitlesCommand}"
@@ -380,7 +388,7 @@
                 <!-- Screenshot Button -->
                 <Frame Grid.Column="4"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="3,0">
+                       Margin="0">
                     <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="image.svg"
                                  Command="{Binding CaptureScreenshotCommand}"
@@ -392,7 +400,7 @@
                 <!-- Video Info Button -->
                 <Frame Grid.Column="5"
                        Style="{StaticResource VideoControlFrame}"
-                       Margin="3,0">
+                       Margin="0">
                     <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="video.svg"
                                  Command="{Binding ToggleVideoInfoCommand}"
@@ -402,8 +410,9 @@
                 </Frame>
 
                 <!-- Favorite Toggle Button -->
-                <Grid Grid.Column="6" Margin="3,0,0,0">
+                <Grid Grid.Column="6">
                     <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
                            IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
                         <ImageButton Style="{StaticResource ThemedIconButton}"
                                      Source="bookmark.svg"
@@ -413,6 +422,7 @@
                     </Frame>
 
                     <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
                            IsVisible="{Binding IsFavorite}">
                         <ImageButton Style="{StaticResource ThemedIconButton}"
                                      Source="trash.svg"
