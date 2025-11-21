@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp.Interfaces;
+namespace TheLighthouseWavesPlayerVideoApp.Interfaces;
 
 public interface IScreenWakeService
 {

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace TheLighthouseWavesPlayerVideoApp.Converters;
 
@@ -8,10 +8,10 @@ public class GreaterThanZeroConverter : IValueConverter
     {
         return value switch
         {
-            int i   => i > 0,
-            long l  => l > 0,
-            double d=> d > 0,
-            _       => false
+            int i => i > 0,
+            long l => l > 0,
+            double d => d > 0,
+            _ => false
         };
     }
 

@@ -1,24 +1,34 @@
-﻿using TheLighthouseWavesPlayerVideoApp.ViewModels;
+using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
-public partial class FavoritesPage : ContentPage
+public partial class FavoritesPage
 {
     private readonly FavoritesViewModel _viewModel;
 
     public FavoritesPage(FavoritesViewModel viewModel)
     {
         InitializeComponent();
+        ArgumentNullException.ThrowIfNull(viewModel);
         BindingContext = viewModel;
         _viewModel = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (_viewModel != null)
+        _ = OnAppearingAsync();
+    }
+
+    private async Task OnAppearingAsync()
+    {
+        try
         {
             await _viewModel.OnAppearing();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in FavoritesPage.OnAppearing: {ex.Message}");
         }
     }
 

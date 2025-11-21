@@ -1,4 +1,4 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp.Models;
+namespace TheLighthouseWavesPlayerVideoApp.Models;
 
 public class VideoMetadata
 {
@@ -13,12 +13,20 @@ public class VideoMetadata
     private string GetFormattedFileSize()
     {
         if (FileSize < 1024)
+        {
             return $"{FileSize} B";
+        }
         else if (FileSize < 1024 * 1024)
+        {
             return $"{FileSize / 1024.0:F2} KB";
+        }
         else if (FileSize < 1024 * 1024 * 1024)
+        {
             return $"{FileSize / (1024.0 * 1024):F2} MB";
+        }
         else
+        {
             return $"{FileSize / (1024.0 * 1024 * 1024):F2} GB";
+        }
     }
 }

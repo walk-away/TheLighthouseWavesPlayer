@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:TheLighthouseWavesPlayerVideoApp.ViewModels"
+             xmlns:behaviors="clr-namespace:TheLighthouseWavesPlayerVideoApp.Behaviors"
              xmlns:localization1="clr-namespace:TheLighthouseWavesPlayerVideoApp.Localization"
              x:DataType="vm:VideoPlayerViewModel"
              x:Class="TheLighthouseWavesPlayerVideoApp.Views.VideoPlayerPage"
@@ -60,18 +61,11 @@
 
             <!-- Subtitle overlay -->
             <Border IsVisible="{Binding HasSubtitles}"
-                    HorizontalOptions="Center"
+                    Style="{StaticResource SubtitleContainerBorder}"
                     VerticalOptions="End"
-                    Margin="0,0,0,20"
-                    StrokeShape="RoundRectangle 10"
-                    BackgroundColor="#80000000"
-                    Padding="10,5"
-                    MaximumWidthRequest="600">
+                    Margin="0,0,0,20">
                 <Label Text="{Binding CurrentSubtitleText}"
-                       TextColor="White"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Center" />
+                       Style="{StaticResource SubtitleLabel}" />
             </Border>
 
             <!-- Video Info Overlay -->
@@ -116,16 +110,16 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
                 Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
                 StrokeThickness="1"
-                Margin="{OnPlatform Default='10,5', Android='10,5', iOS='10,5'}"
-                Padding="{OnPlatform Default='15,10', Android='15,10', iOS='15,10'}"
+                Margin="10,5"
+                Padding="15,10"
                 IsVisible="{Binding IsPlaylistControlsVisible}">
             <Border.Shadow>
-                <Shadow Brush="{AppThemeBinding Light={StaticResource ElevationColor}, Dark={StaticResource ElevationColorDark}}"
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Shadow2}, Dark={StaticResource Shadow3}}"
                         Offset="0,2"
                         Radius="4"
-                        Opacity="0.2" />
+                        Opacity="0.3" />
             </Border.Shadow>
-            
+
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="OrientationStates">
@@ -150,130 +144,140 @@
                     </VisualStateGroup>
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
-            
+
             <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto"
-                  VerticalOptions="Center">
+                  VerticalOptions="Center"
+                  ColumnSpacing="8">
 
                 <!-- Previous Button -->
                 <Frame Grid.Column="0"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="0,0,3,0">
-                    <ImageButton BackgroundColor="Transparent"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipback.svg"
                                  Command="{Binding PreviousVideoCommand}"
                                  IsEnabled="{Binding CanGoToPrevious}"
                                  Opacity="{Binding CanGoToPrevious, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit" />
+                                 WidthRequest="24" />
                 </Frame>
 
                 <!-- Next Button -->
                 <Frame Grid.Column="1"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="0,0,3,0">
-                    <ImageButton BackgroundColor="Transparent"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
                                  Source="skipforward.svg"
                                  Command="{Binding NextVideoCommand}"
                                  IsEnabled="{Binding CanGoToNext}"
                                  Opacity="{Binding CanGoToNext, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
-                                 WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit" />
+                                 WidthRequest="24" />
                 </Frame>
 
                 <!-- Spacer -->
                 <BoxView Grid.Column="2" />
 
                 <!-- Repeat Mode Toggle -->
-                <Grid Grid.Column="3" Margin="3,0">
+                <Grid Grid.Column="3">
                     <!-- None Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
-                        <ImageButton BackgroundColor="Transparent"
-                                     Source="repeat.svg"
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=None}">
+                        <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
                                      WidthRequest="24"
+                                     BackgroundColor="Transparent"
                                      Padding="0"
-                                     Opacity="0.5"
-                                     Aspect="AspectFit" />
+                                     Aspect="AspectFit"
+                                     Opacity="0.5">
+                            <ImageButton.Behaviors>
+                                <toolkit:IconTintColorBehavior
+                                    TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                            </ImageButton.Behaviors>
+                        </ImageButton>
                     </Frame>
 
                     <!-- All Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
-                        <ImageButton BackgroundColor="Transparent"
-                                     Source="repeat.svg"
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=All}">
+                        <ImageButton Source="repeat.svg"
                                      Command="{Binding ToggleRepeatModeCommand}"
                                      HeightRequest="24"
                                      WidthRequest="24"
+                                     BackgroundColor="Transparent"
                                      Padding="0"
-                                     Aspect="AspectFit" />
+                                     Aspect="AspectFit"
+                                     behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}"
+                                     Opacity="1.0">
+                            <ImageButton.Behaviors>
+                                <toolkit:IconTintColorBehavior
+                                    TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                            </ImageButton.Behaviors>
+                        </ImageButton>
                     </Frame>
 
                     <!-- One Mode -->
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
+                           IsVisible="{Binding RepeatMode, Converter={StaticResource EnumEqualityConverter}, ConverterParameter=One}">
                         <Grid>
-                            <ImageButton BackgroundColor="Transparent"
-                                         Source="repeat.svg"
+                            <ImageButton Source="repeat.svg"
                                          Command="{Binding ToggleRepeatModeCommand}"
                                          HeightRequest="24"
                                          WidthRequest="24"
+                                         BackgroundColor="Transparent"
                                          Padding="0"
-                                         Aspect="AspectFit" />
+                                         Aspect="AspectFit"
+                                         behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}"
+                                         Opacity="1.0">
+                                <ImageButton.Behaviors>
+                                    <toolkit:IconTintColorBehavior
+                                        TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                                </ImageButton.Behaviors>
+                            </ImageButton>
                             <Label Text="1"
                                    FontSize="8"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
                                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   FontAttributes="Bold" />
+                                   FontAttributes="Bold"
+                                   InputTransparent="True" />
                         </Grid>
                     </Frame>
                 </Grid>
 
                 <!-- Shuffle Toggle -->
                 <Frame Grid.Column="4"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="0,0,0,0">
-                    <ImageButton BackgroundColor="Transparent"
-                                 Source="shuffle.svg"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
+                    <ImageButton Source="shuffle.svg"
                                  Command="{Binding ToggleShuffleCommand}"
-                                 Opacity="{Binding IsShuffleEnabled, Converter={StaticResource BoolToHighlightOpacityConverter}}"
                                  HeightRequest="24"
                                  WidthRequest="24"
+                                 BackgroundColor="Transparent"
                                  Padding="0"
-                                 Aspect="AspectFit" />
+                                 Aspect="AspectFit"
+                                 behaviors:TintBehavior.TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}">
+                        <ImageButton.Behaviors>
+                            <toolkit:IconTintColorBehavior
+                                TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryAccent}}" />
+                        </ImageButton.Behaviors>
+                        <ImageButton.Triggers>
+                            <DataTrigger TargetType="ImageButton"
+                                         Binding="{Binding IsShuffleEnabled}"
+                                         Value="True">
+                                <Setter Property="Opacity" Value="1.0" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="ImageButton"
+                                         Binding="{Binding IsShuffleEnabled}"
+                                         Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </ImageButton.Triggers>
+                    </ImageButton>
                 </Frame>
             </Grid>
         </Border>
@@ -284,15 +288,15 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
                 Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
                 StrokeThickness="1"
-                Margin="{OnPlatform Default='10,5,10,10', Android='10,5,10,10', iOS='10,5,10,10'}"
-                Padding="{OnPlatform Default='15', Android='15', iOS='15'}">
+                Margin="10,5,10,10"
+                Padding="15">
             <Border.Shadow>
-                <Shadow Brush="{AppThemeBinding Light={StaticResource ElevationColor}, Dark={StaticResource ElevationColorDark}}"
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Shadow2}, Dark={StaticResource Shadow3}}"
                         Offset="0,2"
                         Radius="4"
-                        Opacity="0.2" />
+                        Opacity="0.3" />
             </Border.Shadow>
-            
+
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="OrientationStates">
@@ -317,49 +321,38 @@
                     </VisualStateGroup>
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
-            
+
             <!-- Standard Controls -->
             <Grid x:Name="BottomControlsGrid"
                   ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto"
-                  VerticalOptions="Center">
+                  VerticalOptions="Center"
+                  ColumnSpacing="8">
 
                 <!-- Back Button - only visible in landscape mode -->
                 <Frame Grid.Column="0"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="0,0,3,0"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0"
                        x:Name="BackButtonFrame"
                        IsVisible="{Binding IsLandscape}">
                     <ImageButton x:Name="BackButton"
-                                 BackgroundColor="Transparent"
+                                 Style="{StaticResource ThemedIconButton}"
                                  Source="arrow.svg"
                                  Command="{Binding GoBackCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="Back" />
                 </Frame>
 
                 <!-- Volume Icon -->
                 <Frame Grid.Column="1"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="0,0,3,0">
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
                     <ImageButton x:Name="VolumeIcon"
-                                 BackgroundColor="Transparent"
+                                 Style="{StaticResource ThemedIconButton}"
                                  Source="{Binding Source={x:Reference VolumeSlider}, Path=Value, Converter={StaticResource VolumeToIconConverter}}"
                                  Command="{Binding ToggleMuteCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleMute]}" />
                 </Frame>
 
@@ -369,6 +362,7 @@
                         Minimum="0"
                         Maximum="1"
                         MaximumWidthRequest="150"
+                        Margin="8,0"
                         Value="{Binding Source={x:Reference mediaElement}, Path=Volume, Mode=TwoWay}"
                         VerticalOptions="Center" />
 
@@ -376,89 +370,65 @@
                 <Frame Grid.Column="3"
                        BorderColor="{Binding AreSubtitlesEnabled, Converter={StaticResource BoolToSubtitleButtonColorConverter}}"
                        BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
+                       Padding="6"
+                       CornerRadius="10"
                        HasShadow="False"
                        IsVisible="{Binding HasSubtitles}"
-                       Margin="3,0">
-                    <ImageButton Source="sliders.svg"
-                                 BackgroundColor="Transparent"
+                       Margin="0"
+                       MinimumHeightRequest="48"
+                       MinimumWidthRequest="48">
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="sliders.svg"
                                  Command="{Binding ToggleSubtitlesCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_ToggleSubtitles]}" />
                 </Frame>
 
                 <!-- Screenshot Button -->
                 <Frame Grid.Column="4"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="3,0">
-                    <ImageButton Source="image.svg"
-                                 BackgroundColor="Transparent"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="image.svg"
                                  Command="{Binding CaptureScreenshotCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_Screenshot]}" />
                 </Frame>
 
                 <!-- Video Info Button -->
                 <Frame Grid.Column="5"
-                       BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                       BackgroundColor="Transparent"
-                       Padding="2"
-                       CornerRadius="6"
-                       HasShadow="False"
-                       Margin="3,0">
-                    <ImageButton Source="video.svg"
-                                 BackgroundColor="Transparent"
+                       Style="{StaticResource VideoControlFrame}"
+                       Margin="0">
+                    <ImageButton Style="{StaticResource ThemedIconButton}"
+                                 Source="video.svg"
                                  Command="{Binding ToggleVideoInfoCommand}"
                                  HeightRequest="24"
                                  WidthRequest="24"
-                                 Padding="0"
-                                 Aspect="AspectFit"
                                  ToolTipProperties.Text="{Binding Source={x:Static localization1:LocalizedResourcesProvider.Instance}, Path=[Player_VideoInfo]}" />
                 </Frame>
 
                 <!-- Favorite Toggle Button -->
-                <Grid Grid.Column="6" Margin="3,0,0,0">
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
-                        <ImageButton Source="bookmark.svg"
-                                     BackgroundColor="Transparent"
+                <Grid Grid.Column="6">
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
+                           IsVisible="{Binding IsFavorite, Converter={StaticResource InverseBoolConverter}}">
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
+                                     Source="bookmark.svg"
                                      Command="{Binding ToggleFavoriteCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24"
-                                     Padding="0"
-                                     Aspect="AspectFit" />
+                                     WidthRequest="24" />
                     </Frame>
 
-                    <Frame
-                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                        BackgroundColor="Transparent"
-                        Padding="2"
-                        CornerRadius="6"
-                        HasShadow="False"
-                        IsVisible="{Binding IsFavorite}">
-                        <ImageButton Source="trash.svg"
-                                     BackgroundColor="Transparent"
+                    <Frame Style="{StaticResource VideoControlFrame}"
+                           Margin="0"
+                           IsVisible="{Binding IsFavorite}">
+                        <ImageButton Style="{StaticResource ThemedIconButton}"
+                                     Source="trash.svg"
                                      Command="{Binding ToggleFavoriteCommand}"
                                      HeightRequest="24"
-                                     WidthRequest="24"
-                                     Padding="0"
-                                     Aspect="AspectFit" />
+                                     WidthRequest="24" />
                     </Frame>
                 </Grid>
             </Grid>

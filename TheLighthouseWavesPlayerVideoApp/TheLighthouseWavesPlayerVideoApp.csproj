@@ -1,114 +1,166 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0-android</TargetFramework>
-        <OutputType>Exe</OutputType>
-        <RootNamespace>TheLighthouseWavesPlayerVideoApp</RootNamespace>
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        
-        <!-- Display name -->
-        <ApplicationTitle>TheLighthouseWavesPlayerVideoApp</ApplicationTitle>
+  <PropertyGroup>
+    <!-- Target Framework -->
+    <TargetFramework>net8.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TheLighthouseWavesPlayerVideoApp</RootNamespace>
 
-        <!-- App Identifier -->
-        <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
+    <!-- MAUI Settings -->
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
 
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.3</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+    <!-- App Identity -->
+    <ApplicationTitle>TheLighthouseWavesPlayer</ApplicationTitle>
+    <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
 
-        <!-- Android specific settings -->
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-    </PropertyGroup>
-    
-    
+    <!-- Neutral Resources Language -->
+    <NeutralLanguage>en-US</NeutralLanguage>
 
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
-        <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
-    </PropertyGroup>
+    <!-- Versioning -->
+    <ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
 
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
-        <ApplicationId>com.walkawaysolutions.thelighthousewavesplayervideoapp</ApplicationId>
-    </PropertyGroup>
+    <!-- Platform Support -->
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 
-    <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\icon.png" />
+    <!-- Android Settings -->
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidUseAapt2>true</AndroidUseAapt2>
+    <AndroidCreatePackagePerAbi Condition="'$(Configuration)' == 'Release'">true</AndroidCreatePackagePerAbi>
 
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#f5f6f7" BaseSize="512,512" />
+    <!-- Code Analysis -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <LangVersion>12</LangVersion>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
-        <!-- Images -->
-        <MauiImage Include="Resources\Images\*svg" />
-        <MauiImage Include="Resources\Images\*png" />
-        <MauiImage Include="Resources\Images\*jpg" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
+    <!-- Suppress non-critical warnings -->
+    <NoWarn>$(NoWarn);CA1031;CA1416;CA1724;CA2000;CA2008</NoWarn>
 
-        <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*"/>
+    <!-- Package Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
-        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
-    </ItemGroup>
+    <!-- Warnings as Errors -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Maui" Version="8.0.1" />
-        <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="4.1.2" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-    </ItemGroup>
+  <!-- Debug Configuration -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Update="Resources\Languages\AppResources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>AppResources.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Languages\AppResources.ru.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>AppResources.ru.resx</DependentUpon>
-        </Compile>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\Languages\AppResources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Languages\AppResources.ru.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>AppResources.ru.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
+  <!-- Release Configuration -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
 
-    <ItemGroup>
-        <None Remove="Resources\Images\settings.svg" />
-        <None Remove="Resources\Images\star.svg" />
-        <None Remove="Resources\Images\film.svg" />
-        <None Remove="Resources\Images\edit.svg" />
-        <None Remove="Resources\Images\trash.svg" />
-        <None Remove="Resources\Images\image.svg" />
-        <None Remove="Resources\Images\bookmark.png" />
-        <None Remove="Resources\Images\video.svg" />
-        <None Remove="Resources\Images\sliders.svg" />
-        <None Remove="Resources\Images\volumex.svg" />
-        <None Remove="Resources\Images\volume2.svg" />
-        <None Remove="Resources\Images\arrow.svg" />
-        <None Remove="Resources\Images\playlistadd.svg" />
-        <None Remove="Resources\Images\play.svg" />
-        <None Remove="Resources\Images\delete.svg" />
-        <None Remove="Resources\Images\plussquare.svg" />
-        <None Remove="Resources\Images\repeat.svg" />
-        <None Remove="Resources\Images\shuffle.svg" />
-        <None Remove="Resources\Images\skipback.svg" />
-        <None Remove="Resources\Images\skipforward.svg" />
-    </ItemGroup>
-    
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+
+    <EnableLLVM>false</EnableLLVM>
+
+    <RuntimeIdentifiers>android-arm64;android-arm;android-x64</RuntimeIdentifiers>
+
+    <!-- Signing from environment variables -->
+    <AndroidKeyStore Condition="'$(ANDROID_KEYSTORE_PATH)' != ''">true</AndroidKeyStore>
+    <AndroidSigningKeyStore>$(ANDROID_KEYSTORE_PATH)</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>$(ANDROID_KEY_ALIAS)</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>$(ANDROID_KEY_PASS)</AndroidSigningKeyPass>
+    <AndroidSigningStorePass>$(ANDROID_STORE_PASS)</AndroidSigningStorePass>
+  </PropertyGroup>
+
+  <!-- MAUI Assets -->
+  <ItemGroup>
+    <!-- App Icon -->
+    <MauiIcon Include="Resources\AppIcon\icon.png"/>
+
+    <!-- Splash Screen -->
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#f5f6f7" BaseSize="512,512"/>
+
+    <!-- Images -->
+    <MauiImage Include="Resources\Images\*.svg"/>
+    <MauiImage Include="Resources\Images\*.png"/>
+    <MauiImage Include="Resources\Images\*.jpg"/>
+    <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
+
+    <!-- Custom Fonts -->
+    <MauiFont Include="Resources\Fonts\*"/>
+
+    <!-- Raw Assets -->
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <!-- Package References -->
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Maui"/>
+    <PackageReference Include="CommunityToolkit.Maui.MediaElement"/>
+    <PackageReference Include="CommunityToolkit.Mvvm"/>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>
+    <PackageReference Include="Microsoft.Maui.Controls"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
+    <PackageReference Include="sqlite-net-pcl"/>
+  </ItemGroup>
+
+  <!-- Localization Resources -->
+  <ItemGroup>
+    <Compile Update="Resources\Languages\AppResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Languages\AppResources.ru.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppResources.ru.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Languages\AppResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Languages\AppResources.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.ru.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Exclude Images from Build -->
+  <ItemGroup>
+    <None Remove="Resources\Images\arrow.svg"/>
+    <None Remove="Resources\Images\bookmark.png"/>
+    <None Remove="Resources\Images\delete.svg"/>
+    <None Remove="Resources\Images\edit.svg"/>
+    <None Remove="Resources\Images\film.svg"/>
+    <None Remove="Resources\Images\image.svg"/>
+    <None Remove="Resources\Images\play.svg"/>
+    <None Remove="Resources\Images\playlistadd.svg"/>
+    <None Remove="Resources\Images\plussquare.svg"/>
+    <None Remove="Resources\Images\repeat.svg"/>
+    <None Remove="Resources\Images\settings.svg"/>
+    <None Remove="Resources\Images\shuffle.svg"/>
+    <None Remove="Resources\Images\skipback.svg"/>
+    <None Remove="Resources\Images\skipforward.svg"/>
+    <None Remove="Resources\Images\sliders.svg"/>
+    <None Remove="Resources\Images\star.svg"/>
+    <None Remove="Resources\Images\trash.svg"/>
+    <None Remove="Resources\Images\video.svg"/>
+    <None Remove="Resources\Images\volume2.svg"/>
+    <None Remove="Resources\Images\volumex.svg"/>
+  </ItemGroup>
+
 </Project>

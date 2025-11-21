@@ -1,29 +1,495 @@
-name: .NET MAUI CI
+name: Build, Test & Release Android
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main", "develop"]
+    tags:
+      - 'v*.*.*'
   pull_request:
-    branches: [ "main" ]
+    branches: ["main", "develop"]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_NAME: 'TheLighthouseWavesPlayer.sln'
+  PROJECT_PATH: 'TheLighthouseWavesPlayerVideoApp/TheLighthouseWavesPlayerVideoApp.csproj'
+  ARTIFACT_NAME: 'TheLighthouseWavesPlayerVideoApp'
+  JAVA_VERSION: '17'
 
 jobs:
-  build:
-    runs-on: windows-latest # MAUI Android builds require Windows or macOS
+  # ============================================
+  # Job 1: Code Quality Checks
+  # ============================================
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: windows-latest
+    # Skip for dependabot and github-actions bot
+    if: |
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]'
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.x' # Specify your .NET version
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Install MAUI Workloads
-      run: dotnet workload install maui
+      - name: Install MAUI workload
+        run: dotnet workload install maui --skip-sign-check
 
-    - name: Restore Dependencies
-      run: dotnet restore TheLighthouseWavesPlayerVideoApp/TheLighthouseWavesPlayerVideoApp.csproj
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
-    - name: Build
-      run: dotnet build TheLighthouseWavesPlayerVideoApp/TheLighthouseWavesPlayerVideoApp.csproj -c Release -f net8.0-android --no-restore
+      - name: Fix code formatting
+        run: dotnet format ${{ env.SOLUTION_NAME }} --verbosity diagnostic
+
+      - name: Check code formatting
+        run: dotnet format ${{ env.SOLUTION_NAME }} --verify-no-changes --verbosity diagnostic
+        continue-on-error: true
+
+      - name: Run Code Analysis
+        run: |
+          dotnet build ${{ env.SOLUTION_NAME }} `
+            --configuration Release `
+            --no-restore `
+            --framework net8.0-android `
+            /p:TreatWarningsAsErrors=false
+        continue-on-error: true
+
+  # ============================================
+  # Job 2: Build & Test
+  # ============================================
+  build-and-test:
+    name: Build Android (${{ matrix.configuration }})
+    runs-on: windows-latest
+    needs: code-quality
+    if: always() && (needs.code-quality.result == 'success' || needs.code-quality.result == 'skipped')
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui --skip-sign-check
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
+
+      - name: Build APK
+        run: |
+          dotnet build ${{ env.PROJECT_PATH }} `
+            --configuration ${{ matrix.configuration }} `
+            --framework net8.0-android `
+            --no-restore `
+            /p:ContinuousIntegrationBuild=true
+
+      - name: Upload Build Artifacts (${{ matrix.configuration }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Artifacts-${{ matrix.configuration }}
+          path: |
+            TheLighthouseWavesPlayerVideoApp/bin/${{ matrix.configuration }}/net8.0-android/**/*.apk
+            !TheLighthouseWavesPlayerVideoApp/bin/${{ matrix.configuration }}/net8.0-android/**/bundle/**
+          retention-days: 7
+
+  # ============================================
+  # Job 3: Build Signed Release APK
+  # ============================================
+  build-signed-release:
+    name: Build Signed Release APK
+    runs-on: windows-latest
+    needs: build-and-test
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui --skip-sign-check
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
+
+      - name: Get version from tag or use default
+        id: version
+        run: |
+          if ("${{ github.ref }}" -match "refs/tags/v(.*)") {
+            $version = $matches[1]
+          } else {
+            $version = "1.4.0-dev.${{ github.run_number }}"
+          }
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "Version: $version"
+
+      - name: Decode Keystore
+        run: |
+          $keystore_b64 = "${{ secrets.ANDROID_KEYSTORE_BASE64 }}"
+          $keystore_bytes = [Convert]::FromBase64String($keystore_b64)
+          $keystorePath = "${{ github.workspace }}/app.keystore"
+          [IO.File]::WriteAllBytes($keystorePath, $keystore_bytes)
+          echo "Keystore decoded successfully"
+          echo "KEYSTORE_PATH=$keystorePath" >> $env:GITHUB_ENV
+
+      - name: Build & Sign Release APK
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} `
+            --configuration Release `
+            --framework net8.0-android `
+            /p:ApplicationDisplayVersion=${{ steps.version.outputs.version }} `
+            /p:ApplicationVersion=${{ github.run_number }} `
+            /p:AndroidPackageFormat=apk `
+            /p:AndroidKeyStore=true `
+            /p:AndroidSigningKeyStore=${{ env.KEYSTORE_PATH }} `
+            /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} `
+            /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASS }} `
+            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASS }}
+
+      - name: Find signed APK
+        id: find_apk
+        run: |
+          $apkPath = Get-ChildItem -Path "TheLighthouseWavesPlayerVideoApp/bin/Release/net8.0-android/publish" -Filter "*-Signed.apk" -Recurse | Select-Object -First 1
+          if ($apkPath) {
+            echo "apk_path=$($apkPath.FullName)" >> $env:GITHUB_OUTPUT
+            echo "apk_name=$($apkPath.Name)" >> $env:GITHUB_OUTPUT
+            $sizeBytes = $apkPath.Length
+            $sizeMB = [math]::Round($sizeBytes / 1MB, 2)
+            echo "apk_size_mb=$sizeMB" >> $env:GITHUB_OUTPUT
+            echo "Found APK: $($apkPath.FullName)"
+            echo "Size: $sizeMB MB"
+          } else {
+            echo "APK not found!"
+            exit 1
+          }
+
+      - name: Rename APK
+        run: |
+          $oldPath = "${{ steps.find_apk.outputs.apk_path }}"
+          $newName = "${{ env.ARTIFACT_NAME }}-v${{ steps.version.outputs.version }}-signed.apk"
+          $newPath = Join-Path (Split-Path $oldPath) $newName
+          Move-Item -Path $oldPath -Destination $newPath -Force
+          echo "APK_FINAL_PATH=$newPath" >> $env:GITHUB_ENV
+          echo "APK_FINAL_NAME=$newName" >> $env:GITHUB_ENV
+          echo "Renamed to: $newName"
+
+      - name: Calculate APK hash
+        id: hash
+        run: |
+          $apkPath = $env:APK_FINAL_PATH
+          $hash = Get-FileHash -Path $apkPath -Algorithm SHA256
+          echo "sha256=$($hash.Hash)" >> $env:GITHUB_OUTPUT
+          echo "SHA256: $($hash.Hash)"
+
+      - name: Verify APK signature
+        run: |
+          $apkPath = $env:APK_FINAL_PATH
+          $apktoolPath = "$env:ANDROID_HOME/build-tools/34.0.0/apksigner.bat"
+
+          if (Test-Path $apktoolPath) {
+            & $apktoolPath verify --verbose $apkPath
+          } else {
+            echo "apksigner not found, skipping verification"
+          }
+        continue-on-error: true
+
+      - name: Upload Signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}-signed-apk
+          path: ${{ env.APK_FINAL_PATH }}
+          retention-days: 90
+          compression-level: 0
+
+      - name: Create build info
+        run: |
+          $buildInfo = @"
+          Build Information
+          =================
+          App Name: The Lighthouse Waves Player Video App
+          Version: ${{ steps.version.outputs.version }}
+          Configuration: Release (Signed)
+          Platform: Android (net8.0-android)
+          APK Size: ${{ steps.find_apk.outputs.apk_size_mb }} MB
+          SHA256: ${{ steps.hash.outputs.sha256 }}
+
+          Package ID: com.walkawaysolutions.thelighthousewavesplayervideoapp
+          Min Android Version: 5.0 (API 21)
+          Target Framework: .NET 8.0
+
+          Features:
+          - Video playback with MediaElement
+          - Playlist management
+          - Favorites system
+          - Multi-language support (English, Russian)
+          - SQLite local storage
+          - MVVM architecture
+
+          Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
+          Commit: ${{ github.sha }}
+          "@
+
+          $buildInfo | Out-File -FilePath ./BUILD_INFO.txt -Encoding utf8
+          Write-Output $buildInfo
+
+      - name: Upload Build Info
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-info
+          path: BUILD_INFO.txt
+          retention-days: 90
+
+      - name: Cleanup keystore
+        if: always()
+        run: |
+          if (Test-Path $env:KEYSTORE_PATH) {
+            Remove-Item -Path $env:KEYSTORE_PATH -Force
+            echo "Keystore removed"
+          }
+
+  # ============================================
+  # Job 4: Create GitHub Release (on tags)
+  # ============================================
+  release:
+    name: Create GitHub Release
+    runs-on: windows-latest
+    needs: build-signed-release
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download signed APK
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}-signed-apk
+          path: ./artifacts
+
+      - name: Download build info
+        uses: actions/download-artifact@v4
+        with:
+          name: build-info
+          path: ./artifacts
+
+      - name: Get version
+        id: version
+        run: |
+          $version = "${{ github.ref_name }}"
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release Notes
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $notes = @"
+          # 🎬 The Lighthouse Waves Player Video App $version
+
+          ## 📦 Downloads
+
+          **Android APK (Signed)**
+          - Minimum Android version: 5.0 (API 21)
+          - Target: Android 14+ (API 34)
+          - Architecture: Universal APK (all architectures)
+
+          ## 🚀 Installation
+
+          1. Download the APK file below
+          2. Enable "Install from unknown sources" in your Android settings
+          3. Open the APK file and install
+          4. Grant necessary permissions for video playback
+
+          ## ✨ Features
+
+          - **📹 Video Playback**: High-quality video streaming with MediaElement
+          - **📱 Modern UI**: Beautiful Material Design interface
+          - **📚 Playlists**: Create and manage video playlists
+          - **⭐ Favorites**: Save your favorite videos for quick access
+          - **🌍 Multi-language**: Supports English and Russian
+          - **💾 Local Storage**: SQLite database for offline data
+          - **🎨 Smooth Animations**: Delightful UI transitions
+
+          ## 📋 Requirements
+
+          - **OS**: Android 5.0 (Lollipop) or higher
+          - **Storage**: ~50 MB for app installation
+          - **Permissions**: Storage access for video files
+
+          ## 🔒 Security
+
+          - **SHA256 Checksum**: See BUILD_INFO.txt in artifacts
+          - Signed with official keystore
+          - Verify the signature after download
+
+          ## 📖 Technologies
+
+          - **.NET MAUI**: Cross-platform UI framework
+          - **CommunityToolkit.Maui.MediaElement**: Video playback
+          - **SQLite**: Local data persistence
+          - **MVVM Pattern**: Clean architecture
+
+          ## 🐛 Known Issues
+
+          - First launch may take a few seconds to initialize database
+          - Video thumbnails may take time to load on slower devices
+
+          ## 📝 Changelog
+
+          See full changelog in commit history.
+
+          ---
+
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/v1.0.0...$version
+          **Report Issues**: https://github.com/${{ github.repository }}/issues
+          "@
+
+          $notes | Out-File -FilePath release_notes.md -Encoding utf8
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./artifacts/*.apk
+            ./artifacts/BUILD_INFO.txt
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
+          generate_release_notes: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================
+  # Job 5: Security Scanning
+  # ============================================
+  security-scan:
+    name: Security Scan
+    runs-on: windows-latest
+    needs: build-and-test
+    if: |
+      github.event_name == 'push' &&
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
+
+      - name: Check for vulnerable packages
+        run: |
+          $output = dotnet list ${{ env.SOLUTION_NAME }} package --vulnerable --include-transitive 2>&1
+          Write-Output $output
+
+          if ($output -match "has the following vulnerable packages") {
+            Write-Error "❌ Vulnerable packages detected!"
+            exit 1
+          } else {
+            Write-Output "✅ No vulnerable packages found"
+          }
+        continue-on-error: true
+
+  # ============================================
+  # Job 6: Dependency Review (PRs only)
+  # ============================================
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]'
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-2.0, GPL-3.0
+
+  # ============================================
+  # Job 7: Auto-approve Dependabot PRs
+  # ============================================
+  auto-approve-dependabot:
+    name: Auto-approve Dependabot
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor == 'dependabot[bot]'
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - name: Approve Dependabot PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

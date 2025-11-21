@@ -1,16 +1,17 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
 
-public class PlaylistService : IPlaylistService
+public sealed class PlaylistService : IPlaylistService
 {
     private readonly IVideoDatabase _videoDatabase;
 
     public PlaylistService(IVideoDatabase videoDatabase)
     {
-        _videoDatabase = videoDatabase ?? throw new ArgumentNullException(nameof(videoDatabase));
+        ArgumentNullException.ThrowIfNull(videoDatabase);
+        _videoDatabase = videoDatabase;
     }
 
     public async Task<List<Playlist>> GetPlaylistsAsync()
@@ -20,6 +21,7 @@ public class PlaylistService : IPlaylistService
         {
             await UpdatePlaylistStatisticsAsync(playlist);
         }
+
         return playlists;
     }
 
@@ -30,24 +32,23 @@ public class PlaylistService : IPlaylistService
         {
             await UpdatePlaylistStatisticsAsync(playlist);
         }
+
         return playlist;
     }
 
     public async Task<int> CreatePlaylistAsync(string name, string description = "")
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Playlist name cannot be empty.", nameof(name));
-        var playlist = new Playlist
-        {
-            Name = name,
-            CreatedDate = DateTime.Now,
-            LastModified = DateTime.Now
-        };
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        var playlist = new Playlist { Name = name, CreatedDate = DateTime.Now, LastModified = DateTime.Now };
+
         return await _videoDatabase.SavePlaylistAsync(playlist);
     }
 
     public async Task<int> UpdatePlaylistAsync(Playlist playlist)
     {
-        if (playlist == null) throw new ArgumentNullException(nameof(playlist));
+        ArgumentNullException.ThrowIfNull(playlist);
+
         playlist.LastModified = DateTime.Now;
         await UpdatePlaylistStatisticsAsync(playlist);
         return await _videoDatabase.SavePlaylistAsync(playlist);
@@ -55,7 +56,7 @@ public class PlaylistService : IPlaylistService
 
     public Task<int> DeletePlaylistAsync(Playlist playlist)
     {
-        if (playlist == null) throw new ArgumentNullException(nameof(playlist));
+        ArgumentNullException.ThrowIfNull(playlist);
         return _videoDatabase.DeletePlaylistAsync(playlist);
     }
 
@@ -63,6 +64,7 @@ public class PlaylistService : IPlaylistService
     {
         var result = new List<VideoInfo>();
         var playlistItems = await _videoDatabase.GetPlaylistItemsAsync(playlistId) ?? new List<PlaylistItem>();
+
         foreach (var item in playlistItems)
         {
             var videoInfo = await _videoDatabase.GetOrCreateVideoInfoAsync(item.VideoPath);
@@ -72,12 +74,14 @@ public class PlaylistService : IPlaylistService
                 result.Add(videoInfo);
             }
         }
+
         return result;
     }
 
     public async Task<int> AddVideoToPlaylistAsync(int playlistId, VideoInfo video)
     {
-        if (video == null) throw new ArgumentNullException(nameof(video));
+        ArgumentNullException.ThrowIfNull(video);
+
         var videoCopy = new VideoInfo
         {
             FilePath = video.FilePath,
@@ -86,6 +90,7 @@ public class PlaylistService : IPlaylistService
             ThumbnailPath = video.ThumbnailPath,
             IsFavorite = video.IsFavorite
         };
+
         await _videoDatabase.GetOrCreateVideoInfoAsync(video.FilePath, videoCopy);
         var result = await _videoDatabase.AddVideoToPlaylistAsync(playlistId, video.FilePath);
 
@@ -95,14 +100,18 @@ public class PlaylistService : IPlaylistService
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 
     public async Task UpdatePlaylistStatisticsAsync(Playlist playlist)
     {
+        ArgumentNullException.ThrowIfNull(playlist);
+
         var items = await _videoDatabase.GetPlaylistItemsAsync(playlist.Id) ?? new List<PlaylistItem>();
         long totalDuration = 0;
         int validVideos = 0;
+
         foreach (var item in items)
         {
             var videoInfo = await _videoDatabase.GetOrCreateVideoInfoAsync(item.VideoPath);
@@ -112,6 +121,7 @@ public class PlaylistService : IPlaylistService
                 validVideos++;
             }
         }
+
         playlist.VideoCount = validVideos;
         playlist.DisplayVideoCount = validVideos;
         var duration = TimeSpan.FromMilliseconds(totalDuration);
@@ -121,35 +131,45 @@ public class PlaylistService : IPlaylistService
 
     public async Task<int> RemoveVideoFromPlaylistAsync(int playlistId, string videoPath)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
+
         var result = await _videoDatabase.RemoveVideoFromPlaylistAsync(playlistId, videoPath);
         var playlist = await _videoDatabase.GetPlaylistAsync(playlistId);
+
         if (playlist != null)
         {
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 
-    public async Task<int> ReorderPlaylistAsync(int playlistId, List<PlaylistItem> items)
+    public async Task<int> ReorderPlaylistAsync(int playlistId, IReadOnlyList<PlaylistItem> items)
     {
-        if (items == null) throw new ArgumentNullException(nameof(items));
+        ArgumentNullException.ThrowIfNull(items);
+
         for (int i = 0; i < items.Count; i++)
         {
             items[i].Order = i;
         }
+
         var result = await _videoDatabase.UpdatePlaylistItemOrderAsync(items);
         var playlist = await _videoDatabase.GetPlaylistAsync(playlistId);
+
         if (playlist != null)
         {
             await UpdatePlaylistStatisticsAsync(playlist);
             await _videoDatabase.SavePlaylistAsync(playlist);
         }
+
         return result;
     }
 
     public async Task<bool> IsVideoInPlaylistAsync(int playlistId, string videoFilePath)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(videoFilePath);
+
         var items = await _videoDatabase.GetPlaylistItemsAsync(playlistId) ?? new List<PlaylistItem>();
         return items.Any(item => item.VideoPath == videoFilePath);
     }

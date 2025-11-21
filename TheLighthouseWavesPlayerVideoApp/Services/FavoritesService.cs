@@ -1,4 +1,4 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Data;
+using TheLighthouseWavesPlayerVideoApp.Data;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Models;
 
@@ -16,7 +16,7 @@ public class FavoritesService : IFavoritesService
     public async Task AddFavoriteAsync(VideoInfo? video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
-        
+
         video.IsFavorite = true;
         await _database.SaveFavoriteAsync(video);
     }
@@ -36,7 +36,7 @@ public class FavoritesService : IFavoritesService
     public async Task RemoveFavoriteAsync(VideoInfo? video)
     {
         if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
-        
+
         video.IsFavorite = false;
         await _database.UpdateVideoInfoAsync(video);
     }

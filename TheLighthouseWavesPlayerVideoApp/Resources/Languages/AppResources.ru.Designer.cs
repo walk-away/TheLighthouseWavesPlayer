@@ -168,6 +168,33 @@ namespace TheLighthouseWavesPlayerVideoApp.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Открыть настройки.
+        /// </summary>
+        internal static string Permissions_Open_Settings {
+            get {
+                return ResourceManager.GetString("Permissions_Open_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Этому приложению нужен доступ к вашим видео для их отображения. Пожалуйста, предоставьте разрешение в настройках приложения..
+        /// </summary>
+        internal static string Permissions_Storage_Message {
+            get {
+                return ResourceManager.GetString("Permissions_Storage_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Требуется разрешение.
+        /// </summary>
+        internal static string Permissions_Storage_Title {
+            get {
+                return ResourceManager.GetString("Permissions_Storage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to В избранное.
         /// </summary>
         internal static string Player_AddFavorite {

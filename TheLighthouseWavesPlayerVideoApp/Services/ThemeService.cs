@@ -1,8 +1,8 @@
-﻿using TheLighthouseWavesPlayerVideoApp.Interfaces;
+using TheLighthouseWavesPlayerVideoApp.Interfaces;
 
 namespace TheLighthouseWavesPlayerVideoApp.Services;
 
-public class ThemeService : IThemeService
+public sealed class ThemeService : IThemeService
 {
     private const string ThemePreferenceKey = "AppTheme";
 
@@ -28,19 +28,18 @@ public class ThemeService : IThemeService
 
     public void ApplyTheme()
     {
-        Application.Current?.Dispatcher.Dispatch(() =>
+        if (Application.Current == null)
         {
-            switch (CurrentTheme)
+            return;
+        }
+
+        Application.Current.Dispatcher.Dispatch(() =>
+        {
+            var theme = CurrentTheme;
+
+            if (Application.Current.UserAppTheme != theme)
             {
-                case AppTheme.Light:
-                    Application.Current.UserAppTheme = AppTheme.Light;
-                    break;
-                case AppTheme.Dark:
-                    Application.Current.UserAppTheme = AppTheme.Dark;
-                    break;
-                case AppTheme.Unspecified:
-                    Application.Current.UserAppTheme = AppTheme.Unspecified;
-                    break;
+                Application.Current.UserAppTheme = theme;
             }
         });
     }

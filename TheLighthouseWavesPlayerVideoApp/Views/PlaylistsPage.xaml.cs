@@ -1,31 +1,39 @@
-﻿using TheLighthouseWavesPlayerVideoApp.ViewModels;
+using TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-namespace TheLighthouseWavesPlayerVideoApp.Views
+namespace TheLighthouseWavesPlayerVideoApp.Views;
+
+public partial class PlaylistsPage
 {
-    public partial class PlaylistsPage : ContentPage
+    private readonly PlaylistsViewModel _viewModel;
+
+    public PlaylistsPage(PlaylistsViewModel viewModel)
     {
-        private readonly PlaylistsViewModel _viewModel;
-        
-        public PlaylistsPage(PlaylistsViewModel viewModel)
+        InitializeComponent();
+        ArgumentNullException.ThrowIfNull(viewModel);
+        BindingContext = viewModel;
+        _viewModel = viewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _ = OnAppearingAsync();
+    }
+
+    private async Task OnAppearingAsync()
+    {
+        try
         {
-            InitializeComponent();
-            BindingContext = viewModel;
-            _viewModel = viewModel;
+            await _viewModel.OnAppearing();
         }
-        
-        protected override async void OnAppearing()
+        catch (Exception ex)
         {
-            base.OnAppearing();
-            
-            if (_viewModel != null)
-            {
-                await _viewModel.OnAppearing();
-            }
+            System.Diagnostics.Debug.WriteLine($"Error in PlaylistsPage.OnAppearing: {ex.Message}");
         }
-        
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-        }
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
     }
 }

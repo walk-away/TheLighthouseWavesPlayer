@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,42 +9,43 @@ using TheLighthouseWavesPlayerVideoApp.Views;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
+public sealed partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 {
     private readonly IVideoDiscoveryService _videoDiscoveryService;
     private readonly IFavoritesService _favoritesService;
     private readonly ILocalizedResourcesProvider _resourcesProvider;
     private readonly IPlaylistService _playlistService;
+    private bool _isDisposed;
 
     [ObservableProperty]
-    private ObservableCollection<Playlist> _availablePlaylists = new();
+    private ObservableCollection<Playlist> _availablePlaylists = [];
 
     [ObservableProperty]
     private bool _isSelectingPlaylist;
 
     [ObservableProperty]
-    private VideoInfo _videoForPlaylist = new VideoInfo();
+    private VideoInfo _videoForPlaylist = new();
 
     [ObservableProperty]
     private bool _hasPlaylists;
 
     [ObservableProperty]
-    private ObservableCollection<VideoInfo> _allVideos = new();
+    private ObservableCollection<VideoInfo> _allVideos = [];
 
     [ObservableProperty]
-    private ObservableCollection<VideoInfo> _videos = new();
+    private ObservableCollection<VideoInfo> _videos = [];
 
     [ObservableProperty]
-    private VideoInfo _selectedVideo = new VideoInfo();
+    private VideoInfo _selectedVideo = new();
 
     [ObservableProperty]
     private string _searchText = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<SortOption> _sortOptions = new();
+    private ObservableCollection<SortOption> _sortOptions = [];
 
     [ObservableProperty]
-    private SortOption _selectedSortOption = new SortOption(string.Empty, string.Empty, true);
+    private SortOption _selectedSortOption = new(string.Empty, string.Empty, true);
 
     private string _lastSelectedSortProperty;
     private bool _lastSelectedSortIsAscending;
@@ -55,10 +56,15 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         ILocalizedResourcesProvider resourcesProvider,
         IPlaylistService playlistService)
     {
-        _videoDiscoveryService = videoDiscoveryService ?? throw new ArgumentNullException(nameof(videoDiscoveryService));
-        _favoritesService = favoritesService ?? throw new ArgumentNullException(nameof(favoritesService));
-        _resourcesProvider = resourcesProvider ?? throw new ArgumentNullException(nameof(resourcesProvider));
-        _playlistService = playlistService ?? throw new ArgumentNullException(nameof(playlistService));
+        ArgumentNullException.ThrowIfNull(videoDiscoveryService);
+        ArgumentNullException.ThrowIfNull(favoritesService);
+        ArgumentNullException.ThrowIfNull(resourcesProvider);
+        ArgumentNullException.ThrowIfNull(playlistService);
+
+        _videoDiscoveryService = videoDiscoveryService;
+        _favoritesService = favoritesService;
+        _resourcesProvider = resourcesProvider;
+        _playlistService = playlistService;
         Title = _resourcesProvider["Library_Title"];
 
         _lastSelectedSortProperty = "Title";
@@ -74,13 +80,13 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
     private void InitializeSortOptions()
     {
-        SortOptions = new ObservableCollection<SortOption>
-        {
+        SortOptions =
+        [
             new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
             new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
             new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
             new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
-        };
+        ];
         SelectedSortOption = SortOptions.First();
     }
 
@@ -98,9 +104,10 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         };
 
         SortOptions = newOptions;
-        SelectedSortOption = SortOptions.FirstOrDefault(
-            o => o.Property == _lastSelectedSortProperty && o.IsAscending == _lastSelectedSortIsAscending)
-            ?? SortOptions.First();
+        SelectedSortOption = SortOptions.FirstOrDefault(o =>
+                                 o.Property == _lastSelectedSortProperty &&
+                                 o.IsAscending == _lastSelectedSortIsAscending)
+                             ?? SortOptions.First();
     }
 
     private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -128,14 +135,15 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
             var lower = SearchText.ToLowerInvariant();
-            filtered = filtered.Where(v => !string.IsNullOrEmpty(v.Title) &&
-                                            v.Title.ToLowerInvariant().Contains(lower));
+            filtered = filtered.Where(v => !string.IsNullOrWhiteSpace(v.Title) &&
+                                           v.Title.Contains(lower, StringComparison.OrdinalIgnoreCase));
         }
 
         filtered = SelectedSortOption.Property switch
         {
-            "Title" => SelectedSortOption.IsAscending ? filtered.OrderBy(v => v.Title)
-                                                       : filtered.OrderByDescending(v => v.Title),
+            "Title" => SelectedSortOption.IsAscending
+                ? filtered.OrderBy(v => v.Title)
+                : filtered.OrderByDescending(v => v.Title),
             "DurationMilliseconds" => SelectedSortOption.IsAscending
                 ? filtered.OrderBy(v => v.DurationMilliseconds)
                 : filtered.OrderByDescending(v => v.DurationMilliseconds),
@@ -148,7 +156,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    public async Task LoadVideos()
+    public async Task LoadVideosAsync()
     {
         if (IsBusy) return;
         IsBusy = true;
@@ -158,7 +166,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
             Videos.Clear();
 
             var discovered = await _videoDiscoveryService.DiscoverVideosAsync();
-            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ?? new HashSet<string>();
+            var favs = (await _favoritesService.GetFavoritesAsync())?.Select(f => f.FilePath).ToHashSet() ?? [];
 
             if (discovered != null)
             {
@@ -175,24 +183,24 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void ClearSearch()
+    private void ClearSearch()
     {
         SearchText = string.Empty;
     }
 
     [RelayCommand]
-    async Task GoToDetails(VideoInfo video)
+    private async Task GoToDetailsAsync(VideoInfo video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath))
+        if (video == null || string.IsNullOrWhiteSpace(video.FilePath))
             return;
 
         await Shell.Current.GoToAsync($"{nameof(VideoPlayerPage)}?FilePath={Uri.EscapeDataString(video.FilePath)}");
     }
 
     [RelayCommand]
-    async Task ToggleFavorite(VideoInfo? video)
+    private async Task ToggleFavoriteAsync(VideoInfo? video)
     {
-        if (video == null || string.IsNullOrEmpty(video.FilePath)) return;
+        if (video == null || string.IsNullOrWhiteSpace(video.FilePath)) return;
 
         try
         {
@@ -203,24 +211,33 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
             {
                 await _favoritesService.RemoveFavoriteAsync(video);
                 video.IsFavorite = false;
-                await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
+                await Shell.Current.DisplayAlert(
+                    _resourcesProvider["Favorites_Title"] ?? "Favorites",
+                    $"{video.Title} {_resourcesProvider["Favorites_Removed"] ?? "removed from favorites"}.",
+                    _resourcesProvider["Button_OK"] ?? "OK");
             }
             else
             {
                 video.IsFavorite = true;
                 await _favoritesService.AddFavoriteAsync(video);
-                await Shell.Current.DisplayAlert("Favorites", $"{video.Title} added to favorites.", "OK");
+                await Shell.Current.DisplayAlert(
+                    _resourcesProvider["Favorites_Title"] ?? "Favorites",
+                    $"{video.Title} {_resourcesProvider["Favorites_Added"] ?? "added to favorites"}.",
+                    _resourcesProvider["Button_OK"] ?? "OK");
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error toggling favorite: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Could not update favorites.", "OK");
+            await Shell.Current.DisplayAlert(
+                _resourcesProvider["Error_Title"] ?? "Error",
+                _resourcesProvider["Error_Favorites_Update"] ?? "Could not update favorites.",
+                _resourcesProvider["Button_OK"] ?? "OK");
         }
     }
 
     [RelayCommand]
-    async Task ShowPlaylistSelection(VideoInfo video)
+    private async Task ShowPlaylistSelectionAsync(VideoInfo video)
     {
         if (video == null) return;
 
@@ -235,9 +252,9 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
             if (!HasPlaylists)
             {
                 await Shell.Current.DisplayAlert(
-                    _resourcesProvider["Playlists_NoPlaylists"],
-                    _resourcesProvider["Playlists_CreateFirstMessage"],
-                    _resourcesProvider["Button_OK"]);
+                    _resourcesProvider["Playlists_NoPlaylists"] ?? "No Playlists",
+                    _resourcesProvider["Playlists_CreateFirstMessage"] ?? "Create a playlist first",
+                    _resourcesProvider["Button_OK"] ?? "OK");
                 return;
             }
 
@@ -253,10 +270,11 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Error showing playlist selection: {ex.Message}");
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Playlists_Error"],
-                string.Format(_resourcesProvider["Playlists_ErrorMessage"], ex.Message),
-                _resourcesProvider["Button_OK"]);
+                _resourcesProvider["Playlists_Error"] ?? "Error",
+                string.Format(_resourcesProvider["Playlists_ErrorMessage"] ?? "Error: {0}", ex.Message),
+                _resourcesProvider["Button_OK"] ?? "OK");
         }
         finally
         {
@@ -265,7 +283,7 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    async Task SavePlaylistSelection()
+    private async Task SavePlaylistSelectionAsync()
     {
         if (VideoForPlaylist == null) return;
 
@@ -293,16 +311,17 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
             IsSelectingPlaylist = false;
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Playlists_Success"],
-                _resourcesProvider["Playlists_UpdateSuccess"],
-                _resourcesProvider["Button_OK"]);
+                _resourcesProvider["Playlists_Success"] ?? "Success",
+                _resourcesProvider["Playlists_UpdateSuccess"] ?? "Playlists updated",
+                _resourcesProvider["Button_OK"] ?? "OK");
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Error saving playlist selection: {ex.Message}");
             await Shell.Current.DisplayAlert(
-                _resourcesProvider["Playlists_Error"],
-                string.Format(_resourcesProvider["Playlists_ErrorMessage"], ex.Message),
-                _resourcesProvider["Button_OK"]);
+                _resourcesProvider["Playlists_Error"] ?? "Error",
+                string.Format(_resourcesProvider["Playlists_ErrorMessage"] ?? "Error: {0}", ex.Message),
+                _resourcesProvider["Button_OK"] ?? "OK");
         }
         finally
         {
@@ -311,13 +330,13 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    void CancelPlaylistSelection()
+    private void CancelPlaylistSelection()
     {
         IsSelectingPlaylist = false;
     }
 
     [RelayCommand]
-    async Task CheckPlaylistsExist()
+    private async Task CheckPlaylistsExistAsync()
     {
         try
         {
@@ -333,15 +352,20 @@ public partial class VideoLibraryViewModel : BaseViewModel, IDisposable
 
     public async Task OnAppearing()
     {
-        await LoadVideos();
-        await CheckPlaylistsExist();
+        await LoadVideosAsync();
+        await CheckPlaylistsExistAsync();
     }
 
     public void Dispose()
     {
+        if (_isDisposed) return;
+
         if (_resourcesProvider is ObservableObject observableProvider)
         {
             observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
         }
+
+        _isDisposed = true;
+        GC.SuppressFinalize(this);
     }
 }

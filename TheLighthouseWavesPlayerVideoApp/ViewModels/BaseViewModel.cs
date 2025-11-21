@@ -1,11 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
 public partial class BaseViewModel : ObservableObject
 {
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsNotBusy))]
-    bool _isBusy;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotBusy))]
+    private bool _isBusy;
 
     [ObservableProperty] private string? _title;
 

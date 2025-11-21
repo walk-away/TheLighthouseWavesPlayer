@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
 using Preferences = Microsoft.Maui.Storage.Preferences;
 
@@ -36,7 +36,8 @@ public class LocalizationManager : ILocalizationManager
 
     public void UpdateUserCulture(CultureInfo cultureInfo)
     {
-        if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
+        ArgumentNullException.ThrowIfNull(cultureInfo);
+
         Preferences.Default.Set("UserCulture", cultureInfo.Name);
         SetCulture(cultureInfo);
 
@@ -51,9 +52,16 @@ public class LocalizationManager : ILocalizationManager
 
     private void UpdateShellLabels(Shell? shell)
     {
-        if (shell == null) return;
+        if (shell == null)
+        {
+            return;
+        }
+
         var provider = _resourceProvider;
-        if (provider == null) return;
+        if (provider == null)
+        {
+            return;
+        }
 
         shell.Title = provider["Shell_Title"] ?? shell.Title;
 
@@ -75,7 +83,9 @@ public class LocalizationManager : ILocalizationManager
                             _ => null
                         };
                         if (!string.IsNullOrEmpty(newTitle))
+                        {
                             tabItem.Title = newTitle;
+                        }
 
                         if (tabItem.Items.Count > 0 && tabItem.Items[0] is ShellContent content)
                         {

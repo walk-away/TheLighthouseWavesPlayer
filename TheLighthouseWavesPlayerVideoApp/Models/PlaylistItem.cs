@@ -1,4 +1,4 @@
-﻿using SQLite;
+using SQLite;
 
 namespace TheLighthouseWavesPlayerVideoApp.Models;
 

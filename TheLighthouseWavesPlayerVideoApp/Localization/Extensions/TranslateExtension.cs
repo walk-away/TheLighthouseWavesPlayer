@@ -1,12 +1,12 @@
-﻿namespace TheLighthouseWavesPlayerVideoApp.Localization.Extensions;
+namespace TheLighthouseWavesPlayerVideoApp.Localization.Extensions;
 
 [ContentProperty(nameof(Key))]
 public class TranslateExtension : IMarkupExtension<Binding>
 {
     public string? Key { get; set; }
-   
+
     object IMarkupExtension.ProvideValue(
-        IServiceProvider serviceProvider) 
+        IServiceProvider serviceProvider)
         => ProvideValue(serviceProvider);
 
     public Binding ProvideValue(

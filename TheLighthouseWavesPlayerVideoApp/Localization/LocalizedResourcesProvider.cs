@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Resources;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
@@ -7,15 +7,11 @@ namespace TheLighthouseWavesPlayerVideoApp.Localization;
 
 public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesProvider
 {
-    ResourceManager _resourceManager;
+    private readonly ResourceManager _resourceManager;
 
-    CultureInfo? _currentCulture;
+    private CultureInfo? _currentCulture;
 
-    public static LocalizedResourcesProvider? Instance
-    {
-        get;
-        private set;
-    }
+    public static LocalizedResourcesProvider Instance { get; private set; } = null!;
 
     public string this[string key]
         => _resourceManager.GetString(key, _currentCulture)
@@ -23,7 +19,7 @@ public class LocalizedResourcesProvider : ObservableObject, ILocalizedResourcesP
 
     public LocalizedResourcesProvider(ResourceManager resourceManager)
     {
-        this._resourceManager = resourceManager;
+        _resourceManager = resourceManager;
         _currentCulture = CultureInfo.CurrentUICulture;
         Instance = this;
     }
