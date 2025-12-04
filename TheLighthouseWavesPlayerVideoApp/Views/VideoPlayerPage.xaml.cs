@@ -3,6 +3,7 @@ using TheLighthouseWavesPlayerVideoApp.ViewModels;
 using System.Timers;
 using CommunityToolkit.Maui.Views;
 using TheLighthouseWavesPlayerVideoApp.Localization;
+using TheLighthouseWavesPlayerVideoApp.Models;
 
 namespace TheLighthouseWavesPlayerVideoApp.Views;
 
@@ -15,7 +16,7 @@ public partial class VideoPlayerPage : IDisposable
     private bool _isPageActive;
     private System.Timers.Timer? _metadataRetryTimer;
     private bool _isDisposed;
-    private readonly object _eventLock = new object();
+    private readonly object _eventLock = new();
     private bool _eventsSubscribed;
     private bool _resumeDialogShown;
 
@@ -23,78 +24,111 @@ public partial class VideoPlayerPage : IDisposable
     {
         InitializeComponent();
         BindingContext = viewModel;
-        _viewModel = viewModel;
+        _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
     }
 
     private void SubscribeToEvents()
     {
         lock (_eventLock)
         {
-            if (!_eventsSubscribed)
+            if (_eventsSubscribed) return;
+
+            UnsubscribeFromEventsInternal();
+
+            SizeChanged += OnPageSizeChanged;
+
+            if (mediaElement != null)
             {
-                UnsubscribeFromEvents();
-
-                SizeChanged += OnPageSizeChanged;
-
-                if (mediaElement != null)
-                {
-                    mediaElement.StateChanged += MediaElement_StateChanged;
-                    mediaElement.MediaOpened += MediaElement_MediaOpened;
-                    mediaElement.MediaEnded += MediaElement_MediaEnded;
-                    mediaElement.PositionChanged += MediaElement_PositionChanged;
-                    mediaElement.MediaFailed += MediaElement_MediaFailed;
-                }
-
-                _eventsSubscribed = true;
-                System.Diagnostics.Debug.WriteLine("Events subscribed");
+                mediaElement.StateChanged += MediaElement_StateChanged;
+                mediaElement.MediaOpened += MediaElement_MediaOpened;
+                mediaElement.MediaEnded += MediaElement_MediaEnded;
+                mediaElement.PositionChanged += MediaElement_PositionChanged;
+                mediaElement.MediaFailed += MediaElement_MediaFailed;
             }
+
+            _viewModel.PlayRequested += OnPlayRequested;
+            _viewModel.SeekRequested += OnSeekRequested;
+            _viewModel.ResumePlaybackRequested += OnResumePlaybackRequested;
+
+            _eventsSubscribed = true;
+            System.Diagnostics.Debug.WriteLine("Events subscribed");
         }
+    }
+
+    private void OnPlayRequested(object? sender, EventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            mediaElement?.Play();
+        });
+    }
+
+    private void OnResumePlaybackRequested(object? sender, ResumePlaybackEventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _isSeekingFromResume = true;
+            mediaElement?.SeekTo(e.Position);
+            mediaElement?.Play();
+        });
+    }
+
+    private void OnSeekRequested(object? sender, SeekEventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            mediaElement?.SeekTo(e.Position);
+        });
     }
 
     private void UnsubscribeFromEvents()
     {
         lock (_eventLock)
         {
-            SizeChanged -= OnPageSizeChanged;
-
-            if (mediaElement != null)
-            {
-                mediaElement.StateChanged -= MediaElement_StateChanged;
-                mediaElement.MediaOpened -= MediaElement_MediaOpened;
-                mediaElement.MediaEnded -= MediaElement_MediaEnded;
-                mediaElement.PositionChanged -= MediaElement_PositionChanged;
-                mediaElement.MediaFailed -= MediaElement_MediaFailed;
-            }
-
-            _eventsSubscribed = false;
-            System.Diagnostics.Debug.WriteLine("Events unsubscribed");
+            UnsubscribeFromEventsInternal();
         }
+    }
+
+    private void UnsubscribeFromEventsInternal()
+    {
+        SizeChanged -= OnPageSizeChanged;
+
+        if (mediaElement != null)
+        {
+            mediaElement.StateChanged -= MediaElement_StateChanged;
+            mediaElement.MediaOpened -= MediaElement_MediaOpened;
+            mediaElement.MediaEnded -= MediaElement_MediaEnded;
+            mediaElement.PositionChanged -= MediaElement_PositionChanged;
+            mediaElement.MediaFailed -= MediaElement_MediaFailed;
+        }
+
+        _viewModel.PlayRequested -= OnPlayRequested;
+        _viewModel.SeekRequested -= OnSeekRequested;
+
+        _eventsSubscribed = false;
+        System.Diagnostics.Debug.WriteLine("Events unsubscribed");
     }
 
     private void MediaElement_MediaFailed(object? sender, MediaFailedEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine($"Media failed: {e.ErrorMessage}");
+        _ = HandleMediaFailedAsync(e.ErrorMessage);
+    }
 
-        MainThread.BeginInvokeOnMainThread(async () =>
+    private async Task HandleMediaFailedAsync(string errorMessage)
+    {
+        try
         {
-            try
-            {
-                var resources = LocalizedResourcesProvider.Instance;
-                await Shell.Current.DisplayAlert(
-                    resources["Player_Error_Title"],
-                    $"{resources["Player_Error_Playback"]}\n{e.ErrorMessage}",
-                    resources["Button_OK"]);
-            }
-            catch (InvalidOperationException ioEx)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"Error displaying failure dialog (Invalid Operation): {ioEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error displaying failure dialog: {ex.Message}");
-            }
-        });
+            var resources = LocalizedResourcesProvider.Instance;
+            await Shell.Current.DisplayAlert(
+                resources["Player_Error_Title"],
+                $"{resources["Player_Error_Playback"]}\n{errorMessage}",
+                resources["Button_OK"]);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error displaying failure dialog: {ex.Message}");
+        }
     }
 
     private void OnPageSizeChanged(object? sender, EventArgs e)
@@ -102,10 +136,6 @@ public partial class VideoPlayerPage : IDisposable
         try
         {
             UpdateOrientationState();
-        }
-        catch (InvalidOperationException ioEx)
-        {
-            System.Diagnostics.Debug.WriteLine($"Invalid operation updating orientation state: {ioEx.Message}");
         }
         catch (Exception ex)
         {
@@ -130,10 +160,6 @@ public partial class VideoPlayerPage : IDisposable
 
             _viewModel.IsLandscape = isLandscape;
         }
-        catch (InvalidOperationException ioEx)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to update visual state (Invalid Operation): {ioEx.Message}");
-        }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Failed to update visual state: {ex.Message}");
@@ -150,13 +176,13 @@ public partial class VideoPlayerPage : IDisposable
         try
         {
             if (!_metadataSuccessfullyUpdated &&
-                (e.NewState == MediaElementState.Playing || e.NewState == MediaElementState.Buffering))
+                e.NewState is MediaElementState.Playing or MediaElementState.Buffering)
             {
                 TryUpdateMetadata();
             }
 
             if (!_isSeekingFromResume &&
-                (e.NewState == MediaElementState.Paused || e.NewState == MediaElementState.Stopped) &&
+                e.NewState is MediaElementState.Paused or MediaElementState.Stopped &&
                 mediaElement.Position > TimeSpan.Zero)
             {
                 _viewModel.SavePosition(mediaElement.Position);
@@ -194,74 +220,80 @@ public partial class VideoPlayerPage : IDisposable
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
-
-            if (!_isPageActive || mediaElement == null || _viewModel == null)
-            {
-                System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened skipped: Preconditions not met.");
-                return;
-            }
-
-            _viewModel.MediaElement = mediaElement;
-            _viewModel.UpdateMediaElementVolume();
-
-            TryUpdateMetadata();
-            if (!_metadataSuccessfullyUpdated)
-                SetupMetadataRetryTimer();
-
-            if (_viewModel.ShouldResumePlayback
-                && _viewModel.ResumePosition > TimeSpan.Zero
-                && !_resumeDialogShown)
-            {
-                _resumeDialogShown = true;
-
-                var resources = LocalizedResourcesProvider.Instance;
-                var title = resources["Player_ResumeDialog_Title"];
-                var messageFormat = resources["Player_ResumeDialog_Message"];
-                var resumeButton = resources["Player_ResumeDialog_Resume"];
-                var startOverButton = resources["Player_ResumeDialog_StartOver"];
-                var formattedTime = _viewModel.ResumePosition.ToString(@"hh\:mm\:ss");
-                var message = string.Format(messageFormat, formattedTime);
-
-                bool resume = await DisplayAlert(title, message, resumeButton, startOverButton);
-                if (resume)
-                {
-                    _isSeekingFromResume = true;
-                    mediaElement.SeekTo(_viewModel.ResumePosition);
-                    mediaElement.Play();
-                }
-                else
-                {
-                    _viewModel.ClearSavedPosition();
-                    mediaElement.Play();
-                }
-
-                _viewModel.ShouldResumePlayback = false;
-            }
-            else if (!_viewModel.ShouldResumePlayback
-                     && (_viewModel.IsPlaylistMode || mediaElement.ShouldAutoPlay))
-            {
-                mediaElement.Play();
-            }
-        }
-        catch (InvalidOperationException ioEx)
-        {
-            System.Diagnostics.Debug.WriteLine($"Invalid operation in MediaElement_MediaOpened: {ioEx}");
-            var resources = LocalizedResourcesProvider.Instance;
-            await Shell.Current.DisplayAlert(
-                resources["Player_Error_Title"],
-                resources["Player_Error_Playback"],
-                resources["Button_OK"]);
+            await HandleMediaOpenedAsync();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error in MediaElement_MediaOpened: {ex}");
-            var resources = LocalizedResourcesProvider.Instance;
-            await Shell.Current.DisplayAlert(
-                resources["Player_Error_Title"],
-                resources["Player_Error_Playback"],
-                resources["Button_OK"]);
+            await HandleMediaOpenedErrorAsync();
         }
+    }
+
+    private async Task HandleMediaOpenedAsync()
+    {
+        System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened fired.");
+
+        if (!_isPageActive || mediaElement == null || _viewModel == null)
+        {
+            System.Diagnostics.Debug.WriteLine("MediaElement_MediaOpened skipped: Preconditions not met.");
+            return;
+        }
+
+        _viewModel.MediaElement = mediaElement;
+        _viewModel.UpdateMediaElementVolume();
+
+        TryUpdateMetadata();
+        if (!_metadataSuccessfullyUpdated)
+            SetupMetadataRetryTimer();
+
+        if (_viewModel.ShouldResumePlayback && !_resumeDialogShown)
+        {
+            _resumeDialogShown = true;
+            await _viewModel.HandleResumeDecisionAsync();
+        }
+/*
+        if (_viewModel.ShouldResumePlayback &&
+            _viewModel.ResumePosition > TimeSpan.Zero &&
+            !_resumeDialogShown)
+        {
+            await HandleResumePlaybackAsync();
+        }
+*/
+        else if (!_viewModel.ShouldResumePlayback &&
+                 (_viewModel.IsPlaylistMode || mediaElement.ShouldAutoPlay))
+        {
+            mediaElement.Play();
+        }
+    }
+
+    private async Task HandleResumePlaybackAsync()
+    {
+        _resumeDialogShown = true;
+
+        bool resume = await _viewModel.ShouldResumeAsync();
+
+        if (resume)
+        {
+            _isSeekingFromResume = true;
+            mediaElement?.SeekTo(_viewModel.ResumePosition);
+            mediaElement?.Play();
+        }
+        else
+        {
+            _viewModel.ClearSavedPosition();
+            mediaElement?.Play();
+        }
+
+        _viewModel.ShouldResumePlayback = false;
+    }
+
+    private async Task HandleMediaOpenedErrorAsync()
+    {
+        var resources = LocalizedResourcesProvider.Instance;
+        await Shell.Current.DisplayAlert(
+            resources["Player_Error_Title"],
+            resources["Player_Error_Playback"],
+            resources["Button_OK"]);
     }
 
     private void MediaElement_MediaEnded(object? sender, EventArgs e)
@@ -285,19 +317,11 @@ public partial class VideoPlayerPage : IDisposable
             System.Diagnostics.Debug.WriteLine(
                 $"TryUpdateMetadata - Path: {_viewModel.FilePath}, W: {currentWidth}, H: {currentHeight}, D: {currentDuration}");
 
-            if (!string.IsNullOrEmpty(_viewModel.FilePath) && currentWidth > 0 && currentHeight > 0 &&
+            if (!string.IsNullOrEmpty(_viewModel.FilePath) &&
+                currentWidth > 0 && currentHeight > 0 &&
                 currentDuration > TimeSpan.Zero)
             {
-                _ = Task.Run(async () =>
-                {
-                    await _viewModel.UpdateVideoMetadataAsync(currentWidth, currentHeight, currentDuration);
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        _metadataSuccessfullyUpdated = true;
-                        StopAndDisposeRetryTimer();
-                        System.Diagnostics.Debug.WriteLine("Metadata updated successfully. Retry timer stopped.");
-                    });
-                });
+                _ = UpdateMetadataAsync(currentWidth, currentHeight, currentDuration);
             }
             else
             {
@@ -309,6 +333,18 @@ public partial class VideoPlayerPage : IDisposable
         {
             System.Diagnostics.Debug.WriteLine($"Error in TryUpdateMetadata: {ex.Message}");
         }
+    }
+
+    private async Task UpdateMetadataAsync(double width, double height, TimeSpan duration)
+    {
+        await _viewModel.UpdateVideoMetadataAsync(width, height, duration);
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _metadataSuccessfullyUpdated = true;
+            StopAndDisposeRetryTimer();
+            System.Diagnostics.Debug.WriteLine("Metadata updated successfully. Retry timer stopped.");
+        });
     }
 
     private void SetupMetadataRetryTimer()
@@ -357,8 +393,8 @@ public partial class VideoPlayerPage : IDisposable
         StopAndDisposeRetryTimer();
 
         TimeSpan currentPosition = TimeSpan.Zero;
-        if (mediaElement != null && (mediaElement.CurrentState == MediaElementState.Playing ||
-                                     mediaElement.CurrentState == MediaElementState.Paused))
+        if (mediaElement != null &&
+            mediaElement.CurrentState is MediaElementState.Playing or MediaElementState.Paused)
         {
             currentPosition = mediaElement.Position;
             mediaElement.Stop();
@@ -366,16 +402,20 @@ public partial class VideoPlayerPage : IDisposable
         }
 
         _viewModel?.OnNavigatedFrom(currentPosition);
-
         UnsubscribeFromEvents();
 
         base.OnNavigatedFrom(args);
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnNavigatedFrom finished.");
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
+        _ = OnAppearingAsync();
+    }
+
+    private async Task OnAppearingAsync()
+    {
         System.Diagnostics.Debug.WriteLine("VideoPlayerPage.OnAppearing started.");
         _isPageActive = true;
         _metadataSuccessfullyUpdated = false;
@@ -389,7 +429,8 @@ public partial class VideoPlayerPage : IDisposable
             _viewModel.CheckForSavedPosition();
 
             System.Diagnostics.Debug.WriteLine(
-                $"OnAppearing: FilePath={_viewModel.FilePath}, ShouldResume={_viewModel.ShouldResumePlayback}, ResumePosition={_viewModel.ResumePosition}, LastKnownPosition={_viewModel.LastKnownPosition}");
+                $"OnAppearing: FilePath={_viewModel.FilePath}, ShouldResume={_viewModel.ShouldResumePlayback}, " +
+                $"ResumePosition={_viewModel.ResumePosition}, LastKnownPosition={_viewModel.LastKnownPosition}");
 
             if (mediaElement.Source == null ||
                 (mediaElement.Source is FileMediaSource fms && fms.Path != _viewModel.FilePath))
@@ -414,7 +455,6 @@ public partial class VideoPlayerPage : IDisposable
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-
         _viewModel?.Cleanup();
     }
 
