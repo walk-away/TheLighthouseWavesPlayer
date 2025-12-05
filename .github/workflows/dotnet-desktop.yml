@@ -23,7 +23,6 @@ jobs:
   code-quality:
     name: Code Quality & Linting
     runs-on: windows-latest
-    # Skip for dependabot and github-actions bot
     if: |
       github.actor != 'dependabot[bot]' &&
       github.actor != 'github-actions[bot]'
@@ -39,11 +38,14 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Install MAUI workload
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
       - name: Fix code formatting
         run: dotnet format ${{ env.SOLUTION_NAME }} --verbosity diagnostic
@@ -58,8 +60,7 @@ jobs:
             --configuration Release `
             --no-restore `
             --framework net8.0-android `
-            /p:TreatWarningsAsErrors=false `
-            /p:CheckEolTargetFramework=false
+            /p:TreatWarningsAsErrors=false
         continue-on-error: true
 
   # ============================================
@@ -87,6 +88,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
@@ -105,7 +109,7 @@ jobs:
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
       - name: Build APK
         run: |
@@ -113,8 +117,7 @@ jobs:
             --configuration ${{ matrix.configuration }} `
             --framework net8.0-android `
             --no-restore `
-            /p:ContinuousIntegrationBuild=true `
-            /p:CheckEolTargetFramework=false
+            /p:ContinuousIntegrationBuild=true
 
       - name: Upload Build Artifacts (${{ matrix.configuration }})
         uses: actions/upload-artifact@v4
@@ -148,6 +151,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
@@ -158,7 +164,7 @@ jobs:
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
       - name: Get version from tag or use default
         id: version
@@ -166,7 +172,7 @@ jobs:
           if ("${{ github.ref }}" -match "refs/tags/v(.*)") {
             $version = $matches[1]
           } else {
-            $version = "1.4.0-dev.${{ github.run_number }}"
+            $version = "1.5.0-dev.${{ github.run_number }}"
           }
           echo "version=$version" >> $env:GITHUB_OUTPUT
           echo "Version: $version"
@@ -192,8 +198,7 @@ jobs:
             /p:AndroidSigningKeyStore=${{ env.KEYSTORE_PATH }} `
             /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} `
             /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASS }} `
-            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASS }} `
-            /p:CheckEolTargetFramework=false
+            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASS }}
 
       - name: Find signed APK
         id: find_apk
@@ -373,7 +378,7 @@ jobs:
 
           ## Technologies
 
-          - **.NET MAUI**: Cross-platform UI framework
+          - **.NET MAUI 8**: Cross-platform UI framework
           - **CommunityToolkit.Maui.MediaElement**: Video playback
           - **SQLite**: Local data persistence
           - **MVVM Pattern**: Clean architecture
@@ -431,7 +436,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
       - name: Check for vulnerable packages
         run: |
