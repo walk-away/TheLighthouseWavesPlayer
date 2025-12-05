@@ -42,7 +42,7 @@ jobs:
         run: dotnet --version
 
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -106,7 +106,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -161,7 +161,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -434,6 +434,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
