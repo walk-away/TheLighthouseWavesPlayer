@@ -43,7 +43,7 @@ jobs:
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }}
+        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
 
       - name: Fix code formatting
         run: dotnet format ${{ env.SOLUTION_NAME }} --verbosity diagnostic
@@ -58,7 +58,8 @@ jobs:
             --configuration Release `
             --no-restore `
             --framework net8.0-android `
-            /p:TreatWarningsAsErrors=false
+            /p:TreatWarningsAsErrors=false `
+            /p:CheckEolTargetFramework=false
         continue-on-error: true
 
   # ============================================
@@ -104,7 +105,7 @@ jobs:
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }}
+        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
 
       - name: Build APK
         run: |
@@ -112,7 +113,8 @@ jobs:
             --configuration ${{ matrix.configuration }} `
             --framework net8.0-android `
             --no-restore `
-            /p:ContinuousIntegrationBuild=true
+            /p:ContinuousIntegrationBuild=true `
+            /p:CheckEolTargetFramework=false
 
       - name: Upload Build Artifacts (${{ matrix.configuration }})
         uses: actions/upload-artifact@v4
@@ -156,7 +158,7 @@ jobs:
         run: dotnet workload install maui --skip-sign-check
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }}
+        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
 
       - name: Get version from tag or use default
         id: version
@@ -190,7 +192,8 @@ jobs:
             /p:AndroidSigningKeyStore=${{ env.KEYSTORE_PATH }} `
             /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} `
             /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASS }} `
-            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASS }}
+            /p:AndroidSigningStorePass=${{ secrets.ANDROID_STORE_PASS }} `
+            /p:CheckEolTargetFramework=false
 
       - name: Find signed APK
         id: find_apk
@@ -330,57 +333,57 @@ jobs:
         run: |
           $version = "${{ steps.version.outputs.version }}"
           $notes = @"
-          # 🎬 The Lighthouse Waves Player Video App $version
+          # The Lighthouse Waves Player Video App $version
 
-          ## 📦 Downloads
+          ## Downloads
 
           **Android APK (Signed)**
           - Minimum Android version: 5.0 (API 21)
           - Target: Android 14+ (API 34)
           - Architecture: Universal APK (all architectures)
 
-          ## 🚀 Installation
+          ## Installation
 
           1. Download the APK file below
           2. Enable "Install from unknown sources" in your Android settings
           3. Open the APK file and install
           4. Grant necessary permissions for video playback
 
-          ## ✨ Features
+          ## Features
 
-          - **📹 Video Playback**: High-quality video streaming with MediaElement
-          - **📱 Modern UI**: Beautiful Material Design interface
-          - **📚 Playlists**: Create and manage video playlists
-          - **⭐ Favorites**: Save your favorite videos for quick access
-          - **🌍 Multi-language**: Supports English and Russian
-          - **💾 Local Storage**: SQLite database for offline data
-          - **🎨 Smooth Animations**: Delightful UI transitions
+          - **Video Playback**: High-quality video streaming with MediaElement
+          - **Modern UI**: Beautiful Material Design interface
+          - **Playlists**: Create and manage video playlists
+          - **Favorites**: Save your favorite videos for quick access
+          - **Multi-language**: Supports English and Russian
+          - **Local Storage**: SQLite database for offline data
+          - **Smooth Animations**: Delightful UI transitions
 
-          ## 📋 Requirements
+          ## Requirements
 
           - **OS**: Android 5.0 (Lollipop) or higher
           - **Storage**: ~50 MB for app installation
           - **Permissions**: Storage access for video files
 
-          ## 🔒 Security
+          ## Security
 
           - **SHA256 Checksum**: See BUILD_INFO.txt in artifacts
           - Signed with official keystore
           - Verify the signature after download
 
-          ## 📖 Technologies
+          ## Technologies
 
           - **.NET MAUI**: Cross-platform UI framework
           - **CommunityToolkit.Maui.MediaElement**: Video playback
           - **SQLite**: Local data persistence
           - **MVVM Pattern**: Clean architecture
 
-          ## 🐛 Known Issues
+          ## Known Issues
 
           - First launch may take a few seconds to initialize database
           - Video thumbnails may take time to load on slower devices
 
-          ## 📝 Changelog
+          ## Changelog
 
           See full changelog in commit history.
 
@@ -428,7 +431,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_NAME }}
+        run: dotnet restore ${{ env.SOLUTION_NAME }} /p:CheckEolTargetFramework=false
 
       - name: Check for vulnerable packages
         run: |
@@ -436,10 +439,10 @@ jobs:
           Write-Output $output
 
           if ($output -match "has the following vulnerable packages") {
-            Write-Error "❌ Vulnerable packages detected!"
+            Write-Error "Vulnerable packages detected!"
             exit 1
           } else {
-            Write-Output "✅ No vulnerable packages found"
+            Write-Output "No vulnerable packages found"
           }
         continue-on-error: true
 
