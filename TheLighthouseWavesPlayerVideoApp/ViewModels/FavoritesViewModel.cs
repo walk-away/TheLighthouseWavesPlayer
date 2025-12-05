@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TheLighthouseWavesPlayerVideoApp.Interfaces;
 using TheLighthouseWavesPlayerVideoApp.Localization.Interfaces;
@@ -9,124 +8,34 @@ using TheLighthouseWavesPlayerVideoApp.Views;
 
 namespace TheLighthouseWavesPlayerVideoApp.ViewModels;
 
-public sealed partial class FavoritesViewModel : BaseViewModel, IDisposable
+public sealed partial class FavoritesViewModel : VideoFilterableSortableViewModel, IDisposable
 {
     private readonly IFavoritesService _favoritesService;
-    private readonly ILocalizedResourcesProvider _resourcesProvider;
-
-    [ObservableProperty]
-    private ObservableCollection<VideoInfo> _allFavoriteVideos = [];
-
-    [ObservableProperty]
-    private ObservableCollection<VideoInfo> _favoriteVideos = [];
-
-    [ObservableProperty]
-    private string _searchText = string.Empty;
-
-    [ObservableProperty]
-    private ObservableCollection<SortOption> _sortOptions = [];
-
-    [ObservableProperty]
-    private SortOption _selectedSortOption = new(string.Empty, string.Empty, true);
-
-    private string _lastSelectedSortProperty;
-    private bool _lastSelectedSortIsAscending;
     private bool _disposed;
 
+    public ObservableCollection<VideoInfo> AllFavoriteVideos => AllItems;
+    public ObservableCollection<VideoInfo> FavoriteVideos => FilteredItems;
+
     public FavoritesViewModel(IFavoritesService favoritesService, ILocalizedResourcesProvider resourcesProvider)
+        : base(resourcesProvider)
     {
         ArgumentNullException.ThrowIfNull(favoritesService);
-        ArgumentNullException.ThrowIfNull(resourcesProvider);
 
         _favoritesService = favoritesService;
-        _resourcesProvider = resourcesProvider;
-        Title = _resourcesProvider["Favorites_Title"];
+        Title = ResourcesProvider["Favorites_Title"];
 
-        _lastSelectedSortProperty = "Title";
-        _lastSelectedSortIsAscending = true;
-
-        InitializeSortOptions();
-
-        if (_resourcesProvider is INotifyPropertyChanged observableProvider)
+        if (resourcesProvider is INotifyPropertyChanged notifier)
         {
-            observableProvider.PropertyChanged += OnResourceProviderPropertyChanged;
+            notifier.PropertyChanged += OnResourceProviderPropertyChanged;
         }
     }
 
-    private void InitializeSortOptions()
+    private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SortOptions =
-        [
-            new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
-            new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
-            new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
-            new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
-        ];
-
-        SelectedSortOption = SortOptions.First();
-    }
-
-    private void UpdateSortOptions()
-    {
-        _lastSelectedSortProperty = SelectedSortOption.Property;
-        _lastSelectedSortIsAscending = SelectedSortOption.IsAscending;
-
-        ObservableCollection<SortOption> newOptions =
-        [
-            new SortOption(_resourcesProvider["Sort_TitleAsc"], "Title", true),
-            new SortOption(_resourcesProvider["Sort_TitleDesc"], "Title", false),
-            new SortOption(_resourcesProvider["Sort_DurationAsc"], "DurationMilliseconds", true),
-            new SortOption(_resourcesProvider["Sort_DurationDesc"], "DurationMilliseconds", false)
-        ];
-
-        SortOptions = newOptions;
-        SelectedSortOption = SortOptions.FirstOrDefault(o => o.Property == _lastSelectedSortProperty &&
-                                                             o.IsAscending == _lastSelectedSortIsAscending)
-                             ?? SortOptions.First();
-    }
-
-    partial void OnSearchTextChanged(string value)
-    {
-        ApplyFilters();
-    }
-
-    partial void OnSelectedSortOptionChanged(SortOption value)
-    {
-        _lastSelectedSortProperty = value.Property;
-        _lastSelectedSortIsAscending = value.IsAscending;
-        ApplyFilters();
-    }
-
-    private void ApplyFilters()
-    {
-        IEnumerable<VideoInfo> filtered = AllFavoriteVideos;
-
-        if (!string.IsNullOrWhiteSpace(SearchText))
+        if (e.PropertyName == "Item")
         {
-            var searchLower = SearchText.ToLowerInvariant();
-            filtered = filtered.Where(v =>
-                !string.IsNullOrEmpty(v.Title) &&
-                v.Title.Contains(searchLower, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (SelectedSortOption != null)
-        {
-            filtered = SelectedSortOption.Property switch
-            {
-                "Title" => SelectedSortOption.IsAscending
-                    ? filtered.OrderBy(v => v.Title)
-                    : filtered.OrderByDescending(v => v.Title),
-                "DurationMilliseconds" => SelectedSortOption.IsAscending
-                    ? filtered.OrderBy(v => v.DurationMilliseconds)
-                    : filtered.OrderByDescending(v => v.DurationMilliseconds),
-                _ => filtered
-            };
-        }
-
-        FavoriteVideos.Clear();
-        foreach (var video in filtered)
-        {
-            FavoriteVideos.Add(video);
+            Title = ResourcesProvider["Favorites_Title"];
+            UpdateSortOptions();
         }
     }
 
@@ -144,15 +53,15 @@ public sealed partial class FavoritesViewModel : BaseViewModel, IDisposable
         IsBusy = true;
         try
         {
-            AllFavoriteVideos.Clear();
-            FavoriteVideos.Clear();
+            AllItems.Clear();
+            FilteredItems.Clear();
 
             var favs = await _favoritesService.GetFavoritesAsync();
             if (favs != null)
             {
                 foreach (var video in favs)
                 {
-                    AllFavoriteVideos.Add(video);
+                    AllItems.Add(video);
                 }
             }
 
@@ -167,12 +76,6 @@ public sealed partial class FavoritesViewModel : BaseViewModel, IDisposable
         {
             IsBusy = false;
         }
-    }
-
-    [RelayCommand]
-    private void ClearSearch()
-    {
-        SearchText = string.Empty;
     }
 
     [RelayCommand]
@@ -194,13 +97,13 @@ public sealed partial class FavoritesViewModel : BaseViewModel, IDisposable
         {
             await _favoritesService.RemoveFavoriteAsync(video);
 
-            var toRemove = AllFavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
+            var toRemove = AllItems.FirstOrDefault(v => v.FilePath == video.FilePath);
             if (toRemove != null)
-                AllFavoriteVideos.Remove(toRemove);
+                AllItems.Remove(toRemove);
 
-            var filteredRemove = FavoriteVideos.FirstOrDefault(v => v.FilePath == video.FilePath);
+            var filteredRemove = FilteredItems.FirstOrDefault(v => v.FilePath == video.FilePath);
             if (filteredRemove != null)
-                FavoriteVideos.Remove(filteredRemove);
+                FilteredItems.Remove(filteredRemove);
 
             await Shell.Current.DisplayAlert("Favorites", $"{video.Title} removed from favorites.", "OK");
         }
@@ -218,32 +121,15 @@ public sealed partial class FavoritesViewModel : BaseViewModel, IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
         if (_disposed)
             return;
 
-        if (disposing)
+        if (ResourcesProvider is INotifyPropertyChanged observableProvider)
         {
-            if (_resourcesProvider is INotifyPropertyChanged observableProvider)
-            {
-                observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
-            }
+            observableProvider.PropertyChanged -= OnResourceProviderPropertyChanged;
         }
 
         _disposed = true;
-    }
-
-    private void OnResourceProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == "Item")
-        {
-            Title = _resourcesProvider["Favorites_Title"];
-            UpdateSortOptions();
-        }
+        GC.SuppressFinalize(this);
     }
 }
