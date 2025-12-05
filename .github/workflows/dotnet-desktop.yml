@@ -23,7 +23,6 @@ jobs:
   code-quality:
     name: Code Quality & Linting
     runs-on: windows-latest
-    # Skip for dependabot and github-actions bot
     if: |
       github.actor != 'dependabot[bot]' &&
       github.actor != 'github-actions[bot]'
@@ -39,8 +38,11 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -86,6 +88,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
@@ -101,7 +106,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -146,6 +151,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify .NET SDK version
+        run: dotnet --version
+
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
@@ -153,7 +161,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Install MAUI workload
-        run: dotnet workload install maui --skip-sign-check
+        run: dotnet workload install maui-android --skip-sign-check
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
@@ -164,7 +172,7 @@ jobs:
           if ("${{ github.ref }}" -match "refs/tags/v(.*)") {
             $version = $matches[1]
           } else {
-            $version = "1.4.0-dev.${{ github.run_number }}"
+            $version = "1.5.0-dev.${{ github.run_number }}"
           }
           echo "version=$version" >> $env:GITHUB_OUTPUT
           echo "Version: $version"
@@ -330,57 +338,57 @@ jobs:
         run: |
           $version = "${{ steps.version.outputs.version }}"
           $notes = @"
-          # 🎬 The Lighthouse Waves Player Video App $version
+          # The Lighthouse Waves Player Video App $version
 
-          ## 📦 Downloads
+          ## Downloads
 
           **Android APK (Signed)**
           - Minimum Android version: 5.0 (API 21)
           - Target: Android 14+ (API 34)
           - Architecture: Universal APK (all architectures)
 
-          ## 🚀 Installation
+          ## Installation
 
           1. Download the APK file below
           2. Enable "Install from unknown sources" in your Android settings
           3. Open the APK file and install
           4. Grant necessary permissions for video playback
 
-          ## ✨ Features
+          ## Features
 
-          - **📹 Video Playback**: High-quality video streaming with MediaElement
-          - **📱 Modern UI**: Beautiful Material Design interface
-          - **📚 Playlists**: Create and manage video playlists
-          - **⭐ Favorites**: Save your favorite videos for quick access
-          - **🌍 Multi-language**: Supports English and Russian
-          - **💾 Local Storage**: SQLite database for offline data
-          - **🎨 Smooth Animations**: Delightful UI transitions
+          - **Video Playback**: High-quality video streaming with MediaElement
+          - **Modern UI**: Beautiful Material Design interface
+          - **Playlists**: Create and manage video playlists
+          - **Favorites**: Save your favorite videos for quick access
+          - **Multi-language**: Supports English and Russian
+          - **Local Storage**: SQLite database for offline data
+          - **Smooth Animations**: Delightful UI transitions
 
-          ## 📋 Requirements
+          ## Requirements
 
           - **OS**: Android 5.0 (Lollipop) or higher
           - **Storage**: ~50 MB for app installation
           - **Permissions**: Storage access for video files
 
-          ## 🔒 Security
+          ## Security
 
           - **SHA256 Checksum**: See BUILD_INFO.txt in artifacts
           - Signed with official keystore
           - Verify the signature after download
 
-          ## 📖 Technologies
+          ## Technologies
 
-          - **.NET MAUI**: Cross-platform UI framework
+          - **.NET MAUI 8**: Cross-platform UI framework
           - **CommunityToolkit.Maui.MediaElement**: Video playback
           - **SQLite**: Local data persistence
           - **MVVM Pattern**: Clean architecture
 
-          ## 🐛 Known Issues
+          ## Known Issues
 
           - First launch may take a few seconds to initialize database
           - Video thumbnails may take time to load on slower devices
 
-          ## 📝 Changelog
+          ## Changelog
 
           See full changelog in commit history.
 
@@ -427,6 +435,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Install MAUI workload
+        run: dotnet workload install maui-android --skip-sign-check
+
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
 
@@ -436,10 +447,10 @@ jobs:
           Write-Output $output
 
           if ($output -match "has the following vulnerable packages") {
-            Write-Error "❌ Vulnerable packages detected!"
+            Write-Error "Vulnerable packages detected!"
             exit 1
           } else {
-            Write-Output "✅ No vulnerable packages found"
+            Write-Output "No vulnerable packages found"
           }
         continue-on-error: true
 

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- Target Framework -->
     <TargetFramework>net8.0-android</TargetFramework>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <OutputType>Exe</OutputType>
     <RootNamespace>TheLighthouseWavesPlayerVideoApp</RootNamespace>
 
