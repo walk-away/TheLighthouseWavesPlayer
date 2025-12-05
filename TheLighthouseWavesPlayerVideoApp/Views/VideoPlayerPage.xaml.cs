@@ -104,6 +104,7 @@ public partial class VideoPlayerPage : IDisposable
 
         _viewModel.PlayRequested -= OnPlayRequested;
         _viewModel.SeekRequested -= OnSeekRequested;
+        _viewModel.ResumePlaybackRequested -= OnResumePlaybackRequested;
 
         _eventsSubscribed = false;
         System.Diagnostics.Debug.WriteLine("Events unsubscribed");
