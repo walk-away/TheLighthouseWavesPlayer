@@ -41,6 +41,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILocalizedResourcesProvider>(new LocalizedResourcesProvider(resourceManager));
         builder.Services.AddSingleton<ILocalizationManager, LocalizationManager>();
 
+        builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
         builder.Services.AddSingleton<IPlaylistService, PlaylistService>();
         builder.Services.AddSingleton<IVideoDiscoveryService, VideoDiscoveryService>();
